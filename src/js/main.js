@@ -15,7 +15,6 @@ const translations = {
         },
         hero: {
             title: 'Ahol a stílus találkozik a közösséggel',
-            subtitle: 'Minden Alkalommal',
             findBarber: 'Foglalj Most!',
             feature1: 'Modern és klasszikus fazonok',
             feature2: 'Barátságos légkör',
@@ -151,7 +150,6 @@ const translations = {
         },
         hero: {
             title: 'Where Style Meets Community',
-            subtitle: 'Every Time',
             findBarber: 'Book Now!',
             feature1: 'Modern and classic styles',
             feature2: 'Friendly atmosphere',
@@ -300,6 +298,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initLanguage();
     initNavbar();
     initNavbarBubble();
+    initHamburgerMenu();
     initCarousel();
     initBookingForm();
     initContactForm();
@@ -383,6 +382,27 @@ function animateLanguageSwitch() {
 }
 
 
+
+// === Hamburger Menu ===
+function initHamburgerMenu() {
+    const btn = document.getElementById('hamburgerBtn');
+    const overlay = document.getElementById('mobileMenuOverlay');
+    if (!btn || !overlay) return;
+
+    btn.addEventListener('click', () => {
+        btn.classList.toggle('active');
+        overlay.classList.toggle('active');
+        document.body.style.overflow = overlay.classList.contains('active') ? 'hidden' : '';
+    });
+
+    overlay.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', () => {
+            btn.classList.remove('active');
+            overlay.classList.remove('active');
+            document.body.style.overflow = '';
+        });
+    });
+}
 
 // === Tubelight Navbar ===
 function initNavbar() {

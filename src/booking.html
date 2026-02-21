@@ -75,29 +75,38 @@
         </div>
     </nav>
 
-    <!-- Mobile Bottom Navigation -->
-    <nav class="mobile-navbar">
-        <a href="index.html" class="mobile-nav-item active" data-page="home">
-            <i class="fa-solid fa-home"></i>
-            <span data-key="nav.home">Kezdőlap</span>
-        </a>
-        <a href="portfolio.html" class="mobile-nav-item" data-page="portfolio">
-            <i class="fa-solid fa-images"></i>
-            <span data-key="nav.portfolio">Portfólió</span>
-        </a>
-        <a href="booking.html" class="mobile-nav-item booking-highlight" data-page="booking">
-            <i class="fa-solid fa-calendar-check"></i>
-            <span data-key="nav.booking">Foglalás</span>
-        </a>
-        <a href="barbers.html" class="mobile-nav-item" data-page="barbers">
-            <i class="fa-solid fa-scissors"></i>
-            <span data-key="nav.barbers">Borbélyok</span>
-        </a>
-        <a href="contact.html" class="mobile-nav-item" data-page="contact">
-            <i class="fa-solid fa-envelope"></i>
-            <span data-key="nav.contact">Kapcsolat</span>
-        </a>
-    </nav>
+    <!-- Hamburger Button (Mobile) -->
+    <button class="hamburger" id="hamburgerBtn" aria-label="Menu">
+        <span></span>
+        <span></span>
+        <span></span>
+    </button>
+
+    <!-- Mobile Menu Overlay -->
+    <div class="mobile-menu-overlay" id="mobileMenuOverlay">
+        <nav class="mobile-menu">
+            <a href="index.html" class="mobile-menu-item" data-page="home">
+                <i class="fa-solid fa-home"></i>
+                <span data-key="nav.home">Kezdőlap</span>
+            </a>
+            <a href="portfolio.html" class="mobile-menu-item" data-page="portfolio">
+                <i class="fa-solid fa-images"></i>
+                <span data-key="nav.portfolio">Portfólió</span>
+            </a>
+            <a href="barbers.html" class="mobile-menu-item" data-page="barbers">
+                <i class="fa-solid fa-scissors"></i>
+                <span data-key="nav.barbers">Borbélyok</span>
+            </a>
+            <a href="contact.html" class="mobile-menu-item" data-page="contact">
+                <i class="fa-solid fa-envelope"></i>
+                <span data-key="nav.contact">Kapcsolat</span>
+            </a>
+            <a href="booking.html" class="mobile-menu-cta" data-page="booking">
+                <i class="fa-solid fa-calendar-check"></i>
+                <span data-key="nav.booking">Foglalás</span>
+            </a>
+        </nav>
+    </div>
 
     <!-- Hero Section -->
     <section id="home" class="hero">
