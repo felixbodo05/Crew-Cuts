@@ -466,6 +466,11 @@ img {
     font-size: 16px;
 }
 
+/* === Mobile Top Booking Button === */
+.mobile-top-booking {
+    display: none;
+}
+
 /* === Hamburger Button === */
 .hamburger {
     display: none;
@@ -562,10 +567,21 @@ img {
     transform: translateY(0);
 }
 
-.mobile-menu-overlay.active .mobile-menu-item:nth-child(1) { transition-delay: 0.1s; }
-.mobile-menu-overlay.active .mobile-menu-item:nth-child(2) { transition-delay: 0.15s; }
-.mobile-menu-overlay.active .mobile-menu-item:nth-child(3) { transition-delay: 0.2s; }
-.mobile-menu-overlay.active .mobile-menu-item:nth-child(4) { transition-delay: 0.25s; }
+.mobile-menu-overlay.active .mobile-menu-item:nth-child(1) {
+    transition-delay: 0.1s;
+}
+
+.mobile-menu-overlay.active .mobile-menu-item:nth-child(2) {
+    transition-delay: 0.15s;
+}
+
+.mobile-menu-overlay.active .mobile-menu-item:nth-child(3) {
+    transition-delay: 0.2s;
+}
+
+.mobile-menu-overlay.active .mobile-menu-item:nth-child(4) {
+    transition-delay: 0.25s;
+}
 
 .mobile-menu-item i {
     font-size: var(--font-size-xl);
@@ -618,6 +634,33 @@ img {
 
     .top-controls {
         display: none;
+    }
+
+    .mobile-top-booking {
+        display: flex;
+        position: fixed;
+        top: var(--header-center);
+        left: 50%;
+        transform: translate(-50%, -50%);
+        align-items: center;
+        background: var(--primary);
+        color: var(--text-inverse);
+        padding: 10px 24px;
+        border-radius: 9999px;
+        font-family: "Oswald", sans-serif;
+        font-weight: 600;
+        font-size: var(--font-size-base);
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        text-decoration: none;
+        z-index: 1000;
+        box-shadow: var(--glow-orange);
+        transition: all var(--transition-base);
+    }
+
+    .mobile-top-booking:active {
+        transform: translate(-50%, -50%) scale(0.95);
+        background: var(--primary-light);
     }
 
     .hamburger {
