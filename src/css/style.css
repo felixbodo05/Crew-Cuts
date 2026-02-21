@@ -904,6 +904,12 @@ img {
         align-items: center;
     }
 
+    /* Hide About video link and CTA button on mobile */
+    .hero-bar-link[href="#about"],
+    .hero-cta-btn {
+        display: none;
+    }
+
     .hero-bar-link--right {
         flex-direction: row;
         text-align: left;
@@ -911,12 +917,6 @@ img {
 
     .hero-title {
         font-size: clamp(2rem, 10vw, 3.5rem);
-    }
-
-    .hero-cta-btn {
-        padding: 14px 36px;
-        font-size: var(--font-size-base);
-        margin: 0;
     }
 }
 
