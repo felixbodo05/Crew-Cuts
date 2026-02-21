@@ -1,0 +1,23 @@
+Colors
+
+Primary:
+#0000EE
+Accent:
+#19D0E8
+Background:
+#545454
+Text Primary:
+#545454
+Link:
+#19D0E8
+Fonts
+
+DM Mono(monospace)
+Instrument Serif(heading)
+Typography
+
+primary: DM Mono
+heading: Instrument Serif
+h1: 12px
+h2: 12px
+body: 70.4px

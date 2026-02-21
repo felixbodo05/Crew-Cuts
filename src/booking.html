@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="hu">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Crew Cutz - Online időpontfoglalás">
+    <title>Foglalás - Crew Cutz</title>
+    <link rel="icon" type="image/png" href="images/logo.png">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400..900&family=Oswald:wght@200..700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://use.typekit.net/pyr5exm.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+
+<body>
+
+
+    <!-- Logo (Top-Left) -->
+    <a href="index.html" class="logo-fixed">
+        <img src="images/logo.png" alt="Crew Cutz Logo">
+        <span>Crew Cutz</span>
+    </a>
+
+    <!-- Language Toggle (Top-Right) -->
+    <div class="top-controls">
+        <button class="lang-toggle" id="langToggle" aria-label="Language Toggle">
+            <span class="lang-option active" data-lang="hu">HU</span>
+            <span class="lang-divider">|</span>
+            <span class="lang-option" data-lang="en">EN</span>
+        </button>
+    </div>
+
+    <!-- Tubelight Navbar (Floating Center) -->
+    <nav class="tubelight-navbar" id="navbar">
+        <div class="navbar-container">
+            <!-- Main Navigation Pills -->
+            <div class="nav-pills">
+                <!-- Hover Bubble (follows mouse) -->
+                <div class="nav-bubble"></div>
+
+                <!-- Active Indicator (slides to active item) -->
+                <div class="active-indicator"></div>
+
+                <a href="index.html" class="nav-pill active" data-page="home">
+                    <i class="fa-solid fa-home"></i>
+                    <span data-key="nav.home">Kezdőlap</span>
+                    <div class="lamp-glow"></div>
+                </a>
+                <a href="portfolio.html" class="nav-pill" data-page="portfolio">
+                    <i class="fa-solid fa-images"></i>
+                    <span data-key="nav.portfolio">Portfólió</span>
+                    <div class="lamp-glow"></div>
+                </a>
+                <a href="barbers.html" class="nav-pill" data-page="barbers">
+                    <i class="fa-solid fa-scissors"></i>
+                    <span data-key="nav.barbers">Borbélyok</span>
+                    <div class="lamp-glow"></div>
+                </a>
+                <a href="contact.html" class="nav-pill" data-page="contact">
+                    <i class="fa-solid fa-envelope"></i>
+                    <span data-key="nav.contact">Kapcsolat</span>
+                    <div class="lamp-glow"></div>
+                </a>
+            </div>
+
+            <!-- Booking Bubble (Highlighted) -->
+            <a href="booking.html" class="booking-bubble" data-page="booking">
+                <i class="fa-solid fa-calendar-check"></i>
+                <span data-key="nav.booking">Foglalás</span>
+            </a>
+        </div>
+    </nav>
+
+    <!-- Mobile Bottom Navigation -->
+    <nav class="mobile-navbar">
+        <a href="index.html" class="mobile-nav-item active" data-page="home">
+            <i class="fa-solid fa-home"></i>
+            <span data-key="nav.home">Kezdőlap</span>
+        </a>
+        <a href="portfolio.html" class="mobile-nav-item" data-page="portfolio">
+            <i class="fa-solid fa-images"></i>
+            <span data-key="nav.portfolio">Portfólió</span>
+        </a>
+        <a href="booking.html" class="mobile-nav-item booking-highlight" data-page="booking">
+            <i class="fa-solid fa-calendar-check"></i>
+            <span data-key="nav.booking">Foglalás</span>
+        </a>
+        <a href="barbers.html" class="mobile-nav-item" data-page="barbers">
+            <i class="fa-solid fa-scissors"></i>
+            <span data-key="nav.barbers">Borbélyok</span>
+        </a>
+        <a href="contact.html" class="mobile-nav-item" data-page="contact">
+            <i class="fa-solid fa-envelope"></i>
+            <span data-key="nav.contact">Kapcsolat</span>
+        </a>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="hero-container">
+            <!-- Top Section: Title + Button + Controls -->
+            <div class="hero-top">
+                <div class="hero-text">
+                    <h1 class="hero-title glitch-text" data-key="hero.title">
+                        TALÁLD MEG A TÖKÉLETES HAJVÁGÁST KÖNNYEDÉN!
+                    </h1>
+                    <button class="find-barber-btn" data-key="hero.findBarber">Foglalj Most!</button>
+                </div>
+
+                <!-- Decorative Dots (top-right) -->
+                <div class="decorative-dots"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Carousel Navigation Arrows -->
+
+    <!-- Page Header -->
+    <header class="page-header">
+        <div class="container">
+            <h1 class="glitch-text" data-key="booking.header.title">
+                FOGLALD LE AZ <span class="accent-underline">IDŐPONTODAT</span> MÉG MA
+            </h1>
+            <p data-key="booking.header.subtitle">Gyors, egyszerű online foglalás – válaszd ki az időpontot és a
+                szolgáltatást!</p>
+        </div>
+    </header>
+
+    <!-- Booking Section -->
+    <section class="booking" style="padding-top: var(--spacing-3xl); padding-bottom: var(--spacing-6xl);">
+        <div class="container">
+            <div class="booking-content">
+                <form class="booking-form" id="bookingForm">
+                    <div class="form-group">
+                        <label for="name" data-key="booking.form.name">Név</label>
+                        <input type="text" id="name" name="name" required placeholder="Teljes név">
+                    </div>
+                    <div class="form-group">
+                        <label for="phone" data-key="booking.form.phone">Telefon</label>
+                        <input type="tel" id="phone" name="phone" required placeholder="+36 XX XXX XXXX">
+                    </div>
+                    <div class="form-group">
+                        <label for="email" data-key="booking.form.email">Email</label>
+                        <input type="email" id="email" name="email" required placeholder="email@pelda.hu">
+                    </div>
+                    <div class="form-group">
+                        <label for="date" data-key="booking.form.date">Dátum</label>
+                        <input type="date" id="date" name="date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="time" data-key="booking.form.time">Időpont</label>
+                        <input type="time" id="time" name="time" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="service" data-key="booking.form.service">Szolgáltatás</label>
+                        <select id="service" name="service" required>
+                            <option value="" data-key="booking.form.selectService">Válassz
+                                szolgáltatást</option>
+                            <option value="haircut" data-key="booking.form.haircut">Hajvágás
+                            </option>
+                            <option value="beard" data-key="booking.form.beard">Szakállformázás
+                            </option>
+                            <option value="combo" data-key="booking.form.combo">Kombináció</option>
+                        </select>
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="notes" data-key="booking.form.notes">Megjegyzés
+                            (opcionális)</label>
+                        <textarea id="notes" name="notes" rows="4" placeholder="Különleges kérések..."></textarea>
+                    </div>
+                    <button type="submit" class="btn-primary" data-key="booking.form.submit">Időpont
+                        foglalása</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <img src="images/logo.png" alt="Crew Cutz Logo">
+                    <p data-key="footer.tagline">Modern és klasszikus fazonok</p>
+                </div>
+                <div class="footer-links">
+                    <a href="index.html" data-key="nav.home">Kezdőlap</a>
+                    <a href="booking.html" data-key="nav.booking">Foglalás</a>
+                    <a href="portfolio.html" data-key="nav.portfolio">Portfólió</a>
+                    <a href="barbers.html" data-key="nav.barbers">Borbélyok</a>
+                    <a href="contact.html" data-key="nav.contact">Kapcsolat</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Crew Cutz. <span data-key="footer.rights">Minden jog
+                        fenntartva.</span></p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/glitch-effect.js"></script>
+    <script src="js/main.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="hu">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Crew Cutz - Online időpontfoglalás">
+    <title>Időpontfoglalás - Crew Cutz</title>
+    <link rel="icon" type="image/png" href="images/logo.png">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar" id="navbar">
+        <div class="container nav-container">
+            <a href="index.html" class="logo">
+                <img src="images/logo.png" alt="Crew Cutz Logo">
+                <span>Crew Cutz</span>
+            </a>
+
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="index.html" class="nav-link" data-key="nav.home">Kezdőlap</a></li>
+                <li><a href="booking.html" class="nav-link active" data-key="nav.booking">Időpontfoglalás</a></li>
+                <li><a href="portfolio.html" class="nav-link" data-key="nav.portfolio">Portfólió</a></li>
+                <li><a href="barbers.html" class="nav-link" data-key="nav.barbers">Borbélyok</a></li>
+                <li><a href="contact.html" class="nav-link" data-key="nav.contact">Kapcsolat</a></li>
+            </ul>
+
+            <div class="nav-actions">
+                <button class="lang-toggle" id="langToggle" aria-label="Language Toggle">
+                    <span class="lang-option" data-lang="hu">HU</span>
+                    <span class="lang-divider">|</span>
+                    <span class="lang-option" data-lang="en">EN</span>
+                </button>
+                <button class="theme-toggle" id="themeToggle" aria-label="Dark Mode Toggle">
+                    <svg class="sun-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2">
+                        <circle cx="12" cy="12" r="5" />
+                        <line x1="12" y1="1" x2="12" y2="3" />
+                        <line x1="12" y1="21" x2="12" y2="23" />
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+                        <line x1="1" y1="12" x2="3" y2="12" />
+                        <line x1="21" y1="12" x2="23" y2="12" />
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+                    </svg>
+                    <svg class="moon-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+                    </svg>
+                </button>
+                <button class="mobile-toggle" id="mobileToggle" aria-label="Mobile Menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <header class="page-header">
+        <div class="container">
+            <h1 class="glitch-text" data-key="booking.header.title">
+                BOOK YOUR <span class="accent-underline">APPOINTMENT</span> TODAY
+            </h1>
+            <p data-key="booking.header.subtitle">Gyors, egyszerű online foglalás – válaszd ki az időpontot és a
+                szolgáltatást!</p>
+        </div>
+    </header>
+
+    <!-- Booking Section -->
+    <section class="booking" style="padding-top: var(--spacing-3xl);">
+        <div class="container">
+            <div class="booking-content">
+                <form class="booking-form" id="bookingForm">
+                    <div class="form-group">
+                        <label for="name" data-key="booking.form.name">Név</label>
+                        <input type="text" id="name" name="name" required placeholder="Teljes név">
+                    </div>
+                    <div class="form-group">
+                        <label for="phone" data-key="booking.form.phone">Telefon</label>
+                        <input type="tel" id="phone" name="phone" required placeholder="+36 XX XXX XXXX">
+                    </div>
+                    <div class="form-group">
+                        <label for="email" data-key="booking.form.email">Email</label>
+                        <input type="email" id="email" name="email" required placeholder="email@pelda.hu">
+                    </div>
+                    <div class="form-group">
+                        <label for="date" data-key="booking.form.date">Dátum</label>
+                        <input type="date" id="date" name="date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="time" data-key="booking.form.time">Időpont</label>
+                        <input type="time" id="time" name="time" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="service" data-key="booking.form.service">Szolgáltatás</label>
+                        <select id="service" name="service" required>
+                            <option value="" data-key="booking.form.selectService">Válassz szolgáltatást</option>
+                            <option value="haircut" data-key="booking.form.haircut">Hajvágás</option>
+                            <option value="beard" data-key="booking.form.beard">Szakállformázás</option>
+                            <option value="combo" data-key="booking.form.combo">Kombináció</option>
+                        </select>
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="notes" data-key="booking.form.notes">Megjegyzés (opcionális)</label>
+                        <textarea id="notes" name="notes" rows="4" placeholder="Különleges kérések..."></textarea>
+                    </div>
+                    <button type="submit" class="btn-primary" data-key="booking.form.submit">Időpont foglalása</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <img src="images/logo.png" alt="Crew Cutz Logo">
+                    <p data-key="footer.tagline">Modern és klasszikus fazonok</p>
+                </div>
+                <div class="footer-links">
+                    <a href="index.html" data-key="nav.home">Kezdőlap</a>
+                    <a href="booking.html" data-key="nav.booking">Időpontfoglalás</a>
+                    <a href="portfolio.html" data-key="nav.portfolio">Portfólió</a>
+                    <a href="barbers.html" data-key="nav.barbers">Borbélyok</a>
+                    <a href="contact.html" data-key="nav.contact">Kapcsolat</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Crew Cutz. <span data-key="footer.rights">Minden jog fenntartva.</span></p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/glitch-effect.js"></script>
+    <script src="js/main.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="hu">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Crew Cutz - Modern és klasszikus fazonok, barátságos légkör, online időpontfoglalás">
+    <title>Crew Cutz - Borbély Szalon</title>
+    <link rel="icon" type="image/png" href="images/logo.png">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="preload" as="image" href="images/haj_1F.jpg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400..900&family=Oswald:wght@200..700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://use.typekit.net/pyr5exm.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+
+
+<body>
+    <!-- Logo (Top-Left) -->
+    <a href="index.html" class="logo-fixed">
+        <img src="images/logo.png" alt="Crew Cutz Logo">
+        <span>Crew Cutz</span>
+    </a>
+
+    <!-- Language Toggle (Top-Right) -->
+    <div class="top-controls">
+        <button class="lang-toggle" id="langToggle" aria-label="Language Toggle">
+            <span class="lang-option active" data-lang="hu">HU</span>
+            <span class="lang-divider">|</span>
+            <span class="lang-option" data-lang="en">EN</span>
+        </button>
+    </div>
+
+    <!-- Tubelight Navbar (Floating Center) -->
+    <nav class="tubelight-navbar" id="navbar">
+        <div class="navbar-container">
+            <!-- Main Navigation Pills -->
+            <div class="nav-pills">
+                <!-- Hover Bubble (follows mouse) -->
+                <div class="nav-bubble"></div>
+
+                <!-- Active Indicator (slides to active item) -->
+                <div class="active-indicator"></div>
+
+                <a href="index.html" class="nav-pill active" data-page="home">
+                    <i class="fa-solid fa-home"></i>
+                    <span data-key="nav.home">Kezdőlap</span>
+                    <div class="lamp-glow"></div>
+                </a>
+                <a href="portfolio.html" class="nav-pill" data-page="portfolio">
+                    <i class="fa-solid fa-images"></i>
+                    <span data-key="nav.portfolio">Portfólió</span>
+                    <div class="lamp-glow"></div>
+                </a>
+                <a href="barbers.html" class="nav-pill" data-page="barbers">
+                    <i class="fa-solid fa-scissors"></i>
+                    <span data-key="nav.barbers">Borbélyok</span>
+                    <div class="lamp-glow"></div>
+                </a>
+                <a href="contact.html" class="nav-pill" data-page="contact">
+                    <i class="fa-solid fa-envelope"></i>
+                    <span data-key="nav.contact">Kapcsolat</span>
+                    <div class="lamp-glow"></div>
+                </a>
+            </div>
+
+            <!-- Booking Bubble (Highlighted) -->
+            <a href="booking.html" class="booking-bubble" data-page="booking">
+                <i class="fa-solid fa-calendar-check"></i>
+                <span data-key="nav.booking">Foglalás</span>
+            </a>
+        </div>
+    </nav>
+
+    <!-- Mobile Bottom Navigation -->
+    <nav class="mobile-navbar">
+        <a href="index.html" class="mobile-nav-item active" data-page="home">
+            <i class="fa-solid fa-home"></i>
+            <span data-key="nav.home">Kezdőlap</span>
+        </a>
+        <a href="portfolio.html" class="mobile-nav-item" data-page="portfolio">
+            <i class="fa-solid fa-images"></i>
+            <span data-key="nav.portfolio">Portfólió</span>
+        </a>
+        <a href="booking.html" class="mobile-nav-item booking-highlight" data-page="booking">
+            <i class="fa-solid fa-calendar-check"></i>
+            <span data-key="nav.booking">Foglalás</span>
+        </a>
+        <a href="barbers.html" class="mobile-nav-item" data-page="barbers">
+            <i class="fa-solid fa-scissors"></i>
+            <span data-key="nav.barbers">Borbélyok</span>
+        </a>
+        <a href="contact.html" class="mobile-nav-item" data-page="contact">
+            <i class="fa-solid fa-envelope"></i>
+            <span data-key="nav.contact">Kapcsolat</span>
+        </a>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <!-- Full-screen background image -->
+        <div class="hero-bg">
+            <img src="images/haj_1F.jpg" alt="Crew Cutz Hero" fetchpriority="high">
+            <div class="hero-overlay"></div>
+        </div>
+
+        <!-- Centred title text -->
+        <div class="hero-center">
+            <h1 class="hero-title" data-key="hero.title">Ahol a stílus találkozik a közösséggel</h1>
+            <p class="hero-subtitle" data-key="hero.subtitle">Minden Alkalommal</p>
+        </div>
+
+        <!-- Bottom action bar -->
+        <div class="hero-bottom-bar">
+            <a href="#about" class="hero-bar-link">
+                <div class="hero-bar-icon">
+                    <i class="fa-solid fa-play"></i>
+                </div>
+                <div>
+                    <span class="hero-bar-label" data-key="hero.whatWeDo">RÓLUNK</span>
+                    <span class="hero-bar-sub" data-key="hero.explore1">Fedezd fel</span>
+                </div>
+            </a>
+
+            <a href="booking.html" class="hero-cta-btn" data-key="hero.cta">FOGLALJ MOST</a>
+
+            <a href="barbers.html" class="hero-bar-link hero-bar-link--right">
+                <div>
+                    <span class="hero-bar-label" data-key="hero.meetBarbers">BORBÉLYAINK</span>
+                    <span class="hero-bar-sub" data-key="hero.explore2">Ismerd meg őket</span>
+                </div>
+            </a>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="about">
+        <div class="container">
+            <h2 class="section-title" data-key="about.title">Rólunk</h2>
+            <p class="section-subtitle" data-key="about.subtitle">Miért válassz minket?</p>
+            <div class="about-content">
+                <p class="about-text" data-key="about.text">A Crew Cutz nem csak egy borbélyüzlet – ez egy hely, ahol
+                    stílus, precizitás és jó hangulat találkozik. Csapatunk tapasztalt borbélyokból áll, akik
+                    szenvedélyesen dolgoznak azért, hogy minden vendég magabiztosan és elégedetten távozzon. Legyen szó
+                    klasszikus fazonról, modern fade-ről vagy szakállformázásról, nálunk profi kezekben vagy. Prémium
+                    termékeket használunk, figyelünk minden részletre, és garantáljuk, hogy az élmény legalább olyan
+                    fontos, mint az eredmény.</p>
+                <div class="about-features">
+                    <div class="about-feature">
+                        <i class="fa-solid fa-scissors"></i>
+                        <h3 data-key="about.feature1.title">Precíz munka</h3>
+                        <p data-key="about.feature1.text">Minden vágás mögött évek tapasztalata és a részletekre való
+                            odafigyelés áll.</p>
+                    </div>
+                    <div class="about-feature">
+                        <i class="fa-solid fa-heart"></i>
+                        <h3 data-key="about.feature2.title">Barátságos légkör</h3>
+                        <p data-key="about.feature2.text">Nálunk otthon érzed magad – lazíts, miközben mi a stílusodon
+                            dolgozunk.</p>
+                    </div>
+                    <div class="about-feature">
+                        <i class="fa-solid fa-clock"></i>
+                        <h3 data-key="about.feature3.title">Pontos időpontok</h3>
+                        <p data-key="about.feature3.text">Online foglalás, nincs várakozás – a Te időd is értékes.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Portfolio Section -->
+    <section id="portfolio" class="portfolio">
+        <div class="container">
+            <h2 class="section-title" data-key="portfolio.title">Portfólió</h2>
+            <p class="section-subtitle" data-key="portfolio.subtitle">Munkáink a legjobb eredményeket beszélik</p>
+            <div class="portfolio-grid">
+                <div class="portfolio-item">
+                    <img src="images/haj_1F.png" alt="Professional haircut style 1">
+                    <div class="portfolio-overlay">
+                        <h3 data-key="portfolio.style">Modern Stílus</h3>
+                    </div>
+                </div>
+                <div class="portfolio-item">
+                    <img src="images/haj_2F.png" alt="Professional haircut style 2">
+                    <div class="portfolio-overlay">
+                        <h3 data-key="portfolio.style">Klasszikus Fazon</h3>
+                    </div>
+                </div>
+                <div class="portfolio-item">
+                    <img src="images/haj_3F.png" alt="Professional haircut style 3">
+                    <div class="portfolio-overlay">
+                        <h3 data-key="portfolio.style">Fade Vágás</h3>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Barbers Section -->
+    <section id="barbers" class="barbers">
+        <div class="container">
+            <h2 class="section-title" data-key="barbers.title">Borbélyok</h2>
+            <p class="section-subtitle" data-key="barbers.subtitle">Tapasztalt szakemberek a Te szolgálatodban</p>
+            <div class="barbers-grid">
+                <div class="barber-card">
+                    <div class="barber-image">
+                        <img src="images/borbly_1.png" alt="Barber 1">
+                    </div>
+                    <div class="barber-info">
+                        <h3 class="barber-name" data-key="barbers.barber1.name">Egervári Márk</h3>
+                        <p class="barber-title" data-key="barbers.barber1.title">Barber</p>
+                    </div>
+                </div>
+                <div class="barber-card">
+                    <div class="barber-image">
+                        <img src="images/borbély_2.png" alt="Barber 2">
+                    </div>
+                    <div class="barber-info">
+                        <h3 class="barber-name" data-key="barbers.barber2.name">Kányai Domonkos</h3>
+                        <p class="barber-title" data-key="barbers.barber2.title">Barber</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="contact">
+        <div class="container">
+            <h2 class="section-title" data-key="contact.title">Kapcsolat</h2>
+            <p class="section-subtitle" data-key="contact.subtitle">Látogass meg minket vagy írj nekünk</p>
+            <div class="contact-content">
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                            <circle cx="12" cy="10" r="3" />
+                        </svg>
+                        <div>
+                            <h3 data-key="contact.address.title">Cím</h3>
+                            <p data-key="contact.address.value">8200 Veszprém, Megyeház tér 2</p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path
+                                d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+                        </svg>
+                        <div>
+                            <h3 data-key="contact.phone.title">Telefon</h3>
+                            <p data-key="contact.phone.value">+36 XX XXX XXXX</p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                            <polyline points="22,6 12,13 2,6" />
+                        </svg>
+                        <div>
+                            <h3 data-key="contact.email.title">Email</h3>
+                            <p data-key="contact.email.value">info@crewcutz.hu</p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <circle cx="12" cy="12" r="10" />
+                            <polyline points="12 6 12 12 16 14" />
+                        </svg>
+                        <div>
+                            <h3 data-key="contact.hours.title">Nyitvatartás</h3>
+                            <p data-key="contact.hours.value">H-P: 9:00-19:00<br>Szo: 9:00-15:00</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="contact-map">
+                    <iframe
+                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2729.027668679093!2d17.9114383158788!3d47.09166697915383!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x476999a09e0b821d%3A0x6a2c9c7f0b0b0b0b!2sVeszpr%C3%A9m%2C%20Megyeh%C3%A1z%20t%C3%A9r%202%2C%208200!5e0!3m2!1shu!2shu!4v1676646700000!5m2!1shu!2shu"
+                        width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy">
+                    </iframe>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <img src="images/logo.png" alt="Crew Cutz Logo">
+                    <p data-key="footer.tagline">Modern és klasszikus fazonok</p>
+                </div>
+                <div class="footer-links">
+                    <a href="#home" data-key="nav.home">Kezdőlap</a>
+                    <a href="#booking" data-key="nav.booking">Foglalás</a>
+                    <a href="#portfolio" data-key="nav.portfolio">Portfólió</a>
+                    <a href="#barbers" data-key="nav.barbers">Borbélyok</a>
+                    <a href="#contact" data-key="nav.contact">Kapcsolat</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Crew Cutz. <span data-key="footer.rights">Minden jog fenntartva.</span></p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/glitch-effect.js"></script>
+    <script src="js/hex-bg.js"></script>
+    <script src="js/main.js"></script>
+</body>
+
+</html>
