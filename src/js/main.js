@@ -825,7 +825,8 @@ function initNavbarBubble() {
             const centerX = rect.left - navRect.left + rect.width / 2;
             const scaleW = rect.width + 16; // desired pixel width
 
-            bubble.style.transform = `translateX(${centerX}px) translateY(-50%) scaleX(${scaleW})`;
+            // translateX(centerX - scaleW/2) centers the element on the pill
+            bubble.style.transform = `translateX(${centerX - scaleW / 2}px) translateY(-50%) scaleX(${scaleW})`;
             bubble.classList.add('active');
         });
     });
@@ -850,5 +851,6 @@ function updateActiveIndicator() {
     const centerX = activeRect.left - navRect.left + activeRect.width / 2;
     const scaleW = activeRect.width;
 
-    indicator.style.transform = `translateX(${centerX}px) translateY(-50%) scaleX(${scaleW})`;
+    // translateX(centerX - scaleW/2) centers the indicator on the active pill
+    indicator.style.transform = `translateX(${centerX - scaleW / 2}px) translateY(-50%) scaleX(${scaleW})`;
 }
