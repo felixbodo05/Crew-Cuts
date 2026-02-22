@@ -803,10 +803,29 @@ img {
     text-transform: uppercase;
     letter-spacing: 0.04em;
     line-height: 1;
-    color: rgba(255, 255, 255, 0.18);
+    /* Make it much more visible */
+    color: rgba(255, 255, 255, 0.6);
     margin: 0 0 var(--spacing-md);
-    text-shadow: none;
     user-select: none;
+    /* Add the animation */
+    animation: title-breathe 4s ease-in-out infinite alternate;
+}
+
+@keyframes title-breathe {
+    0% {
+        color: rgba(255, 255, 255, 0.4);
+        text-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+        transform: scale(0.98);
+    }
+
+    100% {
+        color: rgba(255, 255, 255, 0.85);
+        text-shadow:
+            0 0 20px rgba(255, 255, 255, 0.4),
+            0 0 40px rgba(0, 128, 0, 0.3);
+        /* Subtle green tint in the glow */
+        transform: scale(1.02);
+    }
 }
 
 .hero-subtitle {
