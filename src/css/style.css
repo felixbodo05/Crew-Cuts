@@ -381,13 +381,20 @@ img {
     position: absolute;
     top: 50%;
     left: 0;
-    transform: translate(-50%, -50%);
-    width: 0;
-    height: 0;
+    /* Use transform for GPU-accelerated movement, no layout cost */
+    transform: translateX(0) translateY(-50%) scaleX(1);
+    transform-origin: left center;
+    width: 1px;
+    /* Base width; actual size controlled by JS scaleX */
+    height: 40px;
+    /* Fixed height to avoid layout triggers */
     background: rgba(0, 128, 0, 0.15);
     border-radius: 9999px;
     pointer-events: none;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    /* Only animate transform and opacity — GPU only, no layout */
+    transition: transform 0.22s cubic-bezier(0.4, 0, 0.2, 1),
+        opacity 0.2s ease;
+    will-change: transform, opacity;
     opacity: 0;
     z-index: 0;
 }
@@ -401,11 +408,14 @@ img {
     position: absolute;
     top: 50%;
     left: 0;
-    transform: translate(-50%, -50%);
+    transform: translateX(0) translateY(-50%) scaleX(1);
+    transform-origin: left center;
+    width: 1px;
     height: calc(100% - 4px);
     background: rgba(0, 128, 0, 0.2);
     border-radius: 9999px;
-    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: transform;
     z-index: 0;
     pointer-events: none;
 }

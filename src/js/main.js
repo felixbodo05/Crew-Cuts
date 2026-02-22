@@ -817,18 +817,15 @@ function initNavbarBubble() {
     if (!navPills || !bubble || pills.length === 0) return;
 
     pills.forEach(pill => {
-        pill.addEventListener('mouseenter', (e) => {
+        pill.addEventListener('mouseenter', () => {
             const rect = pill.getBoundingClientRect();
             const navRect = navPills.getBoundingClientRect();
 
-            // Calculate position relative to nav-pills container
-            const left = rect.left - navRect.left + rect.width / 2;
-            const width = rect.width + 16; // Add padding
-            const height = rect.height + 8;
+            // Use transform instead of left/width (GPU-accelerated, no layout cost)
+            const centerX = rect.left - navRect.left + rect.width / 2;
+            const scaleW = rect.width + 16; // desired pixel width
 
-            bubble.style.left = `${left}px`;
-            bubble.style.width = `${width}px`;
-            bubble.style.height = `${height}px`;
+            bubble.style.transform = `translateX(${centerX}px) translateY(-50%) scaleX(${scaleW})`;
             bubble.classList.add('active');
         });
     });
@@ -849,10 +846,9 @@ function updateActiveIndicator() {
     const navRect = navPills.getBoundingClientRect();
     const activeRect = activeItem.getBoundingClientRect();
 
-    // Calculate position relative to nav-pills container
-    const left = activeRect.left - navRect.left + activeRect.width / 2;
-    const width = activeRect.width;
+    // Use transform for GPU-accelerated indicator positioning
+    const centerX = activeRect.left - navRect.left + activeRect.width / 2;
+    const scaleW = activeRect.width;
 
-    indicator.style.left = `${left}px`;
-    indicator.style.width = `${width}px`;
+    indicator.style.transform = `translateX(${centerX}px) translateY(-50%) scaleX(${scaleW})`;
 }
