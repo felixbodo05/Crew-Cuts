@@ -457,12 +457,12 @@ function initNavbar() {
 
                 const navRect = navPillsContainer.getBoundingClientRect();
                 const lastRect = lastItem.getBoundingClientRect();
-                // Use left-edge offset (matches updateActiveIndicator)
-                const left = lastRect.left - navRect.left;
-                const width = lastRect.width;
+                const pillLeft = lastRect.left - navRect.left;
+                const pillWidth = lastRect.width;
 
-                indicator.style.left = `${left}px`;
-                indicator.style.width = `${width}px`;
+                // Use transform (consistent with updateActiveIndicator)
+                indicator.style.width = `${pillWidth}px`;
+                indicator.style.transform = `translateY(-50%) translateX(${pillLeft}px)`;
 
                 // Force reflow to apply the position without transition
                 indicator.offsetHeight;
@@ -822,14 +822,22 @@ function initNavbarBubble() {
             const rect = pill.getBoundingClientRect();
             const navRect = navPills.getBoundingClientRect();
 
-            const left = rect.left - navRect.left;
-            const width = rect.width + 16;
-            const height = rect.height + 8;
+            const pillLeft = rect.left - navRect.left;
+            const bubbleWidth = rect.width + 16;
+            const bubbleHeight = rect.height + 8;
 
-            // Center the bubble on the pill (left - half of padding)
-            bubble.style.left = `${left - 8}px`;
-            bubble.style.width = `${width}px`;
-            bubble.style.height = `${height}px`;
+            // 1. Instantly set the size (no transition = no layout jank)
+            bubble.style.transition = 'none';
+            bubble.style.width = `${bubbleWidth}px`;
+            bubble.style.height = `${bubbleHeight}px`;
+            bubble.offsetHeight; // Force reflow to commit size change
+
+            // 2. Re-enable transition for ONLY transform (GPU-accelerated, no jank)
+            bubble.style.transition = 'transform 0.18s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.15s ease';
+
+            // 3. Position via transform only
+            const xOffset = pillLeft - 8; // -8 for half padding
+            bubble.style.transform = `translateY(-50%) translateX(${xOffset}px)`;
             bubble.classList.add('active');
         });
     });
@@ -850,9 +858,12 @@ function updateActiveIndicator() {
     const navRect = navPills.getBoundingClientRect();
     const activeRect = activeItem.getBoundingClientRect();
 
-    const left = activeRect.left - navRect.left;
-    const width = activeRect.width;
+    const pillLeft = activeRect.left - navRect.left;
+    const pillWidth = activeRect.width;
 
-    indicator.style.left = `${left}px`;
-    indicator.style.width = `${width}px`;
+    // Size is set instantly (no animation)
+    indicator.style.width = `${pillWidth}px`;
+
+    // Position is animated via transform only (GPU-only, no layout jank)
+    indicator.style.transform = `translateY(-50%) translateX(${pillLeft}px)`;
 }
