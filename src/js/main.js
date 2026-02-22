@@ -835,20 +835,15 @@ function initNavbarBubble() {
             bubble.style.width = `${p.w}px`;
             bubble.style.height = `${p.h}px`;
 
-            // If already visible: snap position instantly (zero latency between pills)
-            // If first appearance: animate transform in
-            const snap = bubble.classList.contains('active');
-            bubble.style.transition = snap
-                ? 'opacity 0.12s ease'
-                : 'transform 0.12s ease, opacity 0.1s ease';
-
+            // Smooth slide animation between pills (GPU transform only, no layout cost)
+            bubble.style.transition = 'transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.15s ease';
             bubble.style.transform = `translateY(-50%) translateX(${p.x}px)`;
             bubble.classList.add('active');
         });
     });
 
     navPills.addEventListener('mouseleave', () => {
-        bubble.style.transition = 'opacity 0.15s ease';
+        bubble.style.transition = 'opacity 0.2s ease';
         bubble.classList.remove('active');
     });
 }
