@@ -2,6 +2,9 @@
 // CREW CUTZ - MAIN JAVASCRIPT
 // ========================================
 
+// Module-level nav position refresh (called on language switch & resize)
+let refreshNavPositions = () => { };
+
 // === Translation Data ===
 const translations = {
     hu: {
@@ -352,6 +355,13 @@ function updateLanguage(lang) {
         if (el._glitchInstance) {
             el._glitchInstance.originalText = el.textContent;
         }
+    });
+
+    // Pill text length changes on language switch → re-measure positions
+    // Use requestAnimationFrame to wait for DOM reflow after text update
+    requestAnimationFrame(() => {
+        refreshNavPositions();
+        updateActiveIndicator();
     });
 }
 
@@ -827,6 +837,8 @@ function initNavbarBubble() {
         });
     }
     cachePillPositions();
+    // Expose so updateLanguage() can call it after text changes pill sizes
+    refreshNavPositions = cachePillPositions;
     window.addEventListener('resize', cachePillPositions, { passive: true });
 
     pills.forEach((pill, i) => {
