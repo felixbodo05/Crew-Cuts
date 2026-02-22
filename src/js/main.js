@@ -817,32 +817,38 @@ function initNavbarBubble() {
 
     if (!navPills || !bubble || pills.length === 0) return;
 
-    pills.forEach(pill => {
+    // Pre-compute pill positions once — no getBoundingClientRect on every hover
+    let pillCache = [];
+    function cachePillPositions() {
+        const navRect = navPills.getBoundingClientRect();
+        pillCache = Array.from(pills).map(pill => {
+            const r = pill.getBoundingClientRect();
+            return { x: r.left - navRect.left - 8, w: r.width + 16, h: r.height + 8 };
+        });
+    }
+    cachePillPositions();
+    window.addEventListener('resize', cachePillPositions, { passive: true });
+
+    pills.forEach((pill, i) => {
         pill.addEventListener('mouseenter', () => {
-            const rect = pill.getBoundingClientRect();
-            const navRect = navPills.getBoundingClientRect();
+            const p = pillCache[i];
+            bubble.style.width = `${p.w}px`;
+            bubble.style.height = `${p.h}px`;
 
-            const pillLeft = rect.left - navRect.left;
-            const bubbleWidth = rect.width + 16;
-            const bubbleHeight = rect.height + 8;
+            // If already visible: snap position instantly (zero latency between pills)
+            // If first appearance: animate transform in
+            const snap = bubble.classList.contains('active');
+            bubble.style.transition = snap
+                ? 'opacity 0.12s ease'
+                : 'transform 0.12s ease, opacity 0.1s ease';
 
-            // 1. Instantly set the size (no transition = no layout jank)
-            bubble.style.transition = 'none';
-            bubble.style.width = `${bubbleWidth}px`;
-            bubble.style.height = `${bubbleHeight}px`;
-            bubble.offsetHeight; // Force reflow to commit size change
-
-            // 2. Re-enable transition for ONLY transform (GPU-accelerated, no jank)
-            bubble.style.transition = 'transform 0.18s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.15s ease';
-
-            // 3. Position via transform only
-            const xOffset = pillLeft - 8; // -8 for half padding
-            bubble.style.transform = `translateY(-50%) translateX(${xOffset}px)`;
+            bubble.style.transform = `translateY(-50%) translateX(${p.x}px)`;
             bubble.classList.add('active');
         });
     });
 
     navPills.addEventListener('mouseleave', () => {
+        bubble.style.transition = 'opacity 0.15s ease';
         bubble.classList.remove('active');
     });
 }
