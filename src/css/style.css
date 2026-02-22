@@ -640,9 +640,9 @@ img {
         display: flex;
         position: fixed;
         /* Align perfectly on the same Y-axis as logo and hamburger */
-        top: 24px;
+        top: 36px;
         left: 50%;
-        transform: translate(-50%, 0);
+        transform: translate(-50%, -50%);
         align-items: center;
         background: var(--primary);
         color: var(--text-inverse);
@@ -660,22 +660,22 @@ img {
     }
 
     .mobile-top-booking:active {
-        transform: translate(-50%, 0) scale(0.95);
+        transform: translate(-50%, -50%) scale(0.95);
         background: var(--primary-light);
     }
 
     .hamburger {
         display: flex;
         /* Align perfectly on the same Y-axis */
-        top: 24px;
-        transform: translateY(0) scale(0.75);
+        top: 36px;
+        transform: translateY(-50%) scale(0.75);
     }
 
     .logo-fixed {
         /* Align perfectly on the same Y-axis */
-        top: 24px;
-        transform: translateY(0) scale(0.75);
-        transform-origin: top left;
+        top: 36px;
+        transform: translateY(-50%) scale(0.75);
+        transform-origin: left center;
     }
 
     .logo-fixed img {
