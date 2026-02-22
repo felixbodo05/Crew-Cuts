@@ -644,9 +644,12 @@ img {
         left: 50%;
         transform: translate(-50%, -50%);
         align-items: center;
+        justify-content: center;
         background: var(--primary);
         color: var(--text-inverse);
-        padding: 8px 20px;
+        padding: 0 24px;
+        height: 44px;
+        /* Standardised proportional height */
         border-radius: 9999px;
         font-family: "Oswald", sans-serif;
         font-weight: 600;
@@ -668,12 +671,14 @@ img {
         display: flex;
         /* Align perfectly on the same Y-axis */
         top: 36px;
-        transform: translateY(-50%) scale(0.75);
+        /* Scale standardises to roughly 48px height (96px * 0.5) */
+        transform: translateY(-50%) scale(0.5);
     }
 
     .logo-fixed {
         /* Align perfectly on the same Y-axis */
         top: 36px;
+        /* Scale standardises to roughly 48px height (64px * 0.75) */
         transform: translateY(-50%) scale(0.75);
         transform-origin: left center;
     }
