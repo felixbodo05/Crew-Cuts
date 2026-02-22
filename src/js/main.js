@@ -457,8 +457,9 @@ function initNavbar() {
 
                 const navRect = navPillsContainer.getBoundingClientRect();
                 const lastRect = lastItem.getBoundingClientRect();
-                const left = lastRect.left - navRect.left + lastRect.width / 2;
-                const width = lastRect.width; // Use full width of previous item
+                // Use left-edge offset (matches updateActiveIndicator)
+                const left = lastRect.left - navRect.left;
+                const width = lastRect.width;
 
                 indicator.style.left = `${left}px`;
                 indicator.style.width = `${width}px`;
@@ -821,12 +822,14 @@ function initNavbarBubble() {
             const rect = pill.getBoundingClientRect();
             const navRect = navPills.getBoundingClientRect();
 
-            // Use transform instead of left/width (GPU-accelerated, no layout cost)
-            const centerX = rect.left - navRect.left + rect.width / 2;
-            const scaleW = rect.width + 16; // desired pixel width
+            const left = rect.left - navRect.left;
+            const width = rect.width + 16;
+            const height = rect.height + 8;
 
-            // translateX(centerX - scaleW/2) centers the element on the pill
-            bubble.style.transform = `translateX(${centerX - scaleW / 2}px) translateY(-50%) scaleX(${scaleW})`;
+            // Center the bubble on the pill (left - half of padding)
+            bubble.style.left = `${left - 8}px`;
+            bubble.style.width = `${width}px`;
+            bubble.style.height = `${height}px`;
             bubble.classList.add('active');
         });
     });
@@ -847,10 +850,9 @@ function updateActiveIndicator() {
     const navRect = navPills.getBoundingClientRect();
     const activeRect = activeItem.getBoundingClientRect();
 
-    // Use transform for GPU-accelerated indicator positioning
-    const centerX = activeRect.left - navRect.left + activeRect.width / 2;
-    const scaleW = activeRect.width;
+    const left = activeRect.left - navRect.left;
+    const width = activeRect.width;
 
-    // translateX(centerX - scaleW/2) centers the indicator on the active pill
-    indicator.style.transform = `translateX(${centerX - scaleW / 2}px) translateY(-50%) scaleX(${scaleW})`;
+    indicator.style.left = `${left}px`;
+    indicator.style.width = `${width}px`;
 }

@@ -368,12 +368,12 @@ img {
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
 }
 
-
-
 .nav-pills {
     display: flex;
     gap: 4px;
     position: relative;
+    overflow: visible;
+    /* Ensure border-radius on children isn't clipped */
 }
 
 /* Mouse-Following Bubble */
@@ -381,20 +381,17 @@ img {
     position: absolute;
     top: 50%;
     left: 0;
-    /* Use transform for GPU-accelerated movement, no layout cost */
-    transform: translateX(0) translateY(-50%) scaleX(1);
-    transform-origin: left center;
-    width: 1px;
-    /* Base width; actual size controlled by JS scaleX */
-    height: 40px;
-    /* Fixed height to avoid layout triggers */
+    transform: translateY(-50%);
+    width: 0;
+    height: 0;
     background: rgba(0, 128, 0, 0.15);
     border-radius: 9999px;
     pointer-events: none;
-    /* Only animate transform and opacity — GPU only, no layout */
-    transition: transform 0.22s cubic-bezier(0.4, 0, 0.2, 1),
-        opacity 0.2s ease;
-    will-change: transform, opacity;
+    transition: left 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+        width 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+        height 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+        opacity 0.18s ease;
+    will-change: left, width, opacity;
     opacity: 0;
     z-index: 0;
 }
@@ -408,17 +405,18 @@ img {
     position: absolute;
     top: 50%;
     left: 0;
-    transform: translateX(0) translateY(-50%) scaleX(1);
-    transform-origin: left center;
-    width: 1px;
+    transform: translateY(-50%);
     height: calc(100% - 4px);
+    width: 0;
     background: rgba(0, 128, 0, 0.2);
     border-radius: 9999px;
-    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-    will-change: transform;
+    transition: left 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+        width 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: left, width;
     z-index: 0;
     pointer-events: none;
 }
+
 
 .nav-pill {
     position: relative;
