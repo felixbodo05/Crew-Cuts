@@ -798,11 +798,13 @@ img {
 
 .hero-title {
     font-family: "Cinzel", serif;
-    font-size: clamp(3.5rem, 10vw, 8rem);
+    /* Increased minimum size from 3.5rem to 4.2rem for mobile */
+    font-size: clamp(4.2rem, 10vw, 8rem);
     font-weight: 900;
     text-transform: uppercase;
     letter-spacing: 0.04em;
-    line-height: 1;
+    line-height: 1.1;
+    /* Slightly more breathing room for larger text */
     /* Make it much more visible */
     color: rgba(255, 255, 255, 0.6);
     margin: 0 0 var(--spacing-md);
@@ -813,18 +815,22 @@ img {
 
 @keyframes title-breathe {
     0% {
-        color: rgba(255, 255, 255, 0.4);
+        color: rgba(255, 255, 255, 0.5);
+        /* Softer start */
         text-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
-        transform: scale(0.98);
+        transform: scale(0.99);
+        /* Less shrinkage */
     }
 
     100% {
         color: rgba(255, 255, 255, 0.85);
         text-shadow:
-            0 0 20px rgba(255, 255, 255, 0.4),
-            0 0 40px rgba(0, 128, 0, 0.3);
-        /* Subtle green tint in the glow */
-        transform: scale(1.02);
+            0 0 15px rgba(255, 255, 255, 0.3),
+            /* Softer glow */
+            /* Subtle green tint in the glow */
+            0 0 25px rgba(0, 128, 0, 0.2);
+        transform: scale(1.01);
+        /* Less expansion */
     }
 }
 
