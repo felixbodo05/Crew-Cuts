@@ -639,17 +639,18 @@ img {
     .mobile-top-booking {
         display: flex;
         position: fixed;
-        top: var(--header-center);
+        /* Align perfectly on the same Y-axis as logo and hamburger */
+        top: 24px;
         left: 50%;
-        transform: translate(-50%, -50%);
+        transform: translate(-50%, 0);
         align-items: center;
         background: var(--primary);
         color: var(--text-inverse);
-        padding: 10px 24px;
+        padding: 8px 20px;
         border-radius: 9999px;
         font-family: "Oswald", sans-serif;
         font-weight: 600;
-        font-size: var(--font-size-base);
+        font-size: var(--font-size-sm);
         letter-spacing: 0.05em;
         text-transform: uppercase;
         text-decoration: none;
@@ -659,23 +660,27 @@ img {
     }
 
     .mobile-top-booking:active {
-        transform: translate(-50%, -50%) scale(0.95);
+        transform: translate(-50%, 0) scale(0.95);
         background: var(--primary-light);
     }
 
     .hamburger {
         display: flex;
-        transform: translateY(-50%) scale(0.75);
+        /* Align perfectly on the same Y-axis */
+        top: 24px;
+        transform: translateY(0) scale(0.75);
     }
 
     .logo-fixed {
-        transform: scale(0.75);
+        /* Align perfectly on the same Y-axis */
+        top: 24px;
+        transform: translateY(0) scale(0.75);
         transform-origin: top left;
     }
 
     .logo-fixed img {
-        height: 96px;
-        width: 96px;
+        height: 64px;
+        width: 64px;
     }
 }
 
