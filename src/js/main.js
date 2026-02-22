@@ -645,26 +645,39 @@ function showNotification(message, type = 'info') {
     }, 3000);
 }
 
-// === Intersection Observer for Animations ===
-const observerOptions = {
-    threshold: 0.1,
-    rootMargin: '0px 0px -100px 0px'
-};
-
-const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-        if (entry.isIntersecting) {
-            entry.target.style.animation = 'fadeInUp 0.6s ease-out forwards';
-            observer.unobserve(entry.target);
-        }
-    });
-}, observerOptions);
-
-// Observe sections for scroll animations
+// === Intersection Observer for Scroll-Reveal Animations ===
 document.addEventListener('DOMContentLoaded', () => {
+    // Mark all direct children of sections with .reveal class
     document.querySelectorAll('section > .container > *').forEach(el => {
-        observer.observe(el);
+        el.classList.add('reveal');
     });
+
+    const revealObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+                revealObserver.unobserve(entry.target);
+            }
+        });
+    }, {
+        threshold: 0.1,
+        rootMargin: '0px 0px -60px 0px'
+    });
+
+    document.querySelectorAll('.reveal').forEach(el => {
+        revealObserver.observe(el);
+    });
+
+    // === Header backdrop scroll effect ===
+    const backdrop = document.querySelector('.header-backdrop');
+    if (backdrop) {
+        window.addEventListener('scroll', () => {
+            const scrolled = window.scrollY > 80;
+            backdrop.style.background = scrolled
+                ? 'linear-gradient(to bottom, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.2) 100%)'
+                : 'linear-gradient(to bottom, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 100%)';
+        }, { passive: true });
+    }
 });
 
 // === CSS Animations (defined in style tag) ===

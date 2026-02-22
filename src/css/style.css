@@ -83,6 +83,48 @@ footer,
     z-index: 2;
 }
 
+/* === Fixed Header Backdrop === */
+/* Prevents page content from bleeding through the transparent fixed navbar area */
+.header-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 72px;
+    /* Same as --navbar-height */
+    z-index: 999;
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0) 100%);
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+    pointer-events: none;
+    /* Let clicks pass through */
+    transition: background var(--transition-base);
+}
+
+/* === Scroll Reveal Animation System === */
+.reveal {
+    opacity: 0;
+    transform: translateY(32px);
+    transition: opacity 0.7s ease-out, transform 0.7s ease-out;
+}
+
+.reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(32px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 
 
 /* === Reset & Base Styles === */
