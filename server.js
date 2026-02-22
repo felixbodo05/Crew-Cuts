@@ -100,12 +100,17 @@ app.use((req, res) => {
     res.sendFile(path.join(__dirname, 'src', 'index.html'));
 });
 
-// Start Server
-app.listen(PORT, () => {
-    console.log(`
-    🚀 Server running at http://localhost:${PORT}
-    ✨ Static files served from ./src
-    📅 Booking API: POST /api/booking
-    ✉️ Contact API: POST /api/contact
-    `);
-});
+// Start Server (only if running locally, Vercel will use module.exports)
+if (require.main === module) {
+    app.listen(PORT, () => {
+        console.log(`
+        🚀 Server running at http://localhost:${PORT}
+        ✨ Static files served from ./src
+        📅 Booking API: POST /api/booking
+        ✉️ Contact API: POST /api/contact
+        `);
+    });
+}
+
+// Export the app for Vercel
+module.exports = app;
