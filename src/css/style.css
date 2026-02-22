@@ -665,6 +665,12 @@ img {
 
     .hamburger {
         display: flex;
+        transform: translateY(-50%) scale(0.75);
+    }
+
+    .logo-fixed {
+        transform: scale(0.75);
+        transform-origin: top left;
     }
 
     .logo-fixed img {
