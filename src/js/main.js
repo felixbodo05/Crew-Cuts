@@ -648,24 +648,46 @@ function showNotification(message, type = 'info') {
 // === Intersection Observer for Scroll-Reveal Animations ===
 document.addEventListener('DOMContentLoaded', () => {
     // Mark all direct children of sections with .reveal class
-    document.querySelectorAll('section > .container > *').forEach(el => {
+    const revealElements = document.querySelectorAll('section > .container > *');
+
+    revealElements.forEach(el => {
         el.classList.add('reveal');
     });
 
+    // Immediately mark elements that are ALREADY visible in the viewport
+    // (no animation needed - they should just appear)
+    requestAnimationFrame(() => {
+        revealElements.forEach(el => {
+            const rect = el.getBoundingClientRect();
+            if (rect.top < window.innerHeight && rect.bottom > 0) {
+                // Already visible: skip animation, add visible instantly
+                el.style.transition = 'none';
+                el.classList.add('visible');
+                // Re-enable transition after a short delay (for future state changes)
+                requestAnimationFrame(() => {
+                    el.style.transition = '';
+                });
+            }
+        });
+    });
+
+    // Observe only the non-visible elements for scroll reveal
     const revealObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
-            if (entry.isIntersecting) {
+            if (entry.isIntersecting && !entry.target.classList.contains('visible')) {
                 entry.target.classList.add('visible');
-                revealObserver.unobserve(entry.target);
+                revealObserver.unobserve(entry.target); // Only ever animate once
             }
         });
     }, {
-        threshold: 0.1,
-        rootMargin: '0px 0px -60px 0px'
+        threshold: 0.12,
+        rootMargin: '0px 0px -40px 0px'
     });
 
-    document.querySelectorAll('.reveal').forEach(el => {
-        revealObserver.observe(el);
+    revealElements.forEach(el => {
+        if (!el.classList.contains('visible')) {
+            revealObserver.observe(el);
+        }
     });
 
     // === Header backdrop scroll effect ===
