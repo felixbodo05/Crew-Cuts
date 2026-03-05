@@ -14,18 +14,407 @@
         rel="stylesheet">
     <link rel="stylesheet" href="https://use.typekit.net/pyr5exm.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        /* ── Booking Page ── */
+        .booking-loading {
+            min-height: 60vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 1rem;
+            color: var(--text-secondary);
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(0, 128, 0, 0.2);
+            border-top-color: #008000;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* ── Form ── */
+        .booking-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            background: rgba(10, 10, 10, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            border-radius: 20px;
+            padding: 2.5rem;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-group label {
+            font-size: 0.78rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+        }
+
+        .form-group .input-wrap {
+            position: relative;
+        }
+
+        .form-group .input-wrap i {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+            font-size: 14px;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 13px 14px 13px 40px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            color: var(--text-primary);
+            font-family: var(--font-family);
+            font-size: 1rem;
+            outline: none;
+            transition: all 250ms ease;
+            -webkit-appearance: none;
+        }
+
+        .form-group select {
+            cursor: pointer;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23666' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 14px center;
+            padding-right: 40px;
+        }
+
+        .form-group select option {
+            background: #111;
+            color: #fff;
+        }
+
+        .form-group textarea {
+            padding: 13px 14px;
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: rgba(0, 128, 0, 0.6);
+            background: rgba(0, 128, 0, 0.04);
+            box-shadow: 0 0 0 3px rgba(0, 128, 0, 0.1);
+        }
+
+        .form-group input[readonly] {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        /* ── Barber Cards ── */
+        .barber-select-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .barber-option {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .barber-option input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .barber-option-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            padding: 16px 12px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 2px solid rgba(255, 255, 255, 0.08);
+            border-radius: 14px;
+            transition: all 250ms ease;
+            text-align: center;
+        }
+
+        .barber-option-card i {
+            font-size: 22px;
+            color: var(--text-secondary);
+            transition: color 250ms ease;
+        }
+
+        .barber-option-card span {
+            font-size: 0.9rem;
+            font-weight: 600;
+            letter-spacing: 0.03em;
+            color: var(--text-secondary);
+            transition: color 250ms ease;
+        }
+
+        .barber-option input:checked~.barber-option-card {
+            border-color: rgba(0, 128, 0, 0.7);
+            background: rgba(0, 128, 0, 0.08);
+            box-shadow: 0 0 20px rgba(0, 128, 0, 0.15);
+        }
+
+        .barber-option input:checked~.barber-option-card i,
+        .barber-option input:checked~.barber-option-card span {
+            color: #2eb82e;
+        }
+
+        .barber-option-card:hover {
+            border-color: rgba(0, 128, 0, 0.4);
+        }
+
+        /* ── Time Slot Picker ── */
+        .time-slots {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+        }
+
+        .time-slot {
+            padding: 10px 4px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.03);
+            color: var(--text-primary);
+            font-family: var(--font-family);
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 200ms ease;
+            text-align: center;
+        }
+
+        .time-slot:hover:not(.booked):not(.selected) {
+            border-color: rgba(0, 128, 0, 0.5);
+            background: rgba(0, 128, 0, 0.06);
+        }
+
+        .time-slot.selected {
+            border-color: rgba(0, 128, 0, 0.8);
+            background: rgba(0, 128, 0, 0.15);
+            color: #2eb82e;
+            box-shadow: 0 0 12px rgba(0, 128, 0, 0.2);
+        }
+
+        .time-slot.booked {
+            opacity: 0.35;
+            cursor: not-allowed;
+            text-decoration: line-through;
+            border-color: rgba(239, 68, 68, 0.25);
+            background: rgba(239, 68, 68, 0.04);
+        }
+
+        .time-slot.loading-slot {
+            opacity: 0.4;
+            cursor: wait;
+        }
+
+        .slots-loading {
+            grid-column: 1 / -1;
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            padding: 1rem 0;
+        }
+
+        .slots-hint {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-top: 4px;
+        }
+
+        .slots-hint span {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .slot-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .slot-dot.free {
+            background: rgba(0, 128, 0, 0.6);
+        }
+
+        .slot-dot.taken {
+            background: rgba(239, 68, 68, 0.5);
+        }
+
+        /* Hidden input for selected time */
+        #selectedTimeInput {
+            display: none;
+        }
+
+        /* ── Submit Button ── */
+        .btn-primary {
+            grid-column: 1 / -1;
+            padding: 16px;
+            background: linear-gradient(135deg, #008000, #2eb82e);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-family: var(--font-family);
+            font-size: 1.1rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 250ms ease;
+            box-shadow: 0 4px 20px rgba(0, 128, 0, 0.4);
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(0, 128, 0, 0.5);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* ── User Info Banner ── */
+        .user-banner {
+            max-width: 800px;
+            margin: 0 auto 1.5rem;
+            padding: 12px 20px;
+            background: rgba(0, 128, 0, 0.08);
+            border: 1px solid rgba(0, 128, 0, 0.25);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .user-banner-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #2eb82e;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .user-banner-info i {
+            font-size: 16px;
+        }
+
+        .user-banner a {
+            color: var(--text-secondary);
+            font-size: 0.82rem;
+            text-decoration: underline;
+            cursor: pointer;
+            transition: color 200ms;
+        }
+
+        .user-banner a:hover {
+            color: var(--text-primary);
+        }
+
+        /* ── Form Error/Success ── */
+        .booking-message {
+            grid-column: 1 / -1;
+            padding: 14px 18px;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            display: none;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .booking-message.show {
+            display: flex;
+        }
+
+        .booking-message.error {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #f87171;
+        }
+
+        .booking-message.success {
+            background: rgba(0, 128, 0, 0.1);
+            border: 1px solid rgba(0, 128, 0, 0.3);
+            color: #2eb82e;
+        }
+
+        /* ── Responsive ── */
+        @media (max-width: 640px) {
+            .booking-form {
+                grid-template-columns: 1fr;
+                padding: 1.5rem;
+            }
+
+            .barber-select-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .time-slots {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 400px) {
+            .time-slots {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
 </head>
 
 <body>
 
-
-    <!-- Logo (Top-Left) -->
+    <!-- Logo -->
     <a href="index.html" class="logo-fixed">
         <img src="images/logo.png" alt="Crew Cutz Logo">
         <span>Crew Cutz</span>
     </a>
 
-    <!-- Language Toggle (Top-Right) -->
+    <!-- Language Toggle -->
     <div class="top-controls">
         <button class="lang-toggle" id="langToggle" aria-label="Language Toggle">
             <span class="lang-option active" data-lang="hu">HU</span>
@@ -34,18 +423,13 @@
         </button>
     </div>
 
-    <!-- Tubelight Navbar (Floating Center) -->
+    <!-- Desktop Navbar -->
     <nav class="tubelight-navbar" id="navbar">
         <div class="navbar-container">
-            <!-- Main Navigation Pills -->
             <div class="nav-pills">
-                <!-- Hover Bubble (follows mouse) -->
                 <div class="nav-bubble"></div>
-
-                <!-- Active Indicator (slides to active item) -->
                 <div class="active-indicator"></div>
-
-                <a href="index.html" class="nav-pill active" data-page="home">
+                <a href="index.html" class="nav-pill" data-page="home">
                     <i class="fa-solid fa-home"></i>
                     <span data-key="nav.home">Kezdőlap</span>
                     <div class="lamp-glow"></div>
@@ -66,132 +450,195 @@
                     <div class="lamp-glow"></div>
                 </a>
             </div>
-
-            <!-- Booking Bubble (Highlighted) -->
-            <a href="booking.html" class="booking-bubble" data-page="booking">
+            <a href="booking.html" class="booking-bubble active" data-page="booking">
                 <i class="fa-solid fa-calendar-check"></i>
                 <span data-key="nav.booking">Foglalás</span>
             </a>
         </div>
     </nav>
 
-    <!-- Mobile Top Booking Button -->
     <!-- Header Backdrop -->
     <div class="header-backdrop"></div>
 
+    <!-- Mobile booking button -->
     <a href="booking.html" class="mobile-top-booking" data-page="booking">
         <span data-key="nav.booking">Foglalás</span>
     </a>
 
-    <!-- Hamburger Button (Mobile) -->
+    <!-- Hamburger -->
     <button class="hamburger" id="hamburgerBtn" aria-label="Menu">
-        <span></span>
-        <span></span>
-        <span></span>
+        <span></span><span></span><span></span>
     </button>
 
-    <!-- Mobile Menu Overlay -->
+    <!-- Mobile Menu -->
     <div class="mobile-menu-overlay" id="mobileMenuOverlay">
         <nav class="mobile-menu">
             <a href="index.html" class="mobile-menu-item" data-page="home">
-                <i class="fa-solid fa-home"></i>
-                <span data-key="nav.home">Kezdőlap</span>
+                <i class="fa-solid fa-home"></i><span data-key="nav.home">Kezdőlap</span>
             </a>
             <a href="portfolio.html" class="mobile-menu-item" data-page="portfolio">
-                <i class="fa-solid fa-images"></i>
-                <span data-key="nav.portfolio">Portfólió</span>
+                <i class="fa-solid fa-images"></i><span data-key="nav.portfolio">Portfólió</span>
             </a>
             <a href="barbers.html" class="mobile-menu-item" data-page="barbers">
-                <i class="fa-solid fa-scissors"></i>
-                <span data-key="nav.barbers">Borbélyok</span>
+                <i class="fa-solid fa-scissors"></i><span data-key="nav.barbers">Borbélyok</span>
             </a>
             <a href="contact.html" class="mobile-menu-item" data-page="contact">
-                <i class="fa-solid fa-envelope"></i>
-                <span data-key="nav.contact">Kapcsolat</span>
+                <i class="fa-solid fa-envelope"></i><span data-key="nav.contact">Kapcsolat</span>
             </a>
             <a href="booking.html" class="mobile-menu-cta" data-page="booking">
-                <i class="fa-solid fa-calendar-check"></i>
-                <span data-key="nav.booking">Foglalás</span>
+                <i class="fa-solid fa-calendar-check"></i><span data-key="nav.booking">Foglalás</span>
             </a>
         </nav>
     </div>
 
-    <!-- Hero Section -->
-    <section id="home" class="hero">
-        <div class="hero-container">
-            <!-- Top Section: Title + Button + Controls -->
-            <div class="hero-top">
-                <div class="hero-text">
-                    <h1 class="hero-title glitch-text" data-key="hero.title">
-                        TALÁLD MEG A TÖKÉLETES HAJVÁGÁST KÖNNYEDÉN!
-                    </h1>
-                    <button class="find-barber-btn" data-key="hero.findBarber">Foglalj Most!</button>
-                </div>
-
-                <!-- Decorative Dots (top-right) -->
-                <div class="decorative-dots"></div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Carousel Navigation Arrows -->
-
     <!-- Page Header -->
-    <header class="page-header">
+    <header class="page-header" style="padding-top: 120px; padding-bottom: 40px;">
         <div class="container">
-            <h1 class="glitch-text" data-key="booking.header.title">
+            <h1 class="glitch-text">
                 FOGLALD LE AZ <span class="accent-underline">IDŐPONTODAT</span> MÉG MA
             </h1>
-            <p data-key="booking.header.subtitle">Gyors, egyszerű online foglalás – válaszd ki az időpontot és a
-                szolgáltatást!</p>
+            <p>Gyors, egyszerű online foglalás – válaszd ki a borbélyt, az időpontot és a szolgáltatást!</p>
         </div>
     </header>
 
     <!-- Booking Section -->
-    <section class="booking" style="padding-top: var(--spacing-3xl); padding-bottom: var(--spacing-6xl);">
+    <section class="booking" style="padding-bottom: var(--spacing-6xl);">
         <div class="container">
-            <div class="booking-content">
+
+            <!-- Loading state while checking auth -->
+            <div class="booking-loading" id="bookingLoading">
+                <div class="spinner"></div>
+                <p>Betöltés...</p>
+            </div>
+
+            <!-- Actual booking content (shown after auth check) -->
+            <div id="bookingContent" style="display:none;">
+
+                <!-- User banner -->
+                <div class="user-banner" id="userBanner">
+                    <div class="user-banner-info">
+                        <i class="fa-solid fa-circle-check"></i>
+                        <span id="userBannerName">Bejelentkezve</span>
+                    </div>
+                    <div style="display:flex;gap:1rem;">
+                        <a href="profile.html">Foglalásaim</a>
+                        <a id="logoutLink" href="#">Kijelentkezés</a>
+                    </div>
+                </div>
+
+                <!-- Booking Form -->
                 <form class="booking-form" id="bookingForm">
-                    <div class="form-group">
-                        <label for="name" data-key="booking.form.name">Név</label>
-                        <input type="text" id="name" name="name" required placeholder="Teljes név">
+
+                    <div class="booking-message error" id="bookingError">
+                        <i class="fa-solid fa-circle-exclamation"></i>
+                        <span id="bookingErrorMsg"></span>
                     </div>
-                    <div class="form-group">
-                        <label for="phone" data-key="booking.form.phone">Telefon</label>
-                        <input type="tel" id="phone" name="phone" required placeholder="+36 XX XXX XXXX">
+                    <div class="booking-message success" id="bookingSuccess">
+                        <i class="fa-solid fa-circle-check"></i>
+                        <span id="bookingSuccessMsg"></span>
                     </div>
+
+                    <!-- Name (readonly from profile) -->
                     <div class="form-group">
-                        <label for="email" data-key="booking.form.email">Email</label>
-                        <input type="email" id="email" name="email" required placeholder="email@pelda.hu">
+                        <label for="bookingName">Név</label>
+                        <div class="input-wrap">
+                            <i class="fa-solid fa-user"></i>
+                            <input type="text" id="bookingName" name="name" readonly placeholder="...">
+                        </div>
                     </div>
+
+                    <!-- Email (readonly from profile) -->
                     <div class="form-group">
-                        <label for="date" data-key="booking.form.date">Dátum</label>
-                        <input type="date" id="date" name="date" required>
+                        <label for="bookingEmail">Email</label>
+                        <div class="input-wrap">
+                            <i class="fa-solid fa-envelope"></i>
+                            <input type="email" id="bookingEmail" name="email" readonly placeholder="...">
+                        </div>
                     </div>
+
+                    <!-- Phone -->
                     <div class="form-group">
-                        <label for="time" data-key="booking.form.time">Időpont</label>
-                        <input type="time" id="time" name="time" required>
+                        <label for="bookingPhone">Telefonszám</label>
+                        <div class="input-wrap">
+                            <i class="fa-solid fa-phone"></i>
+                            <input type="tel" id="bookingPhone" name="phone" placeholder="+36 XX XXX XXXX" required>
+                        </div>
                     </div>
+
+                    <!-- Service -->
                     <div class="form-group">
-                        <label for="service" data-key="booking.form.service">Szolgáltatás</label>
-                        <select id="service" name="service" required>
-                            <option value="" data-key="booking.form.selectService">Válassz
-                                szolgáltatást</option>
-                            <option value="haircut" data-key="booking.form.haircut">Hajvágás
-                            </option>
-                            <option value="beard" data-key="booking.form.beard">Szakállformázás
-                            </option>
-                            <option value="combo" data-key="booking.form.combo">Kombináció</option>
-                        </select>
+                        <label for="bookingService">Szolgáltatás</label>
+                        <div class="input-wrap">
+                            <i class="fa-solid fa-scissors"></i>
+                            <select id="bookingService" name="service" required>
+                                <option value="">Válassz szolgáltatást</option>
+                                <option value="haircut">✂️ Hajvágás</option>
+                                <option value="beard">🧔 Szakállformázás</option>
+                                <option value="combo">💈 Kombináció (haj + szakáll)</option>
+                            </select>
+                        </div>
                     </div>
+
+                    <!-- Barber Selection -->
                     <div class="form-group full-width">
-                        <label for="notes" data-key="booking.form.notes">Megjegyzés
-                            (opcionális)</label>
-                        <textarea id="notes" name="notes" rows="4" placeholder="Különleges kérések..."></textarea>
+                        <label>Borbély kiválasztása</label>
+                        <div class="barber-select-grid">
+                            <label class="barber-option">
+                                <input type="radio" name="barber" value="mark" required>
+                                <div class="barber-option-card">
+                                    <i class="fa-solid fa-scissors"></i>
+                                    <span>Egervári Márk</span>
+                                </div>
+                            </label>
+                            <label class="barber-option">
+                                <input type="radio" name="barber" value="domonkos">
+                                <div class="barber-option-card">
+                                    <i class="fa-solid fa-scissors"></i>
+                                    <span>Kányai Domonkos</span>
+                                </div>
+                            </label>
+                        </div>
                     </div>
-                    <button type="submit" class="btn-primary" data-key="booking.form.submit">Időpont
-                        foglalása</button>
+
+                    <!-- Date (min = today) -->
+                    <div class="form-group">
+                        <label for="bookingDate">Dátum</label>
+                        <div class="input-wrap">
+                            <i class="fa-solid fa-calendar"></i>
+                            <input type="date" id="bookingDate" name="date" required>
+                        </div>
+                    </div>
+
+                    <!-- Time Slot Picker -->
+                    <div class="form-group">
+                        <label>Időpont választása</label>
+                        <div class="time-slots" id="timeSlots">
+                            <div class="slots-loading">Válassz borbélyt és dátumot!</div>
+                        </div>
+                        <div class="slots-hint">
+                            <span>
+                                <div class="slot-dot free"></div> Szabad
+                            </span>
+                            <span>
+                                <div class="slot-dot taken"></div> Foglalt
+                            </span>
+                        </div>
+                        <!-- Hidden input that stores selected time -->
+                        <input type="hidden" id="selectedTimeInput" name="time" required>
+                    </div>
+
+                    <!-- Notes -->
+                    <div class="form-group full-width">
+                        <label for="bookingNotes">Megjegyzés (opcionális)</label>
+                        <textarea id="bookingNotes" name="notes" rows="3"
+                            placeholder="Különleges kérések..."></textarea>
+                    </div>
+
+                    <button type="submit" class="btn-primary" id="submitBtn" disabled>
+                        <i class="fa-solid fa-calendar-check"></i> Időpont Foglalása
+                    </button>
                 </form>
+
             </div>
         </div>
     </section>
@@ -213,14 +660,232 @@
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2026 Crew Cutz. <span data-key="footer.rights">Minden jog
-                        fenntartva.</span></p>
+                <p>&copy; 2026 Crew Cutz. <span data-key="footer.rights">Minden jog fenntartva.</span></p>
             </div>
         </div>
     </footer>
 
     <script src="js/glitch-effect.js"></script>
     <script src="js/main.js"></script>
+    <script src="js/auth.js"></script>
+    <script>
+        (async () => {
+            const { requireAuth, getProfile, signOut, supabase, initAuthNav } = window.CrewCutzAuth;
+
+            // ── Auth check ──
+            const user = await requireAuth('booking.html');
+            if (!user) return; // redirected to login
+
+            // Show booking content
+            document.getElementById('bookingLoading').style.display = 'none';
+            document.getElementById('bookingContent').style.display = 'block';
+
+            // ── Load profile ──
+            const profile = await getProfile(user.id);
+            document.getElementById('bookingName').value = profile?.full_name || user.user_metadata?.full_name || '';
+            document.getElementById('bookingEmail').value = user.email || '';
+            document.getElementById('bookingPhone').value = profile?.phone || user.user_metadata?.phone || '';
+            document.getElementById('userBannerName').textContent =
+                `Bejelentkezve: ${profile?.full_name || user.email}`;
+
+            // ── Init auth nav button ──
+            initAuthNav();
+
+            // ── Logout ──
+            document.getElementById('logoutLink').addEventListener('click', async (e) => {
+                e.preventDefault();
+                await signOut();
+                window.location.href = 'login.html';
+            });
+
+            // ── Set min date to today ──
+            const today = new Date();
+            const yyyy = today.getFullYear();
+            const mm = String(today.getMonth() + 1).padStart(2, '0');
+            const dd = String(today.getDate()).padStart(2, '0');
+            const todayStr = `${yyyy}-${mm}-${dd}`;
+            const dateInput = document.getElementById('bookingDate');
+            dateInput.min = todayStr;
+            dateInput.value = todayStr;
+
+            // ── Time slots config ──
+            // Opening hours: Mon-Fri 11:30-20:00, every 30 min
+            const ALL_SLOTS = [
+                '11:30', '12:00', '12:30', '13:00', '13:30', '14:00', '14:30',
+                '15:00', '15:30', '16:00', '16:30', '17:00', '17:30', '18:00',
+                '18:30', '19:00', '19:30'
+            ];
+
+            let selectedTime = null;
+            let bookedSlots = [];
+
+            // ── Fetch booked slots for a given barber + date ──
+            async function fetchBookedSlots(barber, date) {
+                const { data, error } = await window.CrewCutzAuth.supabase
+                    .from('bookings')
+                    .select('booking_time')
+                    .eq('barber', barber)
+                    .eq('booking_date', date)
+                    .neq('status', 'cancelled');
+                if (error) return [];
+                return (data || []).map(b => b.booking_time.slice(0, 5)); // "HH:MM"
+            }
+
+            // ── Check if selected date is a weekday (Mon–Fri) ──
+            function isWorkday(dateStr) {
+                const d = new Date(dateStr + 'T12:00:00');
+                const day = d.getDay(); // 0=Sun, 6=Sat
+                return day !== 0 && day !== 6;
+            }
+
+            // ── Render time slots ──
+            function renderSlots(booked) {
+                const container = document.getElementById('timeSlots');
+                container.innerHTML = '';
+
+                if (!isWorkday(dateInput.value)) {
+                    container.innerHTML = '<div class="slots-loading" style="color:#f87171;">⚠️ Szombaton és vasárnap zárva vagyunk!</div>';
+                    selectedTime = null;
+                    document.getElementById('selectedTimeInput').value = '';
+                    document.getElementById('submitBtn').disabled = true;
+                    return;
+                }
+
+                ALL_SLOTS.forEach(slot => {
+                    const isBooked = booked.includes(slot);
+                    const isSelected = slot === selectedTime;
+                    const btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.className = 'time-slot' + (isBooked ? ' booked' : '') + (isSelected ? ' selected' : '');
+                    btn.textContent = slot;
+                    btn.disabled = isBooked;
+
+                    if (!isBooked) {
+                        btn.addEventListener('click', () => {
+                            selectedTime = slot;
+                            document.getElementById('selectedTimeInput').value = slot;
+                            document.getElementById('submitBtn').disabled = false;
+                            renderSlots(bookedSlots);
+                        });
+                    }
+                    container.appendChild(btn);
+                });
+            }
+
+            // ── Load slots when barber or date changes ──
+            async function loadSlots() {
+                const barber = document.querySelector('input[name="barber"]:checked')?.value;
+                const date = dateInput.value;
+                if (!barber || !date) {
+                    document.getElementById('timeSlots').innerHTML =
+                        '<div class="slots-loading">Válassz borbélyt és dátumot!</div>';
+                    selectedTime = null;
+                    document.getElementById('selectedTimeInput').value = '';
+                    document.getElementById('submitBtn').disabled = true;
+                    return;
+                }
+
+                document.getElementById('timeSlots').innerHTML = '<div class="slots-loading"><span>⏳ Betöltés...</span></div>';
+                bookedSlots = await fetchBookedSlots(barber, date);
+                // Reset selected time if it's now booked
+                if (selectedTime && bookedSlots.includes(selectedTime)) {
+                    selectedTime = null;
+                    document.getElementById('selectedTimeInput').value = '';
+                    document.getElementById('submitBtn').disabled = true;
+                }
+                renderSlots(bookedSlots);
+            }
+
+            // Listen for barber radio change
+            document.querySelectorAll('input[name="barber"]').forEach(radio => {
+                radio.addEventListener('change', loadSlots);
+            });
+
+            // Listen for date change (prevent past dates)
+            dateInput.addEventListener('change', () => {
+                if (dateInput.value < todayStr) {
+                    dateInput.value = todayStr;
+                }
+                selectedTime = null;
+                document.getElementById('selectedTimeInput').value = '';
+                document.getElementById('submitBtn').disabled = true;
+                loadSlots();
+            });
+
+            // ── Form submit ──
+            const bookingForm = document.getElementById('bookingForm');
+            bookingForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                const barber = document.querySelector('input[name="barber"]:checked')?.value;
+                const time = document.getElementById('selectedTimeInput').value;
+
+                if (!barber) {
+                    showMsg('bookingError', 'bookingErrorMsg', 'Kérjük válassz borbélyt!');
+                    return;
+                }
+                if (!time) {
+                    showMsg('bookingError', 'bookingErrorMsg', 'Kérjük válassz időpontot!');
+                    return;
+                }
+
+                hideMsg('bookingError');
+                hideMsg('bookingSuccess');
+
+                const btn = document.getElementById('submitBtn');
+                btn.textContent = '⏳ Küldés...';
+                btn.disabled = true;
+
+                try {
+                    const { createBooking } = window.CrewCutzAuth;
+                    await createBooking({
+                        name: document.getElementById('bookingName').value,
+                        email: document.getElementById('bookingEmail').value,
+                        phone: document.getElementById('bookingPhone').value,
+                        barber: barber,
+                        service: document.getElementById('bookingService').value,
+                        date: dateInput.value,
+                        time: time,
+                        notes: document.getElementById('bookingNotes').value
+                    });
+
+                    showMsg('bookingSuccess', 'bookingSuccessMsg',
+                        `✅ Foglalás rögzítve! ${dateInput.value} – ${time}. Hamarosan felvesszük veled a kapcsolatot.`);
+                    bookingForm.reset();
+                    dateInput.min = todayStr;
+                    dateInput.value = todayStr;
+                    selectedTime = null;
+                    document.getElementById('selectedTimeInput').value = '';
+                    document.getElementById('timeSlots').innerHTML =
+                        '<div class="slots-loading">Válassz borbélyt és dátumot!</div>';
+
+                    // Reload profile data
+                    document.getElementById('bookingName').value = profile?.full_name || '';
+                    document.getElementById('bookingEmail').value = user.email || '';
+                    document.getElementById('bookingPhone').value = profile?.phone || '';
+
+                } catch (err) {
+                    const msg = err.message.includes('unique') || err.message.includes('duplicate')
+                        ? 'Ez az időpont már foglalt! Kérjük válassz másikat.'
+                        : err.message || 'Hiba történt. Kérjük próbálja újra.';
+                    showMsg('bookingError', 'bookingErrorMsg', msg);
+                } finally {
+                    btn.innerHTML = '<i class="fa-solid fa-calendar-check"></i> Időpont Foglalása';
+                    btn.disabled = !selectedTime;
+                }
+            });
+
+            function showMsg(id, msgId, text) {
+                document.getElementById(id).classList.add('show');
+                document.getElementById(msgId).textContent = text;
+                document.getElementById(id).scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+            function hideMsg(id) {
+                document.getElementById(id).classList.remove('show');
+            }
+
+        })();
+    </script>
 </body>
 
 </html>

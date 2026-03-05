@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="hu">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Crew Cutz - Saját foglalásaim">
+    <title>Profilom - Crew Cutz</title>
+    <link rel="icon" type="image/png" href="images/logo.png">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400..900&family=Oswald:wght@200..700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://use.typekit.net/pyr5exm.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        .profile-page {
+            min-height: 100vh;
+            padding: 140px 0 80px;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(0, 128, 0, 0.2);
+            border-top-color: #008000;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 60px auto;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Profile Header Card */
+        .profile-header-card {
+            background: rgba(10, 10, 10, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            padding: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+        }
+
+        .profile-avatar {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #008000, #2eb82e);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            color: white;
+            flex-shrink: 0;
+            box-shadow: 0 0 20px rgba(0, 128, 0, 0.3);
+        }
+
+        .profile-info {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .profile-info h2 {
+            font-size: 1.5rem;
+            margin: 0 0 4px;
+            font-family: 'Cinzel', serif;
+            background: linear-gradient(135deg, #008000, #2eb82e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .profile-info p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin: 0;
+        }
+
+        .profile-actions {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-outline {
+            padding: 10px 20px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            background: transparent;
+            color: var(--text-primary);
+            border-radius: 10px;
+            font-family: var(--font-family);
+            font-size: 0.85rem;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 250ms ease;
+        }
+
+        .btn-outline:hover {
+            border-color: var(--primary);
+            color: #2eb82e;
+            background: rgba(0, 128, 0, 0.08);
+        }
+
+        .btn-danger {
+            border-color: rgba(239, 68, 68, 0.3);
+            color: #f87171;
+        }
+
+        .btn-danger:hover {
+            border-color: #ef4444;
+            color: #f87171;
+            background: rgba(239, 68, 68, 0.08);
+        }
+
+        /* Bookings Section */
+        .bookings-section h3 {
+            font-family: 'Cinzel', serif;
+            font-size: 1.3rem;
+            color: var(--text-primary);
+            margin-bottom: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .bookings-section h3 i {
+            color: #008000;
+        }
+
+        .bookings-grid {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .booking-card {
+            background: rgba(10, 10, 10, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            border-radius: 14px;
+            padding: 1.5rem;
+            backdrop-filter: blur(10px);
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            gap: 1rem;
+            align-items: center;
+            transition: border-color 250ms ease;
+        }
+
+        .booking-card:hover {
+            border-color: rgba(0, 128, 0, 0.25);
+        }
+
+        .booking-date-badge {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 64px;
+            height: 64px;
+            background: rgba(0, 128, 0, 0.1);
+            border: 1px solid rgba(0, 128, 0, 0.25);
+            border-radius: 12px;
+            flex-shrink: 0;
+        }
+
+        .booking-date-badge .day {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #2eb82e;
+            line-height: 1;
+        }
+
+        .booking-date-badge .month {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .booking-details h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 0 0 4px;
+        }
+
+        .booking-details p {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin: 0;
+        }
+
+        .booking-meta {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 6px;
+        }
+
+        .booking-time {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #2eb82e;
+        }
+
+        .status-badge {
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+        }
+
+        .status-pending {
+            background: rgba(245, 158, 11, 0.15);
+            color: #fbbf24;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        .status-confirmed {
+            background: rgba(0, 128, 0, 0.12);
+            color: #2eb82e;
+            border: 1px solid rgba(0, 128, 0, 0.3);
+        }
+
+        .status-cancelled {
+            background: rgba(239, 68, 68, 0.1);
+            color: #f87171;
+            border: 1px solid rgba(239, 68, 68, 0.25);
+        }
+
+        .no-bookings {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--text-secondary);
+            border: 1px dashed rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+        }
+
+        .no-bookings i {
+            font-size: 3rem;
+            color: rgba(0, 128, 0, 0.3);
+            display: block;
+            margin-bottom: 1rem;
+        }
+
+        .no-bookings a {
+            color: #2eb82e;
+            text-decoration: underline;
+        }
+
+        /* Past bookings styling */
+        .booking-card.past {
+            opacity: 0.55;
+        }
+
+        @media (max-width: 640px) {
+            .booking-card {
+                grid-template-columns: auto 1fr;
+                grid-template-rows: auto auto;
+            }
+
+            .booking-meta {
+                grid-column: 2;
+                align-items: flex-start;
+                flex-direction: row;
+                gap: 8px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Logo -->
+    <a href="index.html" class="logo-fixed">
+        <img src="images/logo.png" alt="Crew Cutz Logo">
+    </a>
+
+    <!-- Language Toggle + Auth Button -->
+    <div class="top-controls">
+        <button class="lang-toggle" id="langToggle" aria-label="Language Toggle">
+            <span class="lang-option active" data-lang="hu">HU</span>
+            <span class="lang-divider">|</span>
+            <span class="lang-option" data-lang="en">EN</span>
+        </button>
+    </div>
+
+    <!-- Desktop Navbar -->
+    <nav class="tubelight-navbar" id="navbar">
+        <div class="navbar-container">
+            <div class="nav-pills">
+                <div class="nav-bubble"></div>
+                <div class="active-indicator"></div>
+                <a href="index.html" class="nav-pill" data-page="home">
+                    <i class="fa-solid fa-home"></i><span>Kezdőlap</span>
+                    <div class="lamp-glow"></div>
+                </a>
+                <a href="portfolio.html" class="nav-pill" data-page="portfolio">
+                    <i class="fa-solid fa-images"></i><span>Portfólió</span>
+                    <div class="lamp-glow"></div>
+                </a>
+                <a href="barbers.html" class="nav-pill" data-page="barbers">
+                    <i class="fa-solid fa-scissors"></i><span>Borbélyok</span>
+                    <div class="lamp-glow"></div>
+                </a>
+                <a href="contact.html" class="nav-pill" data-page="contact">
+                    <i class="fa-solid fa-envelope"></i><span>Kapcsolat</span>
+                    <div class="lamp-glow"></div>
+                </a>
+            </div>
+            <a href="booking.html" class="booking-bubble" data-page="booking">
+                <i class="fa-solid fa-calendar-check"></i><span>Foglalás</span>
+            </a>
+        </div>
+    </nav>
+
+    <!-- Header Backdrop -->
+    <div class="header-backdrop"></div>
+
+    <!-- Mobile booking button -->
+    <a href="booking.html" class="mobile-top-booking"><span>Foglalás</span></a>
+
+    <!-- Hamburger -->
+    <button class="hamburger" id="hamburgerBtn" aria-label="Menu">
+        <span></span><span></span><span></span>
+    </button>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu-overlay" id="mobileMenuOverlay">
+        <nav class="mobile-menu">
+            <a href="index.html" class="mobile-menu-item"><i class="fa-solid fa-home"></i><span>Kezdőlap</span></a>
+            <a href="portfolio.html" class="mobile-menu-item"><i
+                    class="fa-solid fa-images"></i><span>Portfólió</span></a>
+            <a href="barbers.html" class="mobile-menu-item"><i
+                    class="fa-solid fa-scissors"></i><span>Borbélyok</span></a>
+            <a href="contact.html" class="mobile-menu-item"><i
+                    class="fa-solid fa-envelope"></i><span>Kapcsolat</span></a>
+            <a href="booking.html" class="mobile-menu-cta"><i
+                    class="fa-solid fa-calendar-check"></i><span>Foglalás</span></a>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <main class="profile-page">
+        <div class="container">
+            <div id="loadingSpinner">
+                <div class="spinner"></div>
+            </div>
+            <div id="profileContent" style="display:none;">
+
+                <!-- Profile Header Card -->
+                <div class="profile-header-card">
+                    <div class="profile-avatar">
+                        <i class="fa-solid fa-user"></i>
+                    </div>
+                    <div class="profile-info">
+                        <h2 id="profileName">–</h2>
+                        <p id="profileEmail">–</p>
+                        <p id="profilePhone" style="margin-top:2px;"></p>
+                    </div>
+                    <div class="profile-actions">
+                        <a href="booking.html" class="btn-outline">
+                            <i class="fa-solid fa-calendar-plus"></i> Új foglalás
+                        </a>
+                        <button class="btn-outline btn-danger" id="logoutBtn">
+                            <i class="fa-solid fa-right-from-bracket"></i> Kilépés
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Upcoming Bookings -->
+                <div class="bookings-section" style="margin-bottom: 2rem;">
+                    <h3><i class="fa-solid fa-calendar-check"></i> Közelgő foglalások</h3>
+                    <div class="bookings-grid" id="upcomingBookings">
+                        <div class="spinner"></div>
+                    </div>
+                </div>
+
+                <!-- Past Bookings -->
+                <div class="bookings-section" id="pastSection" style="display:none;">
+                    <h3><i class="fa-solid fa-clock-rotate-left"></i> Korábbi foglalások</h3>
+                    <div class="bookings-grid" id="pastBookings"></div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <img src="images/logo.png" alt="Crew Cutz Logo">
+                    <p>Modern és klasszikus fazonok</p>
+                </div>
+                <div class="footer-links">
+                    <a href="index.html">Kezdőlap</a>
+                    <a href="booking.html">Foglalás</a>
+                    <a href="portfolio.html">Portfólió</a>
+                    <a href="barbers.html">Borbélyok</a>
+                    <a href="contact.html">Kapcsolat</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Crew Cutz. Minden jog fenntartva.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+    <script src="js/auth.js"></script>
+    <script>
+        (async () => {
+            const { requireAuth, getProfile, signOut, getUserBookings, initAuthNav } = window.CrewCutzAuth;
+
+            const user = await requireAuth('profile.html');
+            if (!user) return;
+
+            document.getElementById('loadingSpinner').style.display = 'none';
+            document.getElementById('profileContent').style.display = 'block';
+
+            // Load profile info
+            const profile = await getProfile(user.id);
+            document.getElementById('profileName').textContent = profile?.full_name || user.user_metadata?.full_name || 'Névtelen';
+            document.getElementById('profileEmail').textContent = user.email;
+            if (profile?.phone) document.getElementById('profilePhone').textContent = profile.phone;
+
+            // Logout
+            document.getElementById('logoutBtn').addEventListener('click', async () => {
+                await signOut();
+                window.location.href = 'login.html';
+            });
+
+            // Init auth nav
+            initAuthNav();
+
+            // Load bookings
+            const barberNames = { mark: 'Egervári Márk', domonkos: 'Kányai Domonkos' };
+            const serviceNames = { haircut: 'Hajvágás', beard: 'Szakállformázás', combo: 'Kombináció' };
+            const statusLabels = { pending: 'Függőben', confirmed: 'Visszaigazolva', cancelled: 'Törölve' };
+            const statusClasses = { pending: 'status-pending', confirmed: 'status-confirmed', cancelled: 'status-cancelled' };
+            const MONTHS = ['Jan', 'Feb', 'Már', 'Ápr', 'Máj', 'Jún', 'Júl', 'Aug', 'Sze', 'Okt', 'Nov', 'Dec'];
+
+            const todayStr = new Date().toISOString().split('T')[0];
+
+            function buildCard(b) {
+                const dateParts = b.booking_date.split('-');
+                const day = dateParts[2];
+                const monthIdx = parseInt(dateParts[1]) - 1;
+                const month = MONTHS[monthIdx];
+                const time = b.booking_time.slice(0, 5);
+                const isPast = b.booking_date < todayStr;
+
+                const card = document.createElement('div');
+                card.className = 'booking-card' + (isPast ? ' past' : '');
+                card.innerHTML = `
+                <div class="booking-date-badge">
+                    <div class="day">${day}</div>
+                    <div class="month">${month}</div>
+                </div>
+                <div class="booking-details">
+                    <h4>${barberNames[b.barber] || b.barber}</h4>
+                    <p>${serviceNames[b.service] || b.service}${b.notes ? ' · ' + b.notes : ''}</p>
+                </div>
+                <div class="booking-meta">
+                    <div class="booking-time">${time}</div>
+                    <div class="status-badge ${statusClasses[b.status] || 'status-pending'}">${statusLabels[b.status] || b.status}</div>
+                </div>
+            `;
+                return card;
+            }
+
+            try {
+                const bookings = await getUserBookings();
+                const upcoming = bookings.filter(b => b.booking_date >= todayStr && b.status !== 'cancelled');
+                const past = bookings.filter(b => b.booking_date < todayStr || b.status === 'cancelled');
+
+                const upcomingEl = document.getElementById('upcomingBookings');
+                upcomingEl.innerHTML = '';
+                if (upcoming.length === 0) {
+                    upcomingEl.innerHTML = `
+                    <div class="no-bookings">
+                        <i class="fa-solid fa-calendar-xmark"></i>
+                        <p>Nincs közelgő foglalásod.</p>
+                        <p><a href="booking.html">Foglalj most!</a></p>
+                    </div>`;
+                } else {
+                    upcoming.forEach(b => upcomingEl.appendChild(buildCard(b)));
+                }
+
+                if (past.length > 0) {
+                    document.getElementById('pastSection').style.display = 'block';
+                    const pastEl = document.getElementById('pastBookings');
+                    past.forEach(b => pastEl.appendChild(buildCard(b)));
+                }
+            } catch (err) {
+                document.getElementById('upcomingBookings').innerHTML =
+                    `<p style="color:#f87171;">Hiba a foglalások betöltésekor: ${err.message}</p>`;
+            }
+
+            // Hamburger
+            const hamburgerBtn = document.getElementById('hamburgerBtn');
+            const mobileMenuOverlay = document.getElementById('mobileMenuOverlay');
+            if (hamburgerBtn && mobileMenuOverlay) {
+                hamburgerBtn.addEventListener('click', () => {
+                    hamburgerBtn.classList.toggle('active');
+                    mobileMenuOverlay.classList.toggle('active');
+                });
+                mobileMenuOverlay.querySelectorAll('a').forEach(link => {
+                    link.addEventListener('click', () => {
+                        hamburgerBtn.classList.remove('active');
+                        mobileMenuOverlay.classList.remove('active');
+                    });
+                });
+            }
+        })();
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="hu">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Crew Cutz - Bejelentkezés és Regisztráció">
+    <title>Belépés - Crew Cutz</title>
+    <link rel="icon" type="image/png" href="images/logo.png">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400..900&family=Oswald:wght@200..700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://use.typekit.net/pyr5exm.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        /* Auth Page Specific Styles */
+        .auth-page {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 120px 20px 60px;
+            position: relative;
+        }
+
+        .auth-bg {
+            position: fixed;
+            inset: 0;
+            background:
+                radial-gradient(ellipse at 20% 50%, rgba(0, 128, 0, 0.08) 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 20%, rgba(0, 128, 0, 0.05) 0%, transparent 50%),
+                #000;
+            z-index: 0;
+        }
+
+        .auth-container {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            max-width: 480px;
+        }
+
+        .auth-logo {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .auth-logo img {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin: 0 auto 0.75rem;
+            border: 2px solid rgba(0, 128, 0, 0.4);
+            box-shadow: 0 0 30px rgba(0, 128, 0, 0.2);
+        }
+
+        .auth-logo h1 {
+            font-family: 'Cinzel', serif;
+            font-size: 1.5rem;
+            background: linear-gradient(135deg, #008000, #2eb82e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 0;
+        }
+
+        .auth-card {
+            background: rgba(10, 10, 10, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            padding: 2.5rem;
+            box-shadow:
+                0 25px 60px rgba(0, 0, 0, 0.8),
+                0 0 0 1px rgba(0, 128, 0, 0.05),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+        }
+
+        /* Tabs */
+        .auth-tabs {
+            display: flex;
+            gap: 4px;
+            background: rgba(255, 255, 255, 0.04);
+            border-radius: 12px;
+            padding: 4px;
+            margin-bottom: 2rem;
+        }
+
+        .auth-tab {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            background: transparent;
+            color: var(--text-secondary);
+            font-family: var(--font-family);
+            font-size: 0.95rem;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 250ms ease;
+        }
+
+        .auth-tab.active {
+            background: rgba(0, 128, 0, 0.2);
+            color: #2eb82e;
+            box-shadow: 0 0 15px rgba(0, 128, 0, 0.15);
+        }
+
+        .auth-tab:hover:not(.active) {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-primary);
+        }
+
+        /* Forms */
+        .auth-form {
+            display: none;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+
+        .auth-form.active {
+            display: flex;
+        }
+
+        .auth-field {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .auth-field label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+        }
+
+        .auth-field .input-wrap {
+            position: relative;
+        }
+
+        .auth-field .input-wrap i {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+            font-size: 14px;
+            pointer-events: none;
+            transition: color 250ms ease;
+        }
+
+        .auth-field input {
+            width: 100%;
+            padding: 12px 14px 12px 40px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            color: var(--text-primary);
+            font-family: var(--font-family);
+            font-size: 1rem;
+            outline: none;
+            transition: all 250ms ease;
+        }
+
+        .auth-field input:focus {
+            border-color: rgba(0, 128, 0, 0.6);
+            background: rgba(0, 128, 0, 0.04);
+            box-shadow: 0 0 0 3px rgba(0, 128, 0, 0.1);
+        }
+
+        .auth-field input:focus + i,
+        .auth-field .input-wrap:focus-within i {
+            color: #2eb82e;
+        }
+
+        .auth-submit-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #008000, #2eb82e);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-family: var(--font-family);
+            font-size: 1rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 250ms ease;
+            margin-top: 0.5rem;
+            box-shadow: 0 4px 20px rgba(0, 128, 0, 0.4);
+        }
+
+        .auth-submit-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(0, 128, 0, 0.5);
+        }
+
+        .auth-submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Error / Success messages */
+        .auth-message {
+            padding: 12px 16px;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            display: none;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .auth-message.show {
+            display: flex;
+        }
+
+        .auth-message.error {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #f87171;
+        }
+
+        .auth-message.success {
+            background: rgba(0, 128, 0, 0.1);
+            border: 1px solid rgba(0, 128, 0, 0.3);
+            color: #2eb82e;
+        }
+
+        .auth-divider {
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            margin-top: 0.25rem;
+        }
+
+        .auth-divider span {
+            cursor: pointer;
+            color: #2eb82e;
+            text-decoration: underline;
+        }
+
+        .auth-divider span:hover {
+            color: var(--primary-light);
+        }
+
+        /* Password strength indicator */
+        .password-strength {
+            height: 3px;
+            border-radius: 2px;
+            background: rgba(255,255,255,0.1);
+            margin-top: 6px;
+            overflow: hidden;
+        }
+
+        .password-strength-bar {
+            height: 100%;
+            border-radius: 2px;
+            width: 0%;
+            transition: width 300ms ease, background 300ms ease;
+        }
+
+        /* Already logged in redirect notice */
+        .auth-already-in {
+            text-align: center;
+            padding: 1.5rem;
+            color: var(--text-secondary);
+            display: none;
+        }
+
+        .auth-already-in a {
+            color: #2eb82e;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Logo -->
+    <a href="index.html" class="logo-fixed">
+        <img src="images/logo.png" alt="Crew Cutz Logo">
+    </a>
+
+    <!-- Header Backdrop -->
+    <div class="header-backdrop"></div>
+
+    <!-- Hamburger (Mobile) -->
+    <button class="hamburger" id="hamburgerBtn" aria-label="Menu">
+        <span></span><span></span><span></span>
+    </button>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu-overlay" id="mobileMenuOverlay">
+        <nav class="mobile-menu">
+            <a href="index.html" class="mobile-menu-item" data-page="home">
+                <i class="fa-solid fa-home"></i><span>Kezdőlap</span>
+            </a>
+            <a href="portfolio.html" class="mobile-menu-item" data-page="portfolio">
+                <i class="fa-solid fa-images"></i><span>Portfólió</span>
+            </a>
+            <a href="barbers.html" class="mobile-menu-item" data-page="barbers">
+                <i class="fa-solid fa-scissors"></i><span>Borbélyok</span>
+            </a>
+            <a href="contact.html" class="mobile-menu-item" data-page="contact">
+                <i class="fa-solid fa-envelope"></i><span>Kapcsolat</span>
+            </a>
+            <a href="booking.html" class="mobile-menu-cta" data-page="booking">
+                <i class="fa-solid fa-calendar-check"></i><span>Foglalás</span>
+            </a>
+        </nav>
+    </div>
+
+    <!-- Auth Background -->
+    <div class="auth-bg"></div>
+
+    <!-- Auth Page -->
+    <main class="auth-page">
+        <div class="auth-container">
+
+            <!-- Logo -->
+            <div class="auth-logo">
+                <img src="images/logo.png" alt="Crew Cutz">
+                <h1>Crew Cutz</h1>
+            </div>
+
+            <!-- Already logged in notice (hidden by default) -->
+            <div class="auth-already-in" id="alreadyLoggedIn">
+                <p>Már be vagy jelentkezve!<br>
+                    <a href="booking.html">Vissza a foglaláshoz</a> vagy
+                    <a href="profile.html">Profilom</a>
+                </p>
+            </div>
+
+            <!-- Auth Card -->
+            <div class="auth-card" id="authCard">
+                <!-- Tabs -->
+                <div class="auth-tabs">
+                    <button class="auth-tab active" id="loginTab">
+                        <i class="fa-solid fa-right-to-bracket"></i> Bejelentkezés
+                    </button>
+                    <button class="auth-tab" id="registerTab">
+                        <i class="fa-solid fa-user-plus"></i> Regisztráció
+                    </button>
+                </div>
+
+                <!-- Login Form -->
+                <form class="auth-form active" id="loginForm">
+                    <div class="auth-message error" id="loginError">
+                        <i class="fa-solid fa-circle-exclamation"></i>
+                        <span id="loginErrorMsg"></span>
+                    </div>
+                    <div class="auth-message success" id="loginSuccess">
+                        <i class="fa-solid fa-circle-check"></i>
+                        <span id="loginSuccessMsg"></span>
+                    </div>
+
+                    <div class="auth-field">
+                        <label for="loginEmail">Email cím</label>
+                        <div class="input-wrap">
+                            <i class="fa-solid fa-envelope"></i>
+                            <input type="email" id="loginEmail" placeholder="email@pelda.hu" required autocomplete="email">
+                        </div>
+                    </div>
+
+                    <div class="auth-field">
+                        <label for="loginPassword">Jelszó</label>
+                        <div class="input-wrap">
+                            <i class="fa-solid fa-lock"></i>
+                            <input type="password" id="loginPassword" placeholder="••••••••" required autocomplete="current-password">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="auth-submit-btn" id="loginBtn">
+                        Bejelentkezés
+                    </button>
+
+                    <p class="auth-divider">Még nincs fiókod? <span id="switchToRegister">Regisztrálj!</span></p>
+                </form>
+
+                <!-- Register Form -->
+                <form class="auth-form" id="registerForm">
+                    <div class="auth-message error" id="registerError">
+                        <i class="fa-solid fa-circle-exclamation"></i>
+                        <span id="registerErrorMsg"></span>
+                    </div>
+                    <div class="auth-message success" id="registerSuccess">
+                        <i class="fa-solid fa-circle-check"></i>
+                        <span id="registerSuccessMsg"></span>
+                    </div>
+
+                    <div class="auth-field">
+                        <label for="regName">Teljes név</label>
+                        <div class="input-wrap">
+                            <i class="fa-solid fa-user"></i>
+                            <input type="text" id="regName" placeholder="Kovács János" required autocomplete="name">
+                        </div>
+                    </div>
+
+                    <div class="auth-field">
+                        <label for="regPhone">Telefonszám</label>
+                        <div class="input-wrap">
+                            <i class="fa-solid fa-phone"></i>
+                            <input type="tel" id="regPhone" placeholder="+36 XX XXX XXXX" required autocomplete="tel">
+                        </div>
+                    </div>
+
+                    <div class="auth-field">
+                        <label for="regEmail">Email cím</label>
+                        <div class="input-wrap">
+                            <i class="fa-solid fa-envelope"></i>
+                            <input type="email" id="regEmail" placeholder="email@pelda.hu" required autocomplete="email">
+                        </div>
+                    </div>
+
+                    <div class="auth-field">
+                        <label for="regPassword">Jelszó</label>
+                        <div class="input-wrap">
+                            <i class="fa-solid fa-lock"></i>
+                            <input type="password" id="regPassword" placeholder="Min. 6 karakter" required minlength="6" autocomplete="new-password">
+                        </div>
+                        <div class="password-strength">
+                            <div class="password-strength-bar" id="strengthBar"></div>
+                        </div>
+                    </div>
+
+                    <div class="auth-field">
+                        <label for="regPasswordConfirm">Jelszó megerősítése</label>
+                        <div class="input-wrap">
+                            <i class="fa-solid fa-lock"></i>
+                            <input type="password" id="regPasswordConfirm" placeholder="••••••••" required autocomplete="new-password">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="auth-submit-btn" id="registerBtn">
+                        Fiók létrehozása
+                    </button>
+
+                    <p class="auth-divider">Van már fiókod? <span id="switchToLogin">Jelentkezz be!</span></p>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <script src="js/auth.js"></script>
+    <script>
+        const { signUp, signIn, getUser, initAuthNav } = window.CrewCutzAuth;
+
+        // ── Check if already logged in ──
+        (async () => {
+            const user = await getUser();
+            if (user) {
+                document.getElementById('authCard').style.display = 'none';
+                document.getElementById('alreadyLoggedIn').style.display = 'block';
+            }
+        })();
+
+        // ── Tab switching ──
+        const loginTab = document.getElementById('loginTab');
+        const registerTab = document.getElementById('registerTab');
+        const loginForm = document.getElementById('loginForm');
+        const registerForm = document.getElementById('registerForm');
+
+        function showLogin() {
+            loginTab.classList.add('active');
+            registerTab.classList.remove('active');
+            loginForm.classList.add('active');
+            registerForm.classList.remove('active');
+        }
+
+        function showRegister() {
+            registerTab.classList.add('active');
+            loginTab.classList.remove('active');
+            registerForm.classList.add('active');
+            loginForm.classList.remove('active');
+        }
+
+        loginTab.addEventListener('click', showLogin);
+        registerTab.addEventListener('click', showRegister);
+        document.getElementById('switchToRegister').addEventListener('click', showRegister);
+        document.getElementById('switchToLogin').addEventListener('click', showLogin);
+
+        // ── Redirect helper ──
+        function getRedirectUrl() {
+            const params = new URLSearchParams(window.location.search);
+            return params.get('redirect') || 'booking.html';
+        }
+
+        // ── Show message helpers ──
+        function showMsg(id, msgId, text) {
+            document.getElementById(id).classList.add('show');
+            document.getElementById(msgId).textContent = text;
+        }
+        function hideMsg(id) {
+            document.getElementById(id).classList.remove('show');
+        }
+
+        // ── Login Form ──
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            hideMsg('loginError');
+            hideMsg('loginSuccess');
+            const btn = document.getElementById('loginBtn');
+            btn.textContent = 'Belépés...';
+            btn.disabled = true;
+
+            try {
+                await signIn(
+                    document.getElementById('loginEmail').value,
+                    document.getElementById('loginPassword').value
+                );
+                showMsg('loginSuccess', 'loginSuccessMsg', 'Sikeres bejelentkezés! Átirányítás...');
+                setTimeout(() => window.location.href = getRedirectUrl(), 1000);
+            } catch (err) {
+                const msg = err.message.includes('Invalid login credentials')
+                    ? 'Hibás email vagy jelszó.'
+                    : err.message;
+                showMsg('loginError', 'loginErrorMsg', msg);
+                btn.textContent = 'Bejelentkezés';
+                btn.disabled = false;
+            }
+        });
+
+        // ── Password strength ──
+        document.getElementById('regPassword').addEventListener('input', (e) => {
+            const val = e.target.value;
+            const bar = document.getElementById('strengthBar');
+            let strength = 0;
+            if (val.length >= 6) strength++;
+            if (val.length >= 10) strength++;
+            if (/[A-Z]/.test(val)) strength++;
+            if (/[0-9]/.test(val)) strength++;
+            if (/[^A-Za-z0-9]/.test(val)) strength++;
+
+            const pct = (strength / 5) * 100;
+            bar.style.width = pct + '%';
+            bar.style.background = strength <= 1 ? '#ef4444'
+                : strength <= 3 ? '#f59e0b'
+                : '#22c55e';
+        });
+
+        // ── Register Form ──
+        registerForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            hideMsg('registerError');
+            hideMsg('registerSuccess');
+
+            const name = document.getElementById('regName').value.trim();
+            const phone = document.getElementById('regPhone').value.trim();
+            const email = document.getElementById('regEmail').value.trim();
+            const pw = document.getElementById('regPassword').value;
+            const pw2 = document.getElementById('regPasswordConfirm').value;
+
+            if (pw !== pw2) {
+                showMsg('registerError', 'registerErrorMsg', 'A két jelszó nem egyezik!');
+                return;
+            }
+
+            const btn = document.getElementById('registerBtn');
+            btn.textContent = 'Létrehozás...';
+            btn.disabled = true;
+
+            try {
+                await signUp(email, pw, name, phone);
+                showMsg('registerSuccess', 'registerSuccessMsg',
+                    'Fiók létrehozva! Ellenőrizd az emailedet a megerősítő linkért, majd jelentkezz be.');
+                registerForm.reset();
+            } catch (err) {
+                const msg = err.message.includes('already registered')
+                    ? 'Ez az email cím már regisztrált.'
+                    : err.message;
+                showMsg('registerError', 'registerErrorMsg', msg);
+            } finally {
+                btn.textContent = 'Fiók létrehozása';
+                btn.disabled = false;
+            }
+        });
+
+        // ── Hamburger menu ──
+        const hamburgerBtn = document.getElementById('hamburgerBtn');
+        const mobileMenuOverlay = document.getElementById('mobileMenuOverlay');
+        if (hamburgerBtn && mobileMenuOverlay) {
+            hamburgerBtn.addEventListener('click', () => {
+                hamburgerBtn.classList.toggle('active');
+                mobileMenuOverlay.classList.toggle('active');
+            });
+            mobileMenuOverlay.querySelectorAll('a').forEach(link => {
+                link.addEventListener('click', () => {
+                    hamburgerBtn.classList.remove('active');
+                    mobileMenuOverlay.classList.remove('active');
+                });
+            });
+        }
+    </script>
+</body>
+</html>
