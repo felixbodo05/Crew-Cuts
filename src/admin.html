@@ -500,7 +500,37 @@
             display: flex;
             align-items: center;
             gap: 1rem;
-            margin-bottom: 1.5rem;
+            margin-bottom: 1.25rem;
+            flex-wrap: wrap;
+        }
+
+        .cal-view-tabs {
+            display: flex;
+            gap: 4px;
+            background: rgba(255, 255, 255, .04);
+            border-radius: 10px;
+            padding: 4px;
+            margin-left: auto;
+        }
+
+        .cal-view-tab {
+            padding: 7px 18px;
+            border: none;
+            background: transparent;
+            color: var(--text-muted);
+            font-family: var(--font);
+            font-size: .8rem;
+            font-weight: 700;
+            letter-spacing: .06em;
+            text-transform: uppercase;
+            border-radius: 7px;
+            cursor: pointer;
+            transition: all 200ms;
+        }
+
+        .cal-view-tab.active {
+            background: rgba(0, 128, 0, .15);
+            color: #2eb82e;
         }
 
         .cal-nav-btn {
@@ -522,33 +552,35 @@
             color: #2eb82e;
         }
 
-        .cal-month {
+        .cal-label {
             font-family: 'Cinzel', serif;
             font-size: 1.2rem;
         }
 
+        /* Monthly grid */
         .calendar-grid {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
-            gap: 2px;
+            gap: 4px;
         }
 
         .cal-header {
             text-align: center;
-            padding: .5rem;
-            font-size: .72rem;
+            padding: .6rem .5rem;
+            font-size: .75rem;
             font-weight: 700;
             letter-spacing: .1em;
             text-transform: uppercase;
             color: var(--text-muted);
+            border-bottom: 1px solid rgba(255, 255, 255, .05);
         }
 
         .cal-day {
-            min-height: 90px;
+            min-height: 130px;
             background: var(--surface2);
             border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: .5rem;
+            border-radius: 10px;
+            padding: .65rem;
             cursor: pointer;
             transition: border-color 150ms;
         }
@@ -558,7 +590,8 @@
         }
 
         .cal-day.today {
-            border-color: rgba(0, 128, 0, .6);
+            border-color: rgba(0, 128, 0, .7);
+            background: rgba(0, 128, 0, .04);
         }
 
         .cal-day.empty {
@@ -567,49 +600,145 @@
             cursor: default;
         }
 
-        .cal-day.other-month {
-            opacity: .35;
-        }
-
         .cal-day-num {
-            font-size: .8rem;
+            font-size: .95rem;
             font-weight: 700;
             color: var(--text-muted);
-            margin-bottom: .35rem;
+            margin-bottom: .4rem;
         }
 
         .cal-day.today .cal-day-num {
             color: #2eb82e;
+            background: rgba(0, 128, 0, .15);
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
         }
 
+        /* Event pills */
         .cal-event {
-            font-size: .65rem;
-            background: rgba(0, 128, 0, .2);
-            border: 1px solid rgba(0, 128, 0, .3);
-            border-radius: 4px;
-            padding: 2px 5px;
-            margin-bottom: 2px;
+            font-size: .72rem;
+            border-radius: 5px;
+            padding: 3px 7px;
+            margin-bottom: 3px;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            color: #2eb82e;
+            font-weight: 600;
+        }
+
+        .cal-event.s-pending {
+            background: rgba(245, 158, 11, .15);
+            border-left: 3px solid #fbbf24;
+            color: #fbbf24;
         }
 
         .cal-event.s-confirmed {
-            background: rgba(0, 128, 0, .25);
-            border-color: rgba(0, 128, 0, .5);
+            background: rgba(0, 128, 0, .18);
+            border-left: 3px solid #2eb82e;
+            color: #2eb82e;
         }
 
         .cal-event.s-cancelled {
             background: rgba(239, 68, 68, .1);
-            border-color: rgba(239, 68, 68, .25);
+            border-left: 3px solid #f87171;
             color: #f87171;
         }
 
-        .cal-event.s-pending {
-            background: rgba(245, 158, 11, .12);
-            border-color: rgba(245, 158, 11, .3);
+        /* Weekly grid */
+        .week-grid {
+            display: grid;
+            grid-template-columns: 60px repeat(7, 1fr);
+            gap: 2px;
+            font-size: .8rem;
+        }
+
+        .week-col-header {
+            text-align: center;
+            padding: .6rem .3rem;
+            font-size: .78rem;
+            font-weight: 700;
+            border-bottom: 1px solid rgba(255, 255, 255, .06);
+            color: var(--text-muted);
+        }
+
+        .week-col-header.today-col {
+            color: #2eb82e;
+        }
+
+        .week-col-header .day-date {
+            font-size: 1.2rem;
+            font-family: 'Cinzel', serif;
+            color: var(--text);
+            display: block;
+        }
+
+        .week-col-header.today-col .day-date {
+            color: #2eb82e;
+            background: rgba(0, 128, 0, .15);
+            width: 38px;
+            height: 38px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            margin: 2px auto 0;
+        }
+
+        .week-time-label {
+            color: var(--text-muted);
+            font-size: .7rem;
+            text-align: right;
+            padding-right: 8px;
+            padding-top: 4px;
+            height: 56px;
+            border-right: 1px solid rgba(255, 255, 255, .05);
+        }
+
+        .week-slot {
+            height: 56px;
+            border: 1px solid rgba(255, 255, 255, .04);
+            border-radius: 4px;
+            position: relative;
+            margin: 1px;
+        }
+
+        .week-slot.today-col {
+            background: rgba(0, 128, 0, .025);
+        }
+
+        .week-event {
+            position: absolute;
+            inset: 2px;
+            border-radius: 5px;
+            padding: 3px 6px;
+            font-size: .72rem;
+            font-weight: 600;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            cursor: default;
+        }
+
+        .week-event.s-pending {
+            background: rgba(245, 158, 11, .2);
+            border-left: 3px solid #fbbf24;
             color: #fbbf24;
+        }
+
+        .week-event.s-confirmed {
+            background: rgba(0, 128, 0, .25);
+            border-left: 3px solid #2eb82e;
+            color: #2eb82e;
+        }
+
+        .week-event.s-cancelled {
+            background: rgba(239, 68, 68, .12);
+            border-left: 3px solid #f87171;
+            color: #f87171;
         }
 
         /* ── IMAGES ── */
@@ -1028,14 +1157,18 @@
             <div class="page" id="page-calendar">
                 <div class="page-header">
                     <h1>Naptár</h1>
-                    <p>Havi nézet – foglalások áttekintése</p>
+                    <p id="calSubtitle">Havi nézet – foglalások áttekintése</p>
                 </div>
                 <div class="calendar-nav">
                     <button class="cal-nav-btn" id="calPrev"><i class="fa-solid fa-chevron-left"></i></button>
-                    <div class="cal-month" id="calMonthLabel"></div>
+                    <div class="cal-label" id="calMonthLabel"></div>
                     <button class="cal-nav-btn" id="calNext"><i class="fa-solid fa-chevron-right"></i></button>
+                    <div class="cal-view-tabs">
+                        <button class="cal-view-tab active" id="tabMonth">Havi</button>
+                        <button class="cal-view-tab" id="tabWeek">Heti</button>
+                    </div>
                 </div>
-                <div class="calendar-grid" id="calGrid"></div>
+                <div id="calGrid"></div>
             </div>
 
             <!-- Images -->
@@ -1288,42 +1421,77 @@
                 });
             }
 
-            // ── Calendar ─────────────────────────────────────────────────
-            let calYear, calMonth;
+            // ── Calendar ───────────────────────────────────────────────
+            let calYear, calMonth, calView = 'month';
+            // Week: track current week's Monday
+            let calWeekStart = null;
+
             function renderCalendar() {
                 const now = new Date();
                 if (!calYear) { calYear = now.getFullYear(); calMonth = now.getMonth(); }
-                drawCalendar();
+                if (!calWeekStart) {
+                    // Set week start to this Monday
+                    const d = new Date();
+                    const day = (d.getDay() + 6) % 7; // Mon=0
+                    d.setDate(d.getDate() - day);
+                    calWeekStart = new Date(d);
+                }
+                if (calView === 'month') drawMonthCalendar();
+                else drawWeekCalendar();
             }
 
-            document.getElementById('calPrev').addEventListener('click', () => {
-                calMonth--;
-                if (calMonth < 0) { calMonth = 11; calYear--; }
-                drawCalendar();
+            // View toggle
+            document.getElementById('tabMonth').addEventListener('click', () => {
+                calView = 'month';
+                document.getElementById('tabMonth').classList.add('active');
+                document.getElementById('tabWeek').classList.remove('active');
+                document.getElementById('calSubtitle').textContent = 'Hávi nézet – foglalások áttekintése';
+                drawMonthCalendar();
             });
-            document.getElementById('calNext').addEventListener('click', () => {
-                calMonth++;
-                if (calMonth > 11) { calMonth = 0; calYear++; }
-                drawCalendar();
+            document.getElementById('tabWeek').addEventListener('click', () => {
+                calView = 'week';
+                document.getElementById('tabWeek').classList.add('active');
+                document.getElementById('tabMonth').classList.remove('active');
+                document.getElementById('calSubtitle').textContent = 'Heti nézet – napi időpontok';
+                drawWeekCalendar();
             });
 
-            function drawCalendar() {
+            document.getElementById('calPrev').addEventListener('click', () => {
+                if (calView === 'month') {
+                    calMonth--;
+                    if (calMonth < 0) { calMonth = 11; calYear--; }
+                    drawMonthCalendar();
+                } else {
+                    calWeekStart.setDate(calWeekStart.getDate() - 7);
+                    drawWeekCalendar();
+                }
+            });
+            document.getElementById('calNext').addEventListener('click', () => {
+                if (calView === 'month') {
+                    calMonth++;
+                    if (calMonth > 11) { calMonth = 0; calYear++; }
+                    drawMonthCalendar();
+                } else {
+                    calWeekStart.setDate(calWeekStart.getDate() + 7);
+                    drawWeekCalendar();
+                }
+            });
+
+            // ── MONTHLY VIEW ──
+            function drawMonthCalendar() {
                 document.getElementById('calMonthLabel').textContent = `${MONTHS_HU[calMonth]} ${calYear}`;
                 const grid = document.getElementById('calGrid');
-                const dayHeaders = ['Hét', 'Ked', 'Sze', 'Csü', 'Pén', 'Szo', 'Vas'];
-                // Month bookings
+                grid.className = 'calendar-grid';
+                const dayHeaders = ['Hétfő', 'Kedd', 'Szerda', 'Csütörtök', 'Péntek', 'Szombat', 'Vasárnap'];
                 const monthStr = `${calYear}-${String(calMonth + 1).padStart(2, '0')}`;
                 const monthBookings = allBookings.filter(b => b.booking_date.startsWith(monthStr));
 
                 const firstDay = new Date(calYear, calMonth, 1);
                 const lastDay = new Date(calYear, calMonth + 1, 0);
-                const startWeekday = (firstDay.getDay() + 6) % 7; // Mon=0
-
+                const startWeekday = (firstDay.getDay() + 6) % 7;
                 const today = new Date().toISOString().split('T')[0];
 
                 let html = dayHeaders.map(d => `<div class="cal-header">${d}</div>`).join('');
-
-                // Empty cells before first day
                 for (let i = 0; i < startWeekday; i++) html += '<div class="cal-day empty"></div>';
 
                 for (let d = 1; d <= lastDay.getDate(); d++) {
@@ -1332,18 +1500,78 @@
                         .sort((a, b) => a.booking_time.localeCompare(b.booking_time));
                     const isToday = dateStr === today;
 
-                    const events = dayB.slice(0, 4).map(b =>
-                        `<div class="cal-event s-${b.status}" title="${b.booking_time?.slice(0, 5)} – ${BARBER_NAMES[b.barber] || b.barber}">
-                ${b.booking_time?.slice(0, 5)} ${BARBER_NAMES[b.barber]?.split(' ')[0] || ''}
-            </div>`
+                    const events = dayB.slice(0, 5).map(b =>
+                        `<div class="cal-event s-${b.status}" title="${b.booking_time?.slice(0, 5)} – ${BARBER_NAMES[b.barber] || b.barber} (${SERVICE_NAMES[b.service] || b.service})">
+                            ${b.booking_time?.slice(0, 5)} ${BARBER_NAMES[b.barber]?.split(' ')[1] || ''}
+                        </div>`
                     ).join('');
-                    const more = dayB.length > 4 ? `<div class="cal-event">+${dayB.length - 4} más</div>` : '';
+                    const more = dayB.length > 5 ? `<div class="cal-event s-pending">+${dayB.length - 5} több</div>` : '';
 
                     html += `<div class="cal-day${isToday ? ' today' : ''}">
-            <div class="cal-day-num">${d}</div>
-            ${events}${more}
-        </div>`;
+                        <div class="cal-day-num">${d}</div>
+                        ${events}${more}
+                    </div>`;
                 }
+                grid.innerHTML = html;
+            }
+
+            // ── WEEKLY VIEW ──
+            const TIME_SLOTS = ['11:30', '12:00', '12:30', '13:00', '13:30', '14:00', '14:30', '15:00', '15:30', '16:00', '16:30', '17:00', '17:30', '18:00', '18:30', '19:00', '19:30'];
+            const DAY_NAMES_SHORT = ['Hétfő', 'Kedd', 'Szerda', 'Csütörtök', 'Péntek', 'Szombat', 'Vasárnap'];
+
+            function drawWeekCalendar() {
+                // Build 7 dates for this week (Mon–Sun)
+                const weekDates = [];
+                for (let i = 0; i < 7; i++) {
+                    const d = new Date(calWeekStart);
+                    d.setDate(d.getDate() + i);
+                    weekDates.push(d);
+                }
+                const firstDate = weekDates[0];
+                const lastDate = weekDates[6];
+                // Label: "Márc 3 – Márc 9, 2026"
+                const monthFirst = MONTHS_HU[firstDate.getMonth()].slice(0, 3);
+                const monthLast = MONTHS_HU[lastDate.getMonth()].slice(0, 3);
+                const same = firstDate.getMonth() === lastDate.getMonth();
+                document.getElementById('calMonthLabel').textContent =
+                    same
+                        ? `${monthFirst} ${firstDate.getDate()} – ${lastDate.getDate()}, ${lastDate.getFullYear()}`
+                        : `${monthFirst} ${firstDate.getDate()} – ${monthLast} ${lastDate.getDate()}, ${lastDate.getFullYear()}`;
+
+                const today = new Date().toISOString().split('T')[0];
+                const grid = document.getElementById('calGrid');
+                grid.className = 'week-grid';
+
+                // Column headers: empty + 7 day headers
+                let html = '<div class="week-col-header"></div>'; // time col
+                weekDates.forEach((d, i) => {
+                    const ds = d.toISOString().split('T')[0];
+                    const isT = ds === today;
+                    html += `<div class="week-col-header${isT ? ' today-col' : ''}">
+                        ${DAY_NAMES_SHORT[i]}<span class="day-date">${d.getDate()}</span>
+                    </div>`;
+                });
+
+                // Time rows
+                TIME_SLOTS.forEach(slot => {
+                    // Time label
+                    html += `<div class="week-time-label">${slot}</div>`;
+                    // 7 day cells
+                    weekDates.forEach(d => {
+                        const ds = d.toISOString().split('T')[0];
+                        const isT = ds === today;
+                        const slotBookings = allBookings.filter(b =>
+                            b.booking_date === ds &&
+                            b.booking_time?.slice(0, 5) === slot
+                        );
+                        const events = slotBookings.map(b =>
+                            `<div class="week-event s-${b.status}" title="${b.name || ''} – ${BARBER_NAMES[b.barber] || b.barber} – ${SERVICE_NAMES[b.service] || b.service}">
+                                ${BARBER_NAMES[b.barber]?.split(' ')[0] || b.barber} – ${SERVICE_NAMES[b.service] || b.service}
+                            </div>`
+                        ).join('');
+                        html += `<div class="week-slot${isT ? ' today-col' : ''}">${events}</div>`;
+                    });
+                });
 
                 grid.innerHTML = html;
             }
