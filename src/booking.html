@@ -30,8 +30,8 @@
         .spinner {
             width: 40px;
             height: 40px;
-            border: 3px solid rgba(0, 128, 0, 0.2);
-            border-top-color: #008000;
+            border: 3px solid rgba(128, 128, 128, 0.2);
+            border-top-color: #808080;
             border-radius: 50%;
             animation: spin 0.8s linear infinite;
         }
@@ -128,9 +128,9 @@
         .form-group input:focus,
         .form-group select:focus,
         .form-group textarea:focus {
-            border-color: rgba(0, 128, 0, 0.6);
-            background: rgba(0, 128, 0, 0.04);
-            box-shadow: 0 0 0 3px rgba(0, 128, 0, 0.1);
+            border-color: rgba(128, 128, 128, 0.6);
+            background: rgba(128, 128, 128, 0.04);
+            box-shadow: 0 0 0 3px rgba(128, 128, 128, 0.1);
         }
 
         .form-group input[readonly] {
@@ -185,18 +185,18 @@
         }
 
         .barber-option input:checked~.barber-option-card {
-            border-color: rgba(0, 128, 0, 0.7);
-            background: rgba(0, 128, 0, 0.08);
-            box-shadow: 0 0 20px rgba(0, 128, 0, 0.15);
+            border-color: rgba(128, 128, 128, 0.7);
+            background: rgba(128, 128, 128, 0.08);
+            box-shadow: 0 0 20px rgba(128, 128, 128, 0.15);
         }
 
         .barber-option input:checked~.barber-option-card i,
         .barber-option input:checked~.barber-option-card span {
-            color: #2eb82e;
+            color: #a0a0a0;
         }
 
         .barber-option-card:hover {
-            border-color: rgba(0, 128, 0, 0.4);
+            border-color: rgba(128, 128, 128, 0.4);
         }
 
         /* ── Time Slot Picker ── */
@@ -221,15 +221,15 @@
         }
 
         .time-slot:hover:not(.booked):not(.selected) {
-            border-color: rgba(0, 128, 0, 0.5);
-            background: rgba(0, 128, 0, 0.06);
+            border-color: rgba(128, 128, 128, 0.5);
+            background: rgba(128, 128, 128, 0.06);
         }
 
         .time-slot.selected {
-            border-color: rgba(0, 128, 0, 0.8);
-            background: rgba(0, 128, 0, 0.15);
-            color: #2eb82e;
-            box-shadow: 0 0 12px rgba(0, 128, 0, 0.2);
+            border-color: rgba(128, 128, 128, 0.8);
+            background: rgba(128, 128, 128, 0.15);
+            color: #a0a0a0;
+            box-shadow: 0 0 12px rgba(128, 128, 128, 0.2);
         }
 
         .time-slot.booked {
@@ -275,7 +275,7 @@
         }
 
         .slot-dot.free {
-            background: rgba(0, 128, 0, 0.6);
+            background: rgba(128, 128, 128, 0.6);
         }
 
         .slot-dot.taken {
@@ -291,7 +291,7 @@
         .btn-primary {
             grid-column: 1 / -1;
             padding: 16px;
-            background: linear-gradient(135deg, #008000, #2eb82e);
+            background: linear-gradient(135deg, #808080, #a0a0a0);
             color: white;
             border: none;
             border-radius: 12px;
@@ -302,12 +302,12 @@
             text-transform: uppercase;
             cursor: pointer;
             transition: all 250ms ease;
-            box-shadow: 0 4px 20px rgba(0, 128, 0, 0.4);
+            box-shadow: 0 4px 20px rgba(128, 128, 128, 0.4);
         }
 
         .btn-primary:hover:not(:disabled) {
             transform: translateY(-2px);
-            box-shadow: 0 8px 30px rgba(0, 128, 0, 0.5);
+            box-shadow: 0 8px 30px rgba(128, 128, 128, 0.5);
         }
 
         .btn-primary:disabled {
@@ -320,8 +320,8 @@
             max-width: 800px;
             margin: 0 auto 1.5rem;
             padding: 12px 20px;
-            background: rgba(0, 128, 0, 0.08);
-            border: 1px solid rgba(0, 128, 0, 0.25);
+            background: rgba(128, 128, 128, 0.08);
+            border: 1px solid rgba(128, 128, 128, 0.25);
             border-radius: 12px;
             display: flex;
             align-items: center;
@@ -334,7 +334,7 @@
             display: flex;
             align-items: center;
             gap: 10px;
-            color: #2eb82e;
+            color: #a0a0a0;
             font-size: 0.9rem;
             font-weight: 600;
         }
@@ -377,9 +377,9 @@
         }
 
         .booking-message.success {
-            background: rgba(0, 128, 0, 0.1);
-            border: 1px solid rgba(0, 128, 0, 0.3);
-            color: #2eb82e;
+            background: rgba(128, 128, 128, 0.1);
+            border: 1px solid rgba(128, 128, 128, 0.3);
+            color: #a0a0a0;
         }
 
         /* ── Responsive ── */

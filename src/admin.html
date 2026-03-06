@@ -15,8 +15,8 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root {
-            --primary: #008000;
-            --primary-light: #2eb82e;
+            --primary: #808080;
+            --primary-light: #a0a0a0;
             --bg: #050505;
             --surface: rgba(12, 12, 12, 0.95);
             --surface2: rgba(20, 20, 20, 0.9);
@@ -49,7 +49,7 @@
             position: fixed;
             inset: 0;
             z-index: 9999;
-            background: radial-gradient(ellipse at 30% 50%, rgba(0, 128, 0, 0.07) 0%, transparent 60%), #000;
+            background: radial-gradient(ellipse at 30% 50%, rgba(128, 128, 128, 0.07) 0%, transparent 60%), #000;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -85,9 +85,9 @@
 
         .gate-badge {
             font-size: 0.7rem;
-            background: rgba(0, 128, 0, 0.15);
-            border: 1px solid rgba(0, 128, 0, 0.3);
-            color: #2eb82e;
+            background: rgba(128, 128, 128, 0.15);
+            border: 1px solid rgba(128, 128, 128, 0.3);
+            color: #a0a0a0;
             padding: 3px 10px;
             border-radius: 20px;
             letter-spacing: .08em;
@@ -122,8 +122,8 @@
         }
 
         .gate-field input:focus {
-            border-color: rgba(0, 128, 0, 0.6);
-            box-shadow: 0 0 0 3px rgba(0, 128, 0, 0.1);
+            border-color: rgba(128, 128, 128, 0.6);
+            box-shadow: 0 0 0 3px rgba(128, 128, 128, 0.1);
         }
 
         .input-wrap {
@@ -143,7 +143,7 @@
         .btn-green {
             width: 100%;
             padding: 14px;
-            background: linear-gradient(135deg, #008000, #2eb82e);
+            background: linear-gradient(135deg, #808080, #a0a0a0);
             color: #fff;
             border: none;
             border-radius: 10px;
@@ -154,12 +154,12 @@
             text-transform: uppercase;
             cursor: pointer;
             transition: all 200ms;
-            box-shadow: 0 4px 20px rgba(0, 128, 0, 0.35);
+            box-shadow: 0 4px 20px rgba(128, 128, 128, 0.35);
         }
 
         .btn-green:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 28px rgba(0, 128, 0, 0.5);
+            box-shadow: 0 8px 28px rgba(128, 128, 128, 0.5);
         }
 
         .gate-error {
@@ -242,9 +242,9 @@
         }
 
         .nav-item.active {
-            color: #2eb82e;
-            border-left-color: #2eb82e;
-            background: rgba(0, 128, 0, 0.06);
+            color: #a0a0a0;
+            border-left-color: #a0a0a0;
+            background: rgba(128, 128, 128, 0.06);
         }
 
         .nav-item i {
@@ -307,7 +307,7 @@
         .page-header h1 {
             font-family: 'Cinzel', serif;
             font-size: 1.6rem;
-            background: linear-gradient(135deg, #008000, #2eb82e);
+            background: linear-gradient(135deg, #808080, #a0a0a0);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -337,7 +337,7 @@
         .stat-card .stat-val {
             font-size: 2rem;
             font-weight: 700;
-            color: #2eb82e;
+            color: #a0a0a0;
             line-height: 1;
             margin-bottom: .25rem;
         }
@@ -379,7 +379,7 @@
 
         .filter-select:focus,
         .filter-input:focus {
-            border-color: rgba(0, 128, 0, 0.5);
+            border-color: rgba(128, 128, 128, 0.5);
         }
 
         .table-wrap {
@@ -436,9 +436,9 @@
         }
 
         .s-confirmed {
-            background: rgba(0, 128, 0, .12);
-            color: #2eb82e;
-            border: 1px solid rgba(0, 128, 0, .3);
+            background: rgba(128, 128, 128, .12);
+            color: #a0a0a0;
+            border: 1px solid rgba(128, 128, 128, .3);
         }
 
         .s-cancelled {
@@ -466,13 +466,13 @@
         }
 
         .btn-confirm {
-            background: rgba(0, 128, 0, .2);
-            color: #2eb82e;
-            border: 1px solid rgba(0, 128, 0, .35);
+            background: rgba(128, 128, 128, .2);
+            color: #a0a0a0;
+            border: 1px solid rgba(128, 128, 128, .35);
         }
 
         .btn-confirm:hover {
-            background: rgba(0, 128, 0, .35);
+            background: rgba(128, 128, 128, .35);
         }
 
         .btn-cancel {
@@ -529,8 +529,8 @@
         }
 
         .cal-view-tab.active {
-            background: rgba(0, 128, 0, .15);
-            color: #2eb82e;
+            background: rgba(128, 128, 128, .15);
+            color: #a0a0a0;
         }
 
         .cal-nav-btn {
@@ -548,8 +548,8 @@
         }
 
         .cal-nav-btn:hover {
-            border-color: rgba(0, 128, 0, .5);
-            color: #2eb82e;
+            border-color: rgba(128, 128, 128, .5);
+            color: #a0a0a0;
         }
 
         .cal-label {
@@ -586,12 +586,12 @@
         }
 
         .cal-day:hover {
-            border-color: rgba(0, 128, 0, .4);
+            border-color: rgba(128, 128, 128, .4);
         }
 
         .cal-day.today {
-            border-color: rgba(0, 128, 0, .7);
-            background: rgba(0, 128, 0, .04);
+            border-color: rgba(128, 128, 128, .7);
+            background: rgba(128, 128, 128, .04);
         }
 
         .cal-day.empty {
@@ -608,8 +608,8 @@
         }
 
         .cal-day.today .cal-day-num {
-            color: #2eb82e;
-            background: rgba(0, 128, 0, .15);
+            color: #a0a0a0;
+            background: rgba(128, 128, 128, .15);
             width: 28px;
             height: 28px;
             display: flex;
@@ -637,9 +637,9 @@
         }
 
         .cal-event.s-confirmed {
-            background: rgba(0, 128, 0, .18);
-            border-left: 3px solid #2eb82e;
-            color: #2eb82e;
+            background: rgba(128, 128, 128, .18);
+            border-left: 3px solid #a0a0a0;
+            color: #a0a0a0;
         }
 
         .cal-event.s-cancelled {
@@ -666,7 +666,7 @@
         }
 
         .week-col-header.today-col {
-            color: #2eb82e;
+            color: #a0a0a0;
         }
 
         .week-col-header .day-date {
@@ -677,8 +677,8 @@
         }
 
         .week-col-header.today-col .day-date {
-            color: #2eb82e;
-            background: rgba(0, 128, 0, .15);
+            color: #a0a0a0;
+            background: rgba(128, 128, 128, .15);
             width: 38px;
             height: 38px;
             display: flex;
@@ -707,7 +707,7 @@
         }
 
         .week-slot.today-col {
-            background: rgba(0, 128, 0, .025);
+            background: rgba(128, 128, 128, .025);
         }
 
         .week-event {
@@ -730,9 +730,9 @@
         }
 
         .week-event.s-confirmed {
-            background: rgba(0, 128, 0, .25);
-            border-left: 3px solid #2eb82e;
-            color: #2eb82e;
+            background: rgba(128, 128, 128, .25);
+            border-left: 3px solid #a0a0a0;
+            color: #a0a0a0;
         }
 
         .week-event.s-cancelled {
@@ -806,8 +806,8 @@
         }
 
         .upload-area:hover {
-            border-color: rgba(0, 128, 0, .5);
-            background: rgba(0, 128, 0, .04);
+            border-color: rgba(128, 128, 128, .5);
+            background: rgba(128, 128, 128, .04);
         }
 
         .upload-area input[type="file"] {
@@ -843,7 +843,7 @@
 
         .upload-progress-bar {
             height: 100%;
-            background: linear-gradient(90deg, #008000, #2eb82e);
+            background: linear-gradient(90deg, #808080, #a0a0a0);
             border-radius: 2px;
             width: 0%;
             transition: width 300ms;
@@ -868,15 +868,15 @@
         }
 
         .img-url-input:focus {
-            border-color: rgba(0, 128, 0, .5);
+            border-color: rgba(128, 128, 128, .5);
         }
 
         .btn-save-url {
             padding: 7px 14px;
-            background: rgba(0, 128, 0, .2);
-            border: 1px solid rgba(0, 128, 0, .4);
+            background: rgba(128, 128, 128, .2);
+            border: 1px solid rgba(128, 128, 128, .4);
             border-radius: 7px;
-            color: #2eb82e;
+            color: #a0a0a0;
             font-family: var(--font);
             font-size: .78rem;
             font-weight: 700;
@@ -888,12 +888,12 @@
         }
 
         .btn-save-url:hover {
-            background: rgba(0, 128, 0, .35);
+            background: rgba(128, 128, 128, .35);
         }
 
         .img-status {
             font-size: .72rem;
-            color: #2eb82e;
+            color: #a0a0a0;
             margin-top: .4rem;
             min-height: 1em;
         }
@@ -903,8 +903,8 @@
             display: inline-block;
             width: 20px;
             height: 20px;
-            border: 2px solid rgba(0, 128, 0, .2);
-            border-top-color: #008000;
+            border: 2px solid rgba(128, 128, 128, .2);
+            border-top-color: #808080;
             border-radius: 50%;
             animation: spin .8s linear infinite;
         }
@@ -923,7 +923,7 @@
 
         .empty-state i {
             font-size: 2.5rem;
-            color: rgba(0, 128, 0, .25);
+            color: rgba(128, 128, 128, .25);
             display: block;
             margin-bottom: 1rem;
         }
@@ -934,7 +934,7 @@
             bottom: 1.5rem;
             right: 1.5rem;
             background: var(--surface);
-            border: 1px solid rgba(0, 128, 0, .4);
+            border: 1px solid rgba(128, 128, 128, .4);
             padding: .9rem 1.25rem;
             border-radius: 12px;
             font-size: .875rem;
@@ -956,7 +956,7 @@
         }
 
         .toast i {
-            color: #2eb82e;
+            color: #a0a0a0;
         }
 
         .toast.error i {
@@ -990,8 +990,8 @@
         }
 
         .view-tab.active {
-            background: rgba(0, 128, 0, .15);
-            color: #2eb82e;
+            background: rgba(128, 128, 128, .15);
+            color: #a0a0a0;
         }
 
         /* Responsive */
@@ -1701,7 +1701,7 @@
                     return false;
                 }
                 const statusEl = document.getElementById('status-' + slot);
-                if (statusEl) { statusEl.textContent = '✓ Mentve!'; statusEl.style.color = '#2eb82e'; }
+                if (statusEl) { statusEl.textContent = '✓ Mentve!'; statusEl.style.color = '#a0a0a0'; }
                 return true;
             }
 

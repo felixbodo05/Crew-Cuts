@@ -2,14 +2,50 @@
     "version": 2,
     "builds": [
         {
-            "src": "server.js",
-            "use": "@vercel/node"
+            "src": "src/**",
+            "use": "@vercel/static"
         }
     ],
-    "rewrites": [
+    "routes": [
         {
-            "source": "/(.*)",
-            "destination": "/server.js"
+            "src": "/",
+            "dest": "/src/index.html"
+        },
+        {
+            "src": "/index.html",
+            "dest": "/src/index.html"
+        },
+        {
+            "src": "/booking.html",
+            "dest": "/src/booking.html"
+        },
+        {
+            "src": "/login.html",
+            "dest": "/src/login.html"
+        },
+        {
+            "src": "/profile.html",
+            "dest": "/src/profile.html"
+        },
+        {
+            "src": "/admin.html",
+            "dest": "/src/admin.html"
+        },
+        {
+            "src": "/barbers.html",
+            "dest": "/src/barbers.html"
+        },
+        {
+            "src": "/contact.html",
+            "dest": "/src/contact.html"
+        },
+        {
+            "src": "/portfolio.html",
+            "dest": "/src/portfolio.html"
+        },
+        {
+            "src": "/(.*)",
+            "dest": "/src/$1"
         }
     ]
 }
