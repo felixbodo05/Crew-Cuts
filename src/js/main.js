@@ -362,7 +362,21 @@ function updateLanguage(lang) {
     requestAnimationFrame(() => {
         requestAnimationFrame(() => {
             refreshNavPositions();
-            updateActiveIndicator();
+            // Disable transition so indicator jumps instantly to correct position
+            // (avoids sliding from stale position after text width changes)
+            const indicator = document.querySelector('.active-indicator');
+            if (indicator) {
+                indicator.style.transition = 'none';
+                indicator.offsetHeight; // force reflow
+                updateActiveIndicator();
+                indicator.offsetHeight; // force reflow
+                // Re-enable smooth transition after a tick
+                requestAnimationFrame(() => {
+                    indicator.style.transition = '';
+                });
+            } else {
+                updateActiveIndicator();
+            }
         });
     });
 }
@@ -453,49 +467,19 @@ function initNavbar() {
         }
     }
 
-    // === Sliding Active Indicator Logic ===
+    // === Sliding Active Indicator ===
     const indicator = document.querySelector('.active-indicator');
     const navPillsContainer = document.querySelector('.nav-pills');
 
     if (indicator && navPillsContainer) {
-        const lastPage = sessionStorage.getItem('lastNavPage');
+        // Hide indicator until fonts load (avoids flash at wrong position)
+        indicator.style.transition = 'none';
+        indicator.style.opacity = '0';
 
-        // If we have a history of navigation, start from previous position
-        if (lastPage && lastPage !== normalizedPage) {
-            const lastItem = document.querySelector(`.nav-pill[data-page="${lastPage}"]`);
-            if (lastItem) {
-                // 1. Teleport to previous item immediately (no transition)
-                indicator.style.transition = 'none';
-
-                const navRect = navPillsContainer.getBoundingClientRect();
-                const lastRect = lastItem.getBoundingClientRect();
-                const pillLeft = lastRect.left - navRect.left;
-                const pillWidth = lastRect.width;
-
-                // Use transform (consistent with updateActiveIndicator)
-                indicator.style.width = `${pillWidth}px`;
-                indicator.style.transform = `translateY(-50%) translateX(${pillLeft}px)`;
-
-                // Force reflow to apply the position without transition
-                indicator.offsetHeight;
-
-                // 2. Enable transition for the slide to current
-                indicator.style.transition = '';
-            }
-        }
-
-        // 3. Move to current active item
-        // Use rAF to ensure the browser has registered the 'transition: none' removal
-        requestAnimationFrame(() => {
-            updateActiveIndicator();
-        });
-
-        // Add resize listener to keep indicator correctly positioned
+        // Position is set correctly inside initNavbarBubble's fonts.ready callback.
+        // Just add resize listener here.
         window.addEventListener('resize', updateActiveIndicator);
     }
-
-    // Save current page as last page for next navigation
-    sessionStorage.setItem('lastNavPage', normalizedPage);
 }
 
 // === Smooth Scroll ===
@@ -846,7 +830,17 @@ function initNavbarBubble() {
     // Re-cache after web fonts finish loading (pill widths change with Oswald)
     document.fonts.ready.then(() => {
         cachePillPositions();
-        updateActiveIndicator();
+        // Place indicator at correct position with no transition (no slide from wrong spot)
+        const indicator = document.querySelector('.active-indicator');
+        if (indicator) {
+            indicator.style.transition = 'none';
+            updateActiveIndicator();
+            indicator.offsetHeight; // force reflow before re-enabling transition
+            indicator.style.opacity = '1';
+            requestAnimationFrame(() => {
+                indicator.style.transition = '';
+            });
+        }
     });
 
     pills.forEach((pill, i) => {
