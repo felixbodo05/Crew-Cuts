@@ -5,9 +5,9 @@
 /* === CSS Variables === */
 :root {
     /* Colors - Dark Mode (Default) */
-    --primary: #008000;
-    --primary-light: #2eb82e;
-    --primary-dark: #006000;
+    --primary: #808080;
+    --primary-light: #a0a0a0;
+    --primary-dark: #606060;
     --secondary: hsl(0, 0%, 7%);
     --secondary-light: hsl(0, 0%, 12%);
 
@@ -20,12 +20,12 @@
     --text-inverse: hsl(0, 0%, 98%);
 
     --border-color: hsl(0, 0%, 20%);
-    --border-accent: rgba(0, 128, 0, 0.3);
+    --border-accent: rgba(128, 128, 128, 0.3);
     --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.5);
     --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.6);
     --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.7);
     --shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.8);
-    --glow-orange: 0 0 20px rgba(0, 128, 0, 0.4);
+    --glow-orange: 0 0 20px rgba(128, 128, 128, 0.4);
 
     /* Typography */
     --font-family: "Oswald", sans-serif;
@@ -181,7 +181,7 @@ h1,
     color: var(--text-inverse);
     background: var(--primary);
     font-weight: 700;
-    box-shadow: 0 0 10px rgba(0, 128, 0, 0.4);
+    box-shadow: 0 0 10px rgba(128, 128, 128, 0.4);
 }
 
 h2 {
@@ -387,7 +387,7 @@ img {
     /* JS will update this instantly (no transition) */
     height: 40px;
     /* JS will update this instantly (no transition) */
-    background: rgba(0, 128, 0, 0.15);
+    background: rgba(128, 128, 128, 0.15);
     border-radius: 9999px;
     pointer-events: none;
     transition: transform 0.18s cubic-bezier(0.4, 0, 0.2, 1),
@@ -411,7 +411,7 @@ img {
     height: calc(100% - 4px);
     width: 80px;
     /* JS will update this instantly (no transition) */
-    background: rgba(0, 128, 0, 0.2);
+    background: rgba(128, 128, 128, 0.2);
     border-radius: 9999px;
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     will-change: transform;
@@ -453,7 +453,7 @@ img {
 
 /* Active State */
 .nav-pill.active {
-    background: rgba(0, 128, 0, 0.1);
+    background: rgba(128, 128, 128, 0.1);
     color: var(--primary);
 }
 
@@ -475,8 +475,8 @@ img {
     opacity: 1;
     box-shadow:
         0 0 8px var(--primary),
-        0 0 16px rgba(0, 128, 0, 0.5),
-        0 4px 12px rgba(0, 128, 0, 0.3);
+        0 0 16px rgba(128, 128, 128, 0.5),
+        0 4px 12px rgba(128, 128, 128, 0.3);
     animation: glow-pulse 2s ease-in-out infinite;
 }
 
@@ -511,7 +511,7 @@ img {
 .booking-bubble:hover {
     background: var(--primary-light);
     transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(0, 128, 0, 0.6);
+    box-shadow: 0 8px 24px rgba(128, 128, 128, 0.6);
 }
 
 .booking-bubble i {
@@ -644,7 +644,7 @@ img {
 
 .mobile-menu-item:hover {
     color: var(--primary);
-    background: rgba(0, 128, 0, 0.1);
+    background: rgba(128, 128, 128, 0.1);
 }
 
 .mobile-menu-cta {
@@ -772,9 +772,9 @@ img {
 
 .lang-option.active {
     color: var(--primary);
-    background: rgba(0, 128, 0, 0.1);
+    background: rgba(128, 128, 128, 0.1);
     font-weight: 700;
-    box-shadow: 0 0 10px rgba(0, 128, 0, 0.2);
+    box-shadow: 0 0 10px rgba(128, 128, 128, 0.2);
 }
 
 .lang-divider {
@@ -879,8 +879,8 @@ img {
         text-shadow:
             0 0 15px rgba(255, 255, 255, 0.3),
             /* Softer glow */
-            /* Subtle green tint in the glow */
-            0 0 25px rgba(0, 128, 0, 0.2);
+            /* Subtle gray tint in the glow */
+            0 0 25px rgba(128, 128, 128, 0.2);
         transform: scale(1.01);
         /* Less expansion */
     }
@@ -985,7 +985,7 @@ img {
 .hero-cta-btn:hover {
     background: var(--primary-light);
     transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(0, 128, 0, 0.6);
+    box-shadow: 0 8px 24px rgba(128, 128, 128, 0.6);
 }
 
 /* Responsive */

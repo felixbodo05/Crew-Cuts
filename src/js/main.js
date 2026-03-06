@@ -358,10 +358,12 @@ function updateLanguage(lang) {
     });
 
     // Pill text length changes on language switch → re-measure positions
-    // Use requestAnimationFrame to wait for DOM reflow after text update
+    // Double rAF ensures the browser has fully reflowed the new text before measuring
     requestAnimationFrame(() => {
-        refreshNavPositions();
-        updateActiveIndicator();
+        requestAnimationFrame(() => {
+            refreshNavPositions();
+            updateActiveIndicator();
+        });
     });
 }
 
@@ -483,10 +485,10 @@ function initNavbar() {
         }
 
         // 3. Move to current active item
-        // Use setTimeout to ensure the browser has registered the 'transition: none' removal
-        setTimeout(() => {
+        // Use rAF to ensure the browser has registered the 'transition: none' removal
+        requestAnimationFrame(() => {
             updateActiveIndicator();
-        }, 50);
+        });
 
         // Add resize listener to keep indicator correctly positioned
         window.addEventListener('resize', updateActiveIndicator);
@@ -639,7 +641,7 @@ function showNotification(message, type = 'info') {
         position: fixed;
         top: 100px;
         right: 20px;
-        background: ${type === 'success' ? '#10b981' : '#3b82f6'};
+        background: ${type === 'success' ? '#9ca3af' : '#3b82f6'};
         color: white;
         padding: 1rem 1.5rem;
         border-radius: 0.5rem;
@@ -840,6 +842,12 @@ function initNavbarBubble() {
     // Expose so updateLanguage() can call it after text changes pill sizes
     refreshNavPositions = cachePillPositions;
     window.addEventListener('resize', cachePillPositions, { passive: true });
+
+    // Re-cache after web fonts finish loading (pill widths change with Oswald)
+    document.fonts.ready.then(() => {
+        cachePillPositions();
+        updateActiveIndicator();
+    });
 
     pills.forEach((pill, i) => {
         pill.addEventListener('mouseenter', () => {
