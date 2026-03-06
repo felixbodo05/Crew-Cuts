@@ -284,9 +284,9 @@
             // 1. Regisztrálj: https://www.emailjs.com (ingyenes)
             // 2. Hozz létre egy Email Service-t és Template-t
             // 3. Cöréld ki az alábbi három értéket
-            const EMAILJS_PUBLIC_KEY = 'ITT_A_PUBLIC_KEY';   // Account > API Keys
-            const EMAILJS_SERVICE_ID = 'ITT_A_SERVICE_ID';   // Email Services
-            const EMAILJS_TEMPLATE_ID = 'ITT_A_TEMPLATE_ID';  // Email Templates
+            const EMAILJS_PUBLIC_KEY = 'dIcZX6nfsPTiOs5Sr';   // Account > API Keys
+            const EMAILJS_SERVICE_ID = 'service_byx402u';        // Email Services
+            const EMAILJS_TEMPLATE_ID = 'template_xjw31tg';  // Email Templates
 
             emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
 
@@ -303,9 +303,9 @@
                 try {
                     await emailjs.sendForm(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, form);
                     msgBox.style.display = 'block';
-                    msgBox.style.background = 'rgba(0,128,0,.1)';
-                    msgBox.style.border = '1px solid rgba(0,128,0,.3)';
-                    msgBox.style.color = '#2eb82e';
+                    msgBox.style.background = 'rgba(128,128,128,.1)';
+                    msgBox.style.border = '1px solid rgba(128,128,128,.3)';
+                    msgBox.style.color = '#a0a0a0';
                     msgBox.textContent = '✓ Üzeneted megkaptuk! Hamarosan jelentkezünk.';
                     form.reset();
                 } catch (err) {
