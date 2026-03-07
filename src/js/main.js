@@ -88,7 +88,14 @@ const translations = {
             },
             title: 'Képek',
             subtitle: 'Munkáink a legjobb eredményeket beszélik',
-            style: 'Stílus'
+            style: 'Stílus',
+            filter: {
+                all: 'Összes',
+                haircut: 'Hajvágás',
+                beard: 'Szakáll',
+                combo: 'Hajvágás + Szakáll'
+            },
+            ctaText: 'Tetszik, amit látsz? Foglalj időpontot még ma!'
         },
         barbers: {
             header: {
@@ -223,7 +230,14 @@ const translations = {
             },
             title: 'Portfolio',
             subtitle: 'Our work speaks for itself',
-            style: 'Style'
+            style: 'Style',
+            filter: {
+                all: 'All',
+                haircut: 'Haircut',
+                beard: 'Beard',
+                combo: 'Haircut + Beard'
+            },
+            ctaText: 'Like what you see? Book your appointment today!'
         },
         barbers: {
             header: {

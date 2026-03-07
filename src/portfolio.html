@@ -4,8 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Crew Cutz - Munkáink portfóliója">
-    <title>Portfólió - Crew Cutz</title>
+    <meta name="description"
+        content="Crew Cutz - Munkáink portfóliója – hajvágás, szakállformázás és kombinált kezelések">
+    <title>Képek - Crew Cutz</title>
     <link rel="icon" type="image/png" href="images/logo.png">
     <link rel="stylesheet" href="css/style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -14,10 +15,193 @@
         rel="stylesheet">
     <link rel="stylesheet" href="https://use.typekit.net/pyr5exm.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        /* ── Portfolio Filter Tabs ── */
+        .portfolio-filters {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: var(--spacing-2xl);
+        }
+
+        .filter-btn {
+            padding: 10px 28px;
+            border: 1.5px solid rgba(255, 255, 255, 0.15);
+            border-radius: 9999px;
+            background: transparent;
+            color: var(--text-secondary);
+            font-family: 'Oswald', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 400;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.25s ease;
+        }
+
+        .filter-btn:hover {
+            border-color: rgba(255, 255, 255, 0.4);
+            color: var(--text-primary);
+        }
+
+        .filter-btn.active {
+            background: rgba(180, 180, 180, 0.2);
+            border-color: rgba(200, 200, 200, 0.5);
+            color: #fff;
+        }
+
+        /* ── Portfolio Grid ── */
+        .portfolio-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        @media (max-width: 900px) {
+            .portfolio-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 560px) {
+            .portfolio-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .portfolio-item {
+            position: relative;
+            border-radius: 12px;
+            overflow: hidden;
+            aspect-ratio: 4/5;
+            background: #111;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+
+        .portfolio-item.hidden {
+            display: none;
+        }
+
+        .portfolio-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.4s ease;
+        }
+
+        .portfolio-item:hover img {
+            transform: scale(1.05);
+        }
+
+        .portfolio-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0.1) 60%, transparent 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 20px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .portfolio-item:hover .portfolio-overlay {
+            opacity: 1;
+        }
+
+        .portfolio-overlay h3 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: #fff;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            margin: 0 0 4px 0;
+        }
+
+        .portfolio-overlay p {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.65);
+            margin: 0;
+        }
+
+        .portfolio-category-badge {
+            position: absolute;
+            top: 14px;
+            left: 14px;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 9999px;
+            padding: 4px 12px;
+            font-family: 'Oswald', sans-serif;
+            font-size: 0.72rem;
+            font-weight: 400;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        /* ── Page Header ── */
+        .page-header {
+            padding: calc(var(--spacing-6xl) + 80px) 0 var(--spacing-3xl);
+            text-align: center;
+        }
+
+        .page-header h1 {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            margin-bottom: var(--spacing-md);
+            color: var(--text-primary);
+        }
+
+        .page-header p {
+            color: var(--text-secondary);
+            max-width: 540px;
+            margin: 0 auto;
+            font-size: 1rem;
+            line-height: 1.7;
+        }
+
+        /* ── CTA Strip ── */
+        .portfolio-cta {
+            text-align: center;
+            margin-top: var(--spacing-3xl);
+            padding-bottom: var(--spacing-2xl);
+        }
+
+        .portfolio-cta p {
+            color: var(--text-secondary);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .portfolio-cta a {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 14px 36px;
+            border-radius: 9999px;
+            background: rgba(150, 150, 150, 0.2);
+            border: 1.5px solid rgba(200, 200, 200, 0.3);
+            color: #fff;
+            font-family: 'Oswald', sans-serif;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            font-size: 0.95rem;
+            text-decoration: none;
+            transition: all 0.25s ease;
+        }
+
+        .portfolio-cta a:hover {
+            background: rgba(180, 180, 180, 0.3);
+            border-color: rgba(255, 255, 255, 0.5);
+            transform: translateY(-2px);
+        }
+    </style>
 </head>
 
 <body>
-
 
     <!-- Logo (Top-Left) -->
     <a href="index.html" class="logo-fixed">
@@ -37,22 +221,18 @@
     <!-- Tubelight Navbar (Floating Center) -->
     <nav class="tubelight-navbar" id="navbar">
         <div class="navbar-container">
-            <!-- Main Navigation Pills -->
             <div class="nav-pills">
-                <!-- Hover Bubble (follows mouse) -->
                 <div class="nav-bubble"></div>
-
-                <!-- Active Indicator (slides to active item) -->
                 <div class="active-indicator"></div>
 
-                <a href="index.html" class="nav-pill active" data-page="home">
+                <a href="index.html" class="nav-pill" data-page="home">
                     <i class="fa-solid fa-home"></i>
                     <span data-key="nav.home">Kezdőlap</span>
                     <div class="lamp-glow"></div>
                 </a>
-                <a href="portfolio.html" class="nav-pill" data-page="portfolio">
+                <a href="portfolio.html" class="nav-pill active" data-page="portfolio">
                     <i class="fa-solid fa-images"></i>
-                    <span data-key="nav.portfolio">Portfólió</span>
+                    <span data-key="nav.portfolio">Képek</span>
                     <div class="lamp-glow"></div>
                 </a>
                 <a href="barbers.html" class="nav-pill" data-page="barbers">
@@ -62,12 +242,11 @@
                 </a>
                 <a href="contact.html" class="nav-pill" data-page="contact">
                     <i class="fa-solid fa-envelope"></i>
-                    <span data-key="nav.contact">Kapcsolat</span>
+                    <span data-key="nav.contact">Elérhetőség</span>
                     <div class="lamp-glow"></div>
                 </a>
             </div>
 
-            <!-- Booking Bubble (Highlighted) -->
             <a href="booking.html" class="booking-bubble" data-page="booking">
                 <i class="fa-solid fa-calendar-check"></i>
                 <span data-key="nav.booking">Foglalás</span>
@@ -75,7 +254,6 @@
         </div>
     </nav>
 
-    <!-- Mobile Top Booking Button -->
     <!-- Header Backdrop -->
     <div class="header-backdrop"></div>
 
@@ -99,7 +277,7 @@
             </a>
             <a href="portfolio.html" class="mobile-menu-item" data-page="portfolio">
                 <i class="fa-solid fa-images"></i>
-                <span data-key="nav.portfolio">Portfólió</span>
+                <span data-key="nav.portfolio">Képek</span>
             </a>
             <a href="barbers.html" class="mobile-menu-item" data-page="barbers">
                 <i class="fa-solid fa-scissors"></i>
@@ -107,7 +285,7 @@
             </a>
             <a href="contact.html" class="mobile-menu-item" data-page="contact">
                 <i class="fa-solid fa-envelope"></i>
-                <span data-key="nav.contact">Kapcsolat</span>
+                <span data-key="nav.contact">Elérhetőség</span>
             </a>
             <a href="booking.html" class="mobile-menu-cta" data-page="booking">
                 <i class="fa-solid fa-calendar-check"></i>
@@ -116,30 +294,10 @@
         </nav>
     </div>
 
-    <!-- Hero Section -->
-    <section id="home" class="hero">
-        <div class="hero-container">
-            <!-- Top Section: Title + Button + Controls -->
-            <div class="hero-top">
-                <div class="hero-text">
-                    <h1 class="hero-title glitch-text" data-key="hero.title">
-                        TALÁLD MEG A TÖKÉLETES HAJVÁGÁST KÖNNYEDÉN!
-                    </h1>
-                    <button class="find-barber-btn" data-key="hero.findBarber">Foglalj Most!</button>
-                </div>
-
-                <!-- Decorative Dots (top-right) -->
-                <div class="decorative-dots"></div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Carousel Navigation Arrows -->
-
     <!-- Page Header -->
     <header class="page-header">
         <div class="container">
-            <h1 class="glitch-text" data-key="portfolio.header.title">
+            <h1 data-key="portfolio.header.title">
                 A LEGJOBB <span class="accent-underline">MUNKÁINK</span>
             </h1>
             <p data-key="portfolio.header.subtitle">Munkáink a legjobb eredményeket beszélik – rátermettség, kreativitás
@@ -148,34 +306,105 @@
     </header>
 
     <!-- Portfolio Section -->
-    <section class="portfolio" style="padding-top: var(--spacing-3xl); padding-bottom: var(--spacing-6xl);">
+    <section class="portfolio" style="padding-bottom: var(--spacing-6xl);">
         <div class="container">
-            <div class="portfolio-grid">
-                <div class="portfolio-item">
-                    <img src="images/haj_1F.png" alt="Professional haircut style 1">
+
+            <!-- Filter Tabs -->
+            <div class="portfolio-filters">
+                <button class="filter-btn active" data-filter="all" data-key="portfolio.filter.all">Összes</button>
+                <button class="filter-btn" data-filter="hajvagas" data-key="portfolio.filter.haircut">Hajvágás</button>
+                <button class="filter-btn" data-filter="szakall" data-key="portfolio.filter.beard">Szakáll</button>
+                <button class="filter-btn" data-filter="kombo" data-key="portfolio.filter.combo">Hajvágás +
+                    Szakáll</button>
+            </div>
+
+            <!-- Grid -->
+            <div class="portfolio-grid" id="portfolioGrid">
+
+                <!-- Hajvágás -->
+                <div class="portfolio-item" data-category="hajvagas">
+                    <span class="portfolio-category-badge" data-key="portfolio.filter.haircut">Hajvágás</span>
+                    <img src="images/haj_1F.png" alt="Modern fade hajvágás">
                     <div class="portfolio-overlay">
-                        <h3 data-key="portfolio.style">Modern Stílus</h3>
-                    </div>
-                </div>
-                <div class="portfolio-item">
-                    <img src="images/haj_2F.png" alt="Professional haircut style 2">
-                    <div class="portfolio-overlay">
-                        <h3 data-key="portfolio.style">Klasszikus Fazon</h3>
-                    </div>
-                </div>
-                <div class="portfolio-item">
-                    <img src="images/haj_3F.png" alt="Professional haircut style 3">
-                    <div class="portfolio-overlay">
-                        <h3 data-key="portfolio.style">Fade Vágás</h3>
-                    </div>
-                </div>
-                <div class="portfolio-item">
-                    <img src="images/haj_4F.png" alt="Professional haircut style 4">
-                    <div class="portfolio-overlay">
-                        <h3 data-key="portfolio.style">Textúrált Stílus</h3>
+                        <h3>Low Fade</h3>
+                        <p>Precíz vágás, letisztult vonalak</p>
                     </div>
                 </div>
 
+                <div class="portfolio-item" data-category="hajvagas">
+                    <span class="portfolio-category-badge" data-key="portfolio.filter.haircut">Hajvágás</span>
+                    <img src="images/haj_2F.png" alt="Klasszikus fade">
+                    <div class="portfolio-overlay">
+                        <h3>Mid Fade</h3>
+                        <p>Klasszikus stílus, modern twist</p>
+                    </div>
+                </div>
+
+                <div class="portfolio-item" data-category="hajvagas">
+                    <span class="portfolio-category-badge" data-key="portfolio.filter.haircut">Hajvágás</span>
+                    <img src="images/haj_3F.png" alt="Skin fade hajvágás">
+                    <div class="portfolio-overlay">
+                        <h3>Skin Fade</h3>
+                        <p>Ultra éles vonal, tökéletes átmenet</p>
+                    </div>
+                </div>
+
+                <div class="portfolio-item" data-category="hajvagas">
+                    <span class="portfolio-category-badge" data-key="portfolio.filter.haircut">Hajvágás</span>
+                    <img src="images/haj_4F.png" alt="Textúrált stílus">
+                    <div class="portfolio-overlay">
+                        <h3>Textúrált</h3>
+                        <p>Természetes textúra, laza stílus</p>
+                    </div>
+                </div>
+
+                <div class="portfolio-item" data-category="hajvagas">
+                    <span class="portfolio-category-badge" data-key="portfolio.filter.haircut">Hajvágás</span>
+                    <img src="images/haj_5F.png" alt="French crop">
+                    <div class="portfolio-overlay">
+                        <h3>French Crop</h3>
+                        <p>Letisztult, egyenes frufru vonal</p>
+                    </div>
+                </div>
+
+                <!-- Szakáll -->
+                <div class="portfolio-item" data-category="szakall">
+                    <span class="portfolio-category-badge" data-key="portfolio.filter.beard">Szakáll</span>
+                    <img src="images/szakall_1.png" alt="Szakállformázás">
+                    <div class="portfolio-overlay">
+                        <h3>Szakállvágás</h3>
+                        <p>Precíz körülvágás, éles kontúrok</p>
+                    </div>
+                </div>
+
+                <div class="portfolio-item" data-category="szakall">
+                    <span class="portfolio-category-badge" data-key="portfolio.filter.beard">Szakáll</span>
+                    <img src="images/szakall_2.png" alt="Fade és szakáll">
+                    <div class="portfolio-overlay">
+                        <h3>Rövid Szakáll</h3>
+                        <p>Gondozott, maszkurin megjelenés</p>
+                    </div>
+                </div>
+
+                <!-- Kombó -->
+                <div class="portfolio-item" data-category="kombo">
+                    <span class="portfolio-category-badge" data-key="portfolio.filter.combo">Kombó</span>
+                    <img src="images/kombo_1.png" alt="Hajvágás és szakáll együtt">
+                    <div class="portfolio-overlay">
+                        <h3>Full Treatment</h3>
+                        <p>Hajvágás + szakáll – a teljes átalakulás</p>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- CTA -->
+            <div class="portfolio-cta">
+                <p data-key="portfolio.ctaText">Tetszik, amit látsz? Foglalj időpontot még ma!</p>
+                <a href="booking.html">
+                    <i class="fa-solid fa-calendar-check"></i>
+                    <span data-key="nav.booking">Foglalás</span>
+                </a>
             </div>
         </div>
     </section>
@@ -191,27 +420,49 @@
                 <div class="footer-links">
                     <a href="index.html" data-key="nav.home">Kezdőlap</a>
                     <a href="booking.html" data-key="nav.booking">Foglalás</a>
-                    <a href="portfolio.html" data-key="nav.portfolio">Portfólió</a>
+                    <a href="portfolio.html" data-key="nav.portfolio">Képek</a>
                     <a href="barbers.html" data-key="nav.barbers">Borbélyok</a>
-                    <a href="contact.html" data-key="nav.contact">Kapcsolat</a>
+                    <a href="contact.html" data-key="nav.contact">Elérhetőség</a>
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2026 Crew Cutz. <span data-key="footer.rights">Minden jog
-                        fenntartva.</span></p>
+                <p>&copy; 2026 Crew Cutz. <span data-key="footer.rights">Minden jog fenntartva.</span></p>
             </div>
         </div>
     </footer>
 
-    <script src="js/glitch-effect.js"></script>
     <script src="js/main.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/auth.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             window.CrewCutzAuth.initAuthNav();
+
+            // ── Portfolio Filter Logic ──
+            const filterBtns = document.querySelectorAll('.filter-btn');
+            const items = document.querySelectorAll('.portfolio-item');
+
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    // Active state
+                    filterBtns.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+
+                    const filter = btn.getAttribute('data-filter');
+
+                    items.forEach(item => {
+                        const cat = item.getAttribute('data-category');
+                        if (filter === 'all' || cat === filter) {
+                            item.classList.remove('hidden');
+                        } else {
+                            item.classList.add('hidden');
+                        }
+                    });
+                });
+            });
         });
     </script>
+
 </body>
 
 </html>
