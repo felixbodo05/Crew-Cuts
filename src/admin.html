@@ -1938,6 +1938,69 @@
                 await updateBookingStatus(id, 'cancelled');
             });
 
+            // ── Future Bookings Modal Logic ──
+            window.openFutureBookingsModal = function () {
+                const today = new Date().toISOString().split('T')[0];
+                const futureOrToday = allBookings
+                    .filter(b => b.booking_date >= today && b.status !== 'cancelled')
+                    .sort((a, b) => a.booking_date.localeCompare(b.booking_date) || a.booking_time.localeCompare(b.booking_time));
+
+                const listEl = document.getElementById('futureBookingsList');
+
+                if (futureOrToday.length === 0) {
+                    listEl.innerHTML = '<div style="text-align:center; padding: 2rem; color: var(--text-muted);"><i class="fa-solid fa-calendar-xmark" style="font-size: 2rem; margin-bottom: 1rem;"></i><br>Nincs jövőbeli aktív foglalás.</div>';
+                } else {
+                    let html = '';
+                    let currentDay = '';
+
+                    futureOrToday.forEach(b => {
+                        if (b.booking_date !== currentDay) {
+                            currentDay = b.booking_date;
+                            // Format date: e.g. 2026-03-08 -> Március 8. Vasárnap
+                            const d = new Date(currentDay);
+                            const month = MONTHS_HU[d.getMonth()];
+                            const dayNum = d.getDate();
+                            const dayName = ['Vasárnap', 'Hétfő', 'Kedd', 'Szerda', 'Csütörtök', 'Péntek', 'Szombat'][d.getDay()];
+
+                            html += `<div style="margin-top: 1.5rem; margin-bottom: 0.5rem; padding-bottom: 0.3rem; border-bottom: 1px solid rgba(255,255,255,0.05);">
+                                        <strong style="color: #a0a0a0; font-size: 1.1rem; letter-spacing: 0.05em;">${month} ${dayNum}. ${dayName}</strong>
+                                     </div>`;
+                        }
+
+                        html += `
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.8rem; background: rgba(255,255,255,0.02); border-radius: 8px; margin-bottom: 0.5rem; border: 1px solid rgba(255,255,255,0.05);">
+                                <div>
+                                    <strong style="color: #fff; font-size: 1.1rem;">${b.booking_time?.slice(0, 5)}</strong>
+                                    <span style="color: var(--text-muted); margin: 0 10px;">|</span>
+                                    <span style="font-weight: 600;">${b.name || '–'}</span>
+                                    <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">
+                                        ${SERVICE_NAMES[b.service] || b.service} • ${BARBER_NAMES[b.barber]?.split(' ')[1] || b.barber} 
+                                        <span class="status-badge s-${b.status}" style="margin-left: 5px; font-size: 0.6rem; padding: 2px 6px;">${{ pending: 'Függőben', confirmed: 'Visszaigazolt' }[b.status] || b.status}</span>
+                                    </div>
+                                </div>
+                                <button class="btn-sm btn-cancel" onclick="event.stopPropagation(); window.openDeleteConfirmFromFuture('${b.id}')"><i class="fa-solid fa-trash"></i></button>
+                            </div>
+                        `;
+                    });
+
+                    listEl.innerHTML = html;
+                }
+
+                document.getElementById('futureBookingsModal').classList.add('show');
+            };
+
+            document.getElementById('btnCloseFuture').addEventListener('click', () => {
+                document.getElementById('futureBookingsModal').classList.remove('show');
+            });
+
+            // Handle deletion from within the future modal
+            window.openDeleteConfirmFromFuture = function (id) {
+                pendingDeleteId = id;
+                // Mock a button so the old logic works
+                pendingDeleteBtn = document.createElement('button');
+                document.getElementById('deleteConfirmModal').classList.add('show');
+            };
+
             // ── Booking Details Modal Logic ──
             window.openDetailsModal = function (id) {
                 const b = allBookings.find(x => x.id === id);
@@ -2175,7 +2238,7 @@
                     renderBookingsTable(getCurrentFilter());
 
                     // Scroll to the filter section
-                    document.querySelector('.filters').scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    document.querySelector('.bookings-toolbar').scrollIntoView({ behavior: 'smooth', block: 'start' });
                     showToast('Szűrve erre: ' + dateStr);
                 }
             };
@@ -2319,6 +2382,24 @@
             }
         }); // end DOMContentLoaded
     </script>
+
+    <!-- FUTURE BOOKINGS MODAL -->
+    <div class="modal-overlay" id="futureBookingsModal">
+        <div class="modal-content" style="max-width: 600px; text-align: left; padding: 2rem;">
+            <div
+                style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 1rem;">
+                <h3 style="font-size: 1.4rem; font-weight: 700; color: #fff; margin: 0;">
+                    <i class="fa-solid fa-list" style="margin-right: 10px; color: #a0a0a0;"></i>Jövőbeli foglalások
+                </h3>
+                <button type="button" id="btnCloseFuture" class="btn-cancel"
+                    style="padding: 6px 12px; font-size: 0.8rem;"><i class="fa-solid fa-xmark"></i> Bezár</button>
+            </div>
+            <div id="futureBookingsList" style="max-height: 60vh; overflow-y: auto; padding-right: 10px;">
+                <!-- Content injected via JS -->
+            </div>
+        </div>
+    </div>
+
     <!-- Confirmation Modal for Deletion -->
     <div class="modal-overlay" id="deleteConfirmModal">
         <div class="modal-content">
