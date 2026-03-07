@@ -429,50 +429,51 @@
     <script src="js/main.js"></script>
     <script src="js/auth.js"></script>
     <script>
-        (async () => {
-            const { requireAuth, getProfile, signOut, getUserBookings, initAuthNav } = window.CrewCutzAuth;
+        document.addEventListener('DOMContentLoaded', () => {
+            (async () => {
+                const { requireAuth, getProfile, signOut, getUserBookings, initAuthNav } = window.CrewCutzAuth;
 
-            const user = await requireAuth('profile.html');
-            if (!user) return;
+                const user = await requireAuth('profile.html');
+                if (!user) return;
 
-            document.getElementById('loadingSpinner').style.display = 'none';
-            document.getElementById('profileContent').style.display = 'block';
+                document.getElementById('loadingSpinner').style.display = 'none';
+                document.getElementById('profileContent').style.display = 'block';
 
-            // Load profile info
-            const profile = await getProfile(user.id);
-            document.getElementById('profileName').textContent = profile?.full_name || user.user_metadata?.full_name || 'Névtelen';
-            document.getElementById('profileEmail').textContent = user.email;
-            if (profile?.phone) document.getElementById('profilePhone').textContent = profile.phone;
+                // Load profile info
+                const profile = await getProfile(user.id);
+                document.getElementById('profileName').textContent = profile?.full_name || user.user_metadata?.full_name || 'Névtelen';
+                document.getElementById('profileEmail').textContent = user.email;
+                if (profile?.phone) document.getElementById('profilePhone').textContent = profile.phone;
 
-            // Logout
-            document.getElementById('logoutBtn').addEventListener('click', async () => {
-                await signOut();
-                window.location.href = 'login.html';
-            });
+                // Logout
+                document.getElementById('logoutBtn').addEventListener('click', async () => {
+                    await signOut();
+                    window.location.href = 'login.html';
+                });
 
-            // Init auth nav
-            initAuthNav();
+                // Init auth nav
+                initAuthNav();
 
-            // Load bookings
-            const barberNames = { mark: 'Egervári Márk', domonkos: 'Kányai Domonkos' };
-            const serviceNames = { haircut: 'Hajvágás', beard: 'Szakállformázás', combo: 'Kombináció' };
-            const statusLabels = { pending: 'Függőben', confirmed: 'Visszaigazolva', cancelled: 'Törölve' };
-            const statusClasses = { pending: 'status-pending', confirmed: 'status-confirmed', cancelled: 'status-cancelled' };
-            const MONTHS = ['Jan', 'Feb', 'Már', 'Ápr', 'Máj', 'Jún', 'Júl', 'Aug', 'Sze', 'Okt', 'Nov', 'Dec'];
+                // Load bookings
+                const barberNames = { mark: 'Egervári Márk', domonkos: 'Kányai Domonkos' };
+                const serviceNames = { haircut: 'Hajvágás', beard: 'Szakállformázás', combo: 'Kombináció' };
+                const statusLabels = { pending: 'Függőben', confirmed: 'Visszaigazolva', cancelled: 'Törölve' };
+                const statusClasses = { pending: 'status-pending', confirmed: 'status-confirmed', cancelled: 'status-cancelled' };
+                const MONTHS = ['Jan', 'Feb', 'Már', 'Ápr', 'Máj', 'Jún', 'Júl', 'Aug', 'Sze', 'Okt', 'Nov', 'Dec'];
 
-            const todayStr = new Date().toISOString().split('T')[0];
+                const todayStr = new Date().toISOString().split('T')[0];
 
-            function buildCard(b) {
-                const dateParts = b.booking_date.split('-');
-                const day = dateParts[2];
-                const monthIdx = parseInt(dateParts[1]) - 1;
-                const month = MONTHS[monthIdx];
-                const time = b.booking_time.slice(0, 5);
-                const isPast = b.booking_date < todayStr;
+                function buildCard(b) {
+                    const dateParts = b.booking_date.split('-');
+                    const day = dateParts[2];
+                    const monthIdx = parseInt(dateParts[1]) - 1;
+                    const month = MONTHS[monthIdx];
+                    const time = b.booking_time.slice(0, 5);
+                    const isPast = b.booking_date < todayStr;
 
-                const card = document.createElement('div');
-                card.className = 'booking-card' + (isPast ? ' past' : '');
-                card.innerHTML = `
+                    const card = document.createElement('div');
+                    card.className = 'booking-card' + (isPast ? ' past' : '');
+                    card.innerHTML = `
                 <div class="booking-date-badge">
                     <div class="day">${day}</div>
                     <div class="month">${month}</div>
@@ -486,53 +487,54 @@
                     <div class="status-badge ${statusClasses[b.status] || 'status-pending'}">${statusLabels[b.status] || b.status}</div>
                 </div>
             `;
-                return card;
-            }
+                    return card;
+                }
 
-            try {
-                const bookings = await getUserBookings();
-                const upcoming = bookings.filter(b => b.booking_date >= todayStr && b.status !== 'cancelled');
-                const past = bookings.filter(b => b.booking_date < todayStr || b.status === 'cancelled');
+                try {
+                    const bookings = await getUserBookings();
+                    const upcoming = bookings.filter(b => b.booking_date >= todayStr && b.status !== 'cancelled');
+                    const past = bookings.filter(b => b.booking_date < todayStr || b.status === 'cancelled');
 
-                const upcomingEl = document.getElementById('upcomingBookings');
-                upcomingEl.innerHTML = '';
-                if (upcoming.length === 0) {
-                    upcomingEl.innerHTML = `
+                    const upcomingEl = document.getElementById('upcomingBookings');
+                    upcomingEl.innerHTML = '';
+                    if (upcoming.length === 0) {
+                        upcomingEl.innerHTML = `
                     <div class="no-bookings">
                         <i class="fa-solid fa-calendar-xmark"></i>
                         <p>Nincs közelgő foglalásod.</p>
                         <p><a href="booking.html">Foglalj most!</a></p>
                     </div>`;
-                } else {
-                    upcoming.forEach(b => upcomingEl.appendChild(buildCard(b)));
+                    } else {
+                        upcoming.forEach(b => upcomingEl.appendChild(buildCard(b)));
+                    }
+
+                    if (past.length > 0) {
+                        document.getElementById('pastSection').style.display = 'block';
+                        const pastEl = document.getElementById('pastBookings');
+                        past.forEach(b => pastEl.appendChild(buildCard(b)));
+                    }
+                } catch (err) {
+                    document.getElementById('upcomingBookings').innerHTML =
+                        `<p style="color:#f87171;">Hiba a foglalások betöltésekor: ${err.message}</p>`;
                 }
 
-                if (past.length > 0) {
-                    document.getElementById('pastSection').style.display = 'block';
-                    const pastEl = document.getElementById('pastBookings');
-                    past.forEach(b => pastEl.appendChild(buildCard(b)));
-                }
-            } catch (err) {
-                document.getElementById('upcomingBookings').innerHTML =
-                    `<p style="color:#f87171;">Hiba a foglalások betöltésekor: ${err.message}</p>`;
-            }
-
-            // Hamburger
-            const hamburgerBtn = document.getElementById('hamburgerBtn');
-            const mobileMenuOverlay = document.getElementById('mobileMenuOverlay');
-            if (hamburgerBtn && mobileMenuOverlay) {
-                hamburgerBtn.addEventListener('click', () => {
-                    hamburgerBtn.classList.toggle('active');
-                    mobileMenuOverlay.classList.toggle('active');
-                });
-                mobileMenuOverlay.querySelectorAll('a').forEach(link => {
-                    link.addEventListener('click', () => {
-                        hamburgerBtn.classList.remove('active');
-                        mobileMenuOverlay.classList.remove('active');
+                // Hamburger
+                const hamburgerBtn = document.getElementById('hamburgerBtn');
+                const mobileMenuOverlay = document.getElementById('mobileMenuOverlay');
+                if (hamburgerBtn && mobileMenuOverlay) {
+                    hamburgerBtn.addEventListener('click', () => {
+                        hamburgerBtn.classList.toggle('active');
+                        mobileMenuOverlay.classList.toggle('active');
                     });
-                });
-            }
-        })();
+                    mobileMenuOverlay.querySelectorAll('a').forEach(link => {
+                        link.addEventListener('click', () => {
+                            hamburgerBtn.classList.remove('active');
+                            mobileMenuOverlay.classList.remove('active');
+                        });
+                    });
+                }
+            })();
+        }); // end DOMContentLoaded
     </script>
 </body>
 

@@ -669,238 +669,240 @@
     <script src="js/main.js"></script>
     <script src="js/auth.js"></script>
     <script>
-        (async () => {
-            const { requireAuth, getProfile, signOut, supabase, initAuthNav } = window.CrewCutzAuth;
+        document.addEventListener('DOMContentLoaded', () => {
+            (async () => {
+                const { requireAuth, getProfile, signOut, supabase, initAuthNav } = window.CrewCutzAuth;
 
-            // ── Auth check ──
-            const user = await requireAuth('booking.html');
-            if (!user) return; // redirected to login
+                // ── Auth check ──
+                const user = await requireAuth('booking.html');
+                if (!user) return; // redirected to login
 
-            // Show booking content
-            document.getElementById('bookingLoading').style.display = 'none';
-            document.getElementById('bookingContent').style.display = 'block';
+                // Show booking content
+                document.getElementById('bookingLoading').style.display = 'none';
+                document.getElementById('bookingContent').style.display = 'block';
 
-            // ── Load profile ──
-            const profile = await getProfile(user.id);
-            document.getElementById('bookingName').value = profile?.full_name || user.user_metadata?.full_name || '';
-            document.getElementById('bookingEmail').value = user.email || '';
-            document.getElementById('bookingPhone').value = profile?.phone || user.user_metadata?.phone || '';
-            document.getElementById('userBannerName').textContent =
-                `Bejelentkezve: ${profile?.full_name || user.email}`;
+                // ── Load profile ──
+                const profile = await getProfile(user.id);
+                document.getElementById('bookingName').value = profile?.full_name || user.user_metadata?.full_name || '';
+                document.getElementById('bookingEmail').value = user.email || '';
+                document.getElementById('bookingPhone').value = profile?.phone || user.user_metadata?.phone || '';
+                document.getElementById('userBannerName').textContent =
+                    `Bejelentkezve: ${profile?.full_name || user.email}`;
 
-            // ── Init auth nav button ──
-            initAuthNav();
+                // ── Init auth nav button ──
+                initAuthNav();
 
-            // ── Logout ──
-            document.getElementById('logoutLink').addEventListener('click', async (e) => {
-                e.preventDefault();
-                await signOut();
-                window.location.href = 'login.html';
-            });
-
-            // ── Set min date to today ──
-            const today = new Date();
-            const yyyy = today.getFullYear();
-            const mm = String(today.getMonth() + 1).padStart(2, '0');
-            const dd = String(today.getDate()).padStart(2, '0');
-            const todayStr = `${yyyy}-${mm}-${dd}`;
-            const dateInput = document.getElementById('bookingDate');
-            dateInput.min = todayStr;
-            dateInput.value = todayStr;
-
-            // ── Time slots config ──
-            // Opening hours: Mon-Fri 11:30-20:00, every 30 min
-            const ALL_SLOTS = [
-                '11:30', '12:00', '12:30', '13:00', '13:30', '14:00', '14:30',
-                '15:00', '15:30', '16:00', '16:30', '17:00', '17:30', '18:00',
-                '18:30', '19:00', '19:30'
-            ];
-
-            let selectedTime = null;
-            let bookedSlots = [];
-
-            // ── Fetch booked slots for a given barber + date ──
-            async function fetchBookedSlots(barber, date) {
-                const { data, error } = await window.CrewCutzAuth.supabase
-                    .from('bookings')
-                    .select('booking_time')
-                    .eq('barber', barber)
-                    .eq('booking_date', date)
-                    .neq('status', 'cancelled');
-                if (error) return [];
-                return (data || []).map(b => b.booking_time.slice(0, 5)); // "HH:MM"
-            }
-
-            // ── Check if selected date is a weekday (Mon–Fri) ──
-            function isWorkday(dateStr) {
-                const d = new Date(dateStr + 'T12:00:00');
-                const day = d.getDay(); // 0=Sun, 6=Sat
-                return day !== 0 && day !== 6;
-            }
-
-            // ── Render time slots ──
-            function renderSlots(booked) {
-                const container = document.getElementById('timeSlots');
-                container.innerHTML = '';
-
-                if (!isWorkday(dateInput.value)) {
-                    container.innerHTML = '<div class="slots-loading" style="color:#f87171;">⚠️ Szombaton és vasárnap zárva vagyunk!</div>';
-                    selectedTime = null;
-                    document.getElementById('selectedTimeInput').value = '';
-                    document.getElementById('submitBtn').disabled = true;
-                    return;
-                }
-
-                ALL_SLOTS.forEach(slot => {
-                    const isBooked = booked.includes(slot);
-                    const isSelected = slot === selectedTime;
-                    const btn = document.createElement('button');
-                    btn.type = 'button';
-                    btn.className = 'time-slot' + (isBooked ? ' booked' : '') + (isSelected ? ' selected' : '');
-                    btn.textContent = slot;
-                    btn.disabled = isBooked;
-
-                    if (!isBooked) {
-                        btn.addEventListener('click', () => {
-                            selectedTime = slot;
-                            document.getElementById('selectedTimeInput').value = slot;
-                            document.getElementById('submitBtn').disabled = false;
-                            renderSlots(bookedSlots);
-                        });
-                    }
-                    container.appendChild(btn);
+                // ── Logout ──
+                document.getElementById('logoutLink').addEventListener('click', async (e) => {
+                    e.preventDefault();
+                    await signOut();
+                    window.location.href = 'login.html';
                 });
-            }
 
-            // ── Load slots when barber or date changes ──
-            async function loadSlots() {
-                const barber = document.querySelector('input[name="barber"]:checked')?.value;
-                const date = dateInput.value;
-                if (!barber || !date) {
-                    document.getElementById('timeSlots').innerHTML =
-                        '<div class="slots-loading">Válassz borbélyt és dátumot!</div>';
-                    selectedTime = null;
-                    document.getElementById('selectedTimeInput').value = '';
-                    document.getElementById('submitBtn').disabled = true;
-                    return;
+                // ── Set min date to today ──
+                const today = new Date();
+                const yyyy = today.getFullYear();
+                const mm = String(today.getMonth() + 1).padStart(2, '0');
+                const dd = String(today.getDate()).padStart(2, '0');
+                const todayStr = `${yyyy}-${mm}-${dd}`;
+                const dateInput = document.getElementById('bookingDate');
+                dateInput.min = todayStr;
+                dateInput.value = todayStr;
+
+                // ── Time slots config ──
+                // Opening hours: Mon-Fri 11:30-20:00, every 30 min
+                const ALL_SLOTS = [
+                    '11:30', '12:00', '12:30', '13:00', '13:30', '14:00', '14:30',
+                    '15:00', '15:30', '16:00', '16:30', '17:00', '17:30', '18:00',
+                    '18:30', '19:00', '19:30'
+                ];
+
+                let selectedTime = null;
+                let bookedSlots = [];
+
+                // ── Fetch booked slots for a given barber + date ──
+                async function fetchBookedSlots(barber, date) {
+                    const { data, error } = await window.CrewCutzAuth.supabase
+                        .from('bookings')
+                        .select('booking_time')
+                        .eq('barber', barber)
+                        .eq('booking_date', date)
+                        .neq('status', 'cancelled');
+                    if (error) return [];
+                    return (data || []).map(b => b.booking_time.slice(0, 5)); // "HH:MM"
                 }
 
-                document.getElementById('timeSlots').innerHTML = '<div class="slots-loading"><span>⏳ Betöltés...</span></div>';
-                bookedSlots = await fetchBookedSlots(barber, date);
-                // Reset selected time if it's now booked
-                if (selectedTime && bookedSlots.includes(selectedTime)) {
-                    selectedTime = null;
-                    document.getElementById('selectedTimeInput').value = '';
-                    document.getElementById('submitBtn').disabled = true;
-                }
-                renderSlots(bookedSlots);
-            }
-
-            // Listen for barber radio change
-            document.querySelectorAll('input[name="barber"]').forEach(radio => {
-                radio.addEventListener('change', loadSlots);
-            });
-
-            // Listen for date change (prevent past dates)
-            dateInput.addEventListener('change', () => {
-                if (dateInput.value < todayStr) {
-                    dateInput.value = todayStr;
-                }
-                selectedTime = null;
-                document.getElementById('selectedTimeInput').value = '';
-                document.getElementById('submitBtn').disabled = true;
-                loadSlots();
-            });
-
-            // ── Form submit ──
-            const bookingForm = document.getElementById('bookingForm');
-            bookingForm.addEventListener('submit', async (e) => {
-                e.preventDefault();
-
-                const barber = document.querySelector('input[name="barber"]:checked')?.value;
-                const time = document.getElementById('selectedTimeInput').value;
-
-                if (!barber) {
-                    showMsg('bookingError', 'bookingErrorMsg', 'Kérjük válassz borbélyt!');
-                    return;
-                }
-                if (!time) {
-                    showMsg('bookingError', 'bookingErrorMsg', 'Kérjük válassz időpontot!');
-                    return;
+                // ── Check if selected date is a weekday (Mon–Fri) ──
+                function isWorkday(dateStr) {
+                    const d = new Date(dateStr + 'T12:00:00');
+                    const day = d.getDay(); // 0=Sun, 6=Sat
+                    return day !== 0 && day !== 6;
                 }
 
-                hideMsg('bookingError');
-                hideMsg('bookingSuccess');
+                // ── Render time slots ──
+                function renderSlots(booked) {
+                    const container = document.getElementById('timeSlots');
+                    container.innerHTML = '';
 
-                const btn = document.getElementById('submitBtn');
-                btn.textContent = '⏳ Küldés...';
-                btn.disabled = true;
-
-                try {
-                    const bookingResult = await createBooking({
-                        name: document.getElementById('bookingName').value,
-                        email: document.getElementById('bookingEmail').value,
-                        phone: document.getElementById('bookingPhone').value,
-                        barber: barber,
-                        service: document.getElementById('bookingService').value,
-                        date: dateInput.value,
-                        time: time,
-                        notes: document.getElementById('bookingNotes').value
-                    });
-
-                    // ── Email visszaigazoló küldése EmailJS-sel ──
-                    try {
-                        emailjs.init({ publicKey: 'dIcZX6nfsPTiOs5Sr' });
-                        await emailjs.send('service_byx402u', 'template_booking', {
-                            to_name: document.getElementById('bookingName').value,
-                            to_email: document.getElementById('bookingEmail').value,
-                            booking_date: dateInput.value,
-                            booking_time: time,
-                            booking_barber: barber,
-                            booking_service: document.getElementById('bookingService').value,
-                            booking_notes: document.getElementById('bookingNotes').value || '—'
-                        });
-                    } catch (emailErr) {
-                        // Email küldés hiba nem blokkol - a foglalás el van mentve
-                        console.warn('Email visszaigazoló küldése nem sikerült:', emailErr);
+                    if (!isWorkday(dateInput.value)) {
+                        container.innerHTML = '<div class="slots-loading" style="color:#f87171;">⚠️ Szombaton és vasárnap zárva vagyunk!</div>';
+                        selectedTime = null;
+                        document.getElementById('selectedTimeInput').value = '';
+                        document.getElementById('submitBtn').disabled = true;
+                        return;
                     }
 
-                    showMsg('bookingSuccess', 'bookingSuccessMsg',
-                        `✅ Foglalás rögzítve! ${dateInput.value} – ${time}. Hamarosan felvesszük veled a kapcsolatot.`);
-                    bookingForm.reset();
-                    dateInput.min = todayStr;
-                    dateInput.value = todayStr;
+                    ALL_SLOTS.forEach(slot => {
+                        const isBooked = booked.includes(slot);
+                        const isSelected = slot === selectedTime;
+                        const btn = document.createElement('button');
+                        btn.type = 'button';
+                        btn.className = 'time-slot' + (isBooked ? ' booked' : '') + (isSelected ? ' selected' : '');
+                        btn.textContent = slot;
+                        btn.disabled = isBooked;
+
+                        if (!isBooked) {
+                            btn.addEventListener('click', () => {
+                                selectedTime = slot;
+                                document.getElementById('selectedTimeInput').value = slot;
+                                document.getElementById('submitBtn').disabled = false;
+                                renderSlots(bookedSlots);
+                            });
+                        }
+                        container.appendChild(btn);
+                    });
+                }
+
+                // ── Load slots when barber or date changes ──
+                async function loadSlots() {
+                    const barber = document.querySelector('input[name="barber"]:checked')?.value;
+                    const date = dateInput.value;
+                    if (!barber || !date) {
+                        document.getElementById('timeSlots').innerHTML =
+                            '<div class="slots-loading">Válassz borbélyt és dátumot!</div>';
+                        selectedTime = null;
+                        document.getElementById('selectedTimeInput').value = '';
+                        document.getElementById('submitBtn').disabled = true;
+                        return;
+                    }
+
+                    document.getElementById('timeSlots').innerHTML = '<div class="slots-loading"><span>⏳ Betöltés...</span></div>';
+                    bookedSlots = await fetchBookedSlots(barber, date);
+                    // Reset selected time if it's now booked
+                    if (selectedTime && bookedSlots.includes(selectedTime)) {
+                        selectedTime = null;
+                        document.getElementById('selectedTimeInput').value = '';
+                        document.getElementById('submitBtn').disabled = true;
+                    }
+                    renderSlots(bookedSlots);
+                }
+
+                // Listen for barber radio change
+                document.querySelectorAll('input[name="barber"]').forEach(radio => {
+                    radio.addEventListener('change', loadSlots);
+                });
+
+                // Listen for date change (prevent past dates)
+                dateInput.addEventListener('change', () => {
+                    if (dateInput.value < todayStr) {
+                        dateInput.value = todayStr;
+                    }
                     selectedTime = null;
                     document.getElementById('selectedTimeInput').value = '';
-                    document.getElementById('timeSlots').innerHTML =
-                        '<div class="slots-loading">Válassz borbélyt és dátumot!</div>';
+                    document.getElementById('submitBtn').disabled = true;
+                    loadSlots();
+                });
 
-                    // Reload profile data
-                    document.getElementById('bookingName').value = profile?.full_name || '';
-                    document.getElementById('bookingEmail').value = user.email || '';
-                    document.getElementById('bookingPhone').value = profile?.phone || '';
+                // ── Form submit ──
+                const bookingForm = document.getElementById('bookingForm');
+                bookingForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
 
-                } catch (err) {
-                    const msg = err.message.includes('unique') || err.message.includes('duplicate')
-                        ? 'Ez az időpont már foglalt! Kérjük válassz másikat.'
-                        : err.message || 'Hiba történt. Kérjük próbálja újra.';
-                    showMsg('bookingError', 'bookingErrorMsg', msg);
-                } finally {
-                    btn.innerHTML = '<i class="fa-solid fa-calendar-check"></i> Időpont Foglalása';
-                    btn.disabled = !selectedTime;
+                    const barber = document.querySelector('input[name="barber"]:checked')?.value;
+                    const time = document.getElementById('selectedTimeInput').value;
+
+                    if (!barber) {
+                        showMsg('bookingError', 'bookingErrorMsg', 'Kérjük válassz borbélyt!');
+                        return;
+                    }
+                    if (!time) {
+                        showMsg('bookingError', 'bookingErrorMsg', 'Kérjük válassz időpontot!');
+                        return;
+                    }
+
+                    hideMsg('bookingError');
+                    hideMsg('bookingSuccess');
+
+                    const btn = document.getElementById('submitBtn');
+                    btn.textContent = '⏳ Küldés...';
+                    btn.disabled = true;
+
+                    try {
+                        const bookingResult = await createBooking({
+                            name: document.getElementById('bookingName').value,
+                            email: document.getElementById('bookingEmail').value,
+                            phone: document.getElementById('bookingPhone').value,
+                            barber: barber,
+                            service: document.getElementById('bookingService').value,
+                            date: dateInput.value,
+                            time: time,
+                            notes: document.getElementById('bookingNotes').value
+                        });
+
+                        // ── Email visszaigazoló küldése EmailJS-sel ──
+                        try {
+                            emailjs.init({ publicKey: 'dIcZX6nfsPTiOs5Sr' });
+                            await emailjs.send('service_byx402u', 'template_booking', {
+                                to_name: document.getElementById('bookingName').value,
+                                to_email: document.getElementById('bookingEmail').value,
+                                booking_date: dateInput.value,
+                                booking_time: time,
+                                booking_barber: barber,
+                                booking_service: document.getElementById('bookingService').value,
+                                booking_notes: document.getElementById('bookingNotes').value || '—'
+                            });
+                        } catch (emailErr) {
+                            // Email küldés hiba nem blokkol - a foglalás el van mentve
+                            console.warn('Email visszaigazoló küldése nem sikerült:', emailErr);
+                        }
+
+                        showMsg('bookingSuccess', 'bookingSuccessMsg',
+                            `✅ Foglalás rögzítve! ${dateInput.value} – ${time}. Hamarosan felvesszük veled a kapcsolatot.`);
+                        bookingForm.reset();
+                        dateInput.min = todayStr;
+                        dateInput.value = todayStr;
+                        selectedTime = null;
+                        document.getElementById('selectedTimeInput').value = '';
+                        document.getElementById('timeSlots').innerHTML =
+                            '<div class="slots-loading">Válassz borbélyt és dátumot!</div>';
+
+                        // Reload profile data
+                        document.getElementById('bookingName').value = profile?.full_name || '';
+                        document.getElementById('bookingEmail').value = user.email || '';
+                        document.getElementById('bookingPhone').value = profile?.phone || '';
+
+                    } catch (err) {
+                        const msg = err.message.includes('unique') || err.message.includes('duplicate')
+                            ? 'Ez az időpont már foglalt! Kérjük válassz másikat.'
+                            : err.message || 'Hiba történt. Kérjük próbálja újra.';
+                        showMsg('bookingError', 'bookingErrorMsg', msg);
+                    } finally {
+                        btn.innerHTML = '<i class="fa-solid fa-calendar-check"></i> Időpont Foglalása';
+                        btn.disabled = !selectedTime;
+                    }
+                });
+
+                function showMsg(id, msgId, text) {
+                    document.getElementById(id).classList.add('show');
+                    document.getElementById(msgId).textContent = text;
+                    document.getElementById(id).scrollIntoView({ behavior: 'smooth', block: 'nearest' });
                 }
-            });
+                function hideMsg(id) {
+                    document.getElementById(id).classList.remove('show');
+                }
 
-            function showMsg(id, msgId, text) {
-                document.getElementById(id).classList.add('show');
-                document.getElementById(msgId).textContent = text;
-                document.getElementById(id).scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-            }
-            function hideMsg(id) {
-                document.getElementById(id).classList.remove('show');
-            }
-
-        })();
+            })();
+        }); // end DOMContentLoaded
     </script>
 
     <!-- EmailJS (foglalási visszaigazoló emailhez) -->
