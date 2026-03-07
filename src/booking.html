@@ -729,7 +729,10 @@
                         .eq('booking_date', date)
                         .neq('status', 'cancelled');
                     if (error) return [];
-                    return (data || []).map(b => b.booking_time.slice(0, 5)); // "HH:MM"
+                    // Biztonsági szűrés: csak érvényes kitöltött időponttal rendelkező foglalásokat veszünk figyelembe
+                    return (data || [])
+                        .filter(b => b.booking_time && typeof b.booking_time === 'string')
+                        .map(b => b.booking_time.slice(0, 5)); // "HH:MM"
                 }
 
                 // ── Check if selected date is a weekday (Mon–Fri) ──
