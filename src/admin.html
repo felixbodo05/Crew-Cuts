@@ -12,7 +12,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400..900&family=Oswald:wght@200..700&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root {
             --primary: #808080;
@@ -1685,7 +1684,9 @@
             async function fetchAllBookings() {
                 try {
                     const json = await adminFetch({ action: 'list' });
-                    return json.bookings || [];
+                    // Biztonsági szűrés: csak érvényes dátummal és idővel rendelkező foglalásokat tartunk meg
+                    // (A Vercelen lévő adatbázisban lehetnek hibás teszt adatok amik kiverik a renderelést)
+                    return (json.bookings || []).filter(b => b.booking_date && typeof b.booking_date === 'string' && b.booking_time && typeof b.booking_time === 'string');
                 } catch (err) {
                     console.warn('Booking fetch error:', err.message);
                     return [];

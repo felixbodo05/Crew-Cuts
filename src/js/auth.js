@@ -193,7 +193,8 @@ async function getUserBookings() {
         .order('booking_date', { ascending: true });
 
     if (error) throw error;
-    return data || [];
+    // Biztonsági szűrés: csak érvényes, kitöltött dátummal/idővel rendelkező foglalásokat adunk vissza
+    return (data || []).filter(b => b.booking_date && typeof b.booking_date === 'string' && b.booking_time && typeof b.booking_time === 'string');
 }
 
 // =============================================
