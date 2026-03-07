@@ -2279,15 +2279,55 @@
 
             // Helper to jump to table and filter when clicking a calendar day
             window.filterByDate = function (dateStr) {
-                const dateInput = document.getElementById('filterDate');
-                if (dateInput) {
-                    dateInput.value = dateStr;
-                    renderBookingsTable(getCurrentFilter());
+                const dayBookings = allBookings
+                    .filter(b => b.booking_date === dateStr && b.status !== 'cancelled')
+                    .sort((a, b) => a.booking_time.localeCompare(b.booking_time));
 
-                    // Scroll to the filter section
-                    document.querySelector('.bookings-toolbar').scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    showToast('Szűrve erre: ' + dateStr);
+                const listEl = document.getElementById('dayBookingsList');
+                const titleEl = document.getElementById('dayBookingsTitle');
+
+                // Formázás
+                const d = new Date(dateStr);
+                const month = MONTHS_HU[d.getMonth()];
+                const dayNum = d.getDate();
+                const dayName = ['Vasárnap', 'Hétfő', 'Kedd', 'Szerda', 'Csütörtök', 'Péntek', 'Szombat'][d.getDay()];
+                titleEl.innerHTML = `<i class="fa-solid fa-calendar-day" style="margin-right: 10px; color: #a0a0a0;"></i>${month} ${dayNum}. ${dayName}`;
+
+                if (dayBookings.length === 0) {
+                    listEl.innerHTML = '<div style="text-align:center; padding: 2rem; color: var(--text-muted);"><i class="fa-solid fa-calendar-xmark" style="font-size: 2rem; margin-bottom: 1rem;"></i><br>Nincs aktív foglalás ezen a napon.</div>';
+                } else {
+                    let html = '';
+                    dayBookings.forEach(b => {
+                        html += `
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.8rem; background: rgba(255,255,255,0.02); border-radius: 8px; margin-bottom: 0.5rem; border: 1px solid rgba(255,255,255,0.05);">
+                                <div>
+                                    <strong style="color: #fff; font-size: 1.1rem;">${b.booking_time?.slice(0, 5)}</strong>
+                                    <span style="color: var(--text-muted); margin: 0 10px;">|</span>
+                                    <span style="font-weight: 600;">${b.name || '–'}</span>
+                                    <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">
+                                        ${SERVICE_NAMES[b.service] || b.service} • ${BARBER_NAMES[b.barber]?.split(' ')[1] || b.barber} 
+                                        <span class="status-badge s-${b.status}" style="margin-left: 5px; font-size: 0.6rem; padding: 2px 6px;">${{ pending: 'Függőben', confirmed: 'Visszaigazolt' }[b.status] || b.status}</span>
+                                    </div>
+                                </div>
+                                <button class="btn-sm btn-cancel" onclick="event.stopPropagation(); window.openDeleteConfirmFromDay('${b.id}')"><i class="fa-solid fa-trash"></i></button>
+                            </div>
+                        `;
+                    });
+                    listEl.innerHTML = html;
                 }
+
+                document.getElementById('dayBookingsModal').classList.add('show');
+            };
+
+            document.getElementById('btnCloseDayModal').addEventListener('click', () => {
+                document.getElementById('dayBookingsModal').classList.remove('show');
+            });
+
+            // Handle deletion from within the day modal
+            window.openDeleteConfirmFromDay = function (id) {
+                pendingDeleteId = id;
+                pendingDeleteBtn = document.createElement('button'); // Mock button
+                document.getElementById('deleteConfirmModal').classList.add('show');
             };
 
             // ── Images ───────────────────────────────────────────────────
@@ -2442,6 +2482,23 @@
                     style="padding: 6px 12px; font-size: 0.8rem;"><i class="fa-solid fa-xmark"></i> Bezár</button>
             </div>
             <div id="futureBookingsList" style="max-height: 60vh; overflow-y: auto; padding-right: 10px;">
+                <!-- Content injected via JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- DAY BOOKINGS MODAL -->
+    <div class="modal-overlay" id="dayBookingsModal">
+        <div class="modal-content" style="max-width: 600px; text-align: left; padding: 2rem;">
+            <div
+                style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 1rem;">
+                <h3 id="dayBookingsTitle" style="font-size: 1.4rem; font-weight: 700; color: #fff; margin: 0;">
+                    <i class="fa-solid fa-calendar-day" style="margin-right: 10px; color: #a0a0a0;"></i>Napi foglalások
+                </h3>
+                <button type="button" id="btnCloseDayModal" class="btn-cancel"
+                    style="padding: 6px 12px; font-size: 0.8rem;"><i class="fa-solid fa-xmark"></i> Bezár</button>
+            </div>
+            <div id="dayBookingsList" style="max-height: 60vh; overflow-y: auto; padding-right: 10px;">
                 <!-- Content injected via JS -->
             </div>
         </div>
