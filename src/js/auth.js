@@ -171,9 +171,7 @@ async function createBooking(bookingData) {
             booking_time: bookingData.time,
             notes: bookingData.notes || null,
             status: 'pending'
-        }])
-        .select()
-        .single();
+        }]);
 
     if (error) throw error;
     return data;
