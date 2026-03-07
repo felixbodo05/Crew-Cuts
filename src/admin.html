@@ -1636,9 +1636,9 @@
                         </select>
                         <input type="date" class="filter-input" id="filterDate">
                     </div>
-                    <button class="btn-primary" onclick="openFutureBookingsModal()"
+                    <button class="btn-primary" onclick="resetTableFilters()"
                         style="font-size: 0.85rem; padding: 8px 16px;">
-                        <i class="fa-solid fa-list-ul" style="margin-right: 8px;"></i>Jövőbeli foglalások
+                        <i class="fa-solid fa-filter-circle-xmark" style="margin-right: 8px;"></i>Összes megjelenítése
                     </button>
                 </div>
                 <div class="table-wrap">
@@ -2107,6 +2107,16 @@
                         renderBookingsTable(getCurrentFilter());
                     });
                 });
+
+                // Clear filters
+                window.resetTableFilters = function () {
+                    ['filterBarber', 'filterStatus', 'filterDate'].forEach(id => {
+                        const el = document.getElementById(id);
+                        if (el) el.value = '';
+                    });
+                    renderBookingsTable(getCurrentFilter());
+                    showToast('Szűrők törölve');
+                };
             }
 
             // ── Calendar ───────────────────────────────────────────────
