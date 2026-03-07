@@ -246,6 +246,29 @@
             border: 1px solid rgba(239, 68, 68, 0.25);
         }
 
+        .btn-cancel-booking {
+            background: transparent;
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            color: #f87171;
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-family: var(--font);
+            cursor: pointer;
+            transition: all 200ms ease;
+            margin-top: 6px;
+        }
+
+        .btn-cancel-booking:hover {
+            background: rgba(239, 68, 68, 0.15);
+            border-color: #f87171;
+        }
+
+        .btn-cancel-booking:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
         .no-bookings {
             text-align: center;
             padding: 4rem 2rem;
@@ -431,7 +454,7 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             (async () => {
-                const { requireAuth, getProfile, signOut, getUserBookings, initAuthNav } = window.CrewCutzAuth;
+                const { requireAuth, getProfile, signOut, getUserBookings, cancelBooking, initAuthNav } = window.CrewCutzAuth;
 
                 const user = await requireAuth('profile.html');
                 if (!user) return;
@@ -471,8 +494,24 @@
                     const time = b.booking_time.slice(0, 5);
                     const isPast = b.booking_date < todayStr;
 
+                    // Check if > 24 hours away
+                    const bookingDateTime = new Date(`${b.booking_date}T${b.booking_time}`);
+                    const now = new Date();
+                    const hoursDiff = (bookingDateTime - now) / (1000 * 60 * 60);
+                    const canCancel = !isPast && b.status !== 'cancelled' && hoursDiff > 24;
+
                     const card = document.createElement('div');
                     card.className = 'booking-card' + (isPast ? ' past' : '');
+
+                    let actionHtml = '';
+                    if (canCancel) {
+                        actionHtml = `
+                            <button class="btn-cancel-booking" data-id="${b.id}">
+                                Lemondás
+                            </button>
+                        `;
+                    }
+
                     card.innerHTML = `
                 <div class="booking-date-badge">
                     <div class="day">${day}</div>
@@ -485,6 +524,7 @@
                 <div class="booking-meta">
                     <div class="booking-time">${time}</div>
                     <div class="status-badge ${statusClasses[b.status] || 'status-pending'}">${statusLabels[b.status] || b.status}</div>
+                    ${actionHtml}
                 </div>
             `;
                     return card;
@@ -513,6 +553,26 @@
                         const pastEl = document.getElementById('pastBookings');
                         past.forEach(b => pastEl.appendChild(buildCard(b)));
                     }
+
+                    // Add event listeners for cancel buttons
+                    document.querySelectorAll('.btn-cancel-booking').forEach(btn => {
+                        btn.addEventListener('click', async (e) => {
+                            const id = e.target.getAttribute('data-id');
+                            if (confirm('Biztosan le szeretnéd mondani ezt a foglalást?')) {
+                                try {
+                                    e.target.disabled = true;
+                                    e.target.textContent = 'Lemondás...';
+                                    await cancelBooking(id);
+                                    alert('Foglalás sikeresen lemondva!');
+                                    window.location.reload();
+                                } catch (error) {
+                                    alert('Hiba történt a lemondás során: ' + error.message);
+                                    e.target.disabled = false;
+                                    e.target.textContent = 'Lemondás';
+                                }
+                            }
+                        });
+                    });
                 } catch (err) {
                     document.getElementById('upcomingBookings').innerHTML =
                         `<p style="color:#f87171;">Hiba a foglalások betöltésekor: ${err.message}</p>`;

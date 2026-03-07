@@ -195,6 +195,23 @@ async function getUserBookings() {
     return (data || []).filter(b => b.booking_date && typeof b.booking_date === 'string' && b.booking_time && typeof b.booking_time === 'string');
 }
 
+/**
+ * Cancel a user's booking (sets status to 'cancelled')
+ */
+async function cancelBooking(bookingId) {
+    const user = await getUser();
+    if (!user) throw new Error('Nem vagy bejelentkezve!');
+
+    const { data, error } = await getClient()
+        .from('bookings')
+        .update({ status: 'cancelled' })
+        .eq('id', bookingId)
+        .eq('user_id', user.id); // Security: only the user's own booking
+
+    if (error) throw error;
+    return data;
+}
+
 // =============================================
 // REDIRECT HELPERS
 // =============================================
@@ -224,5 +241,6 @@ window.CrewCutzAuth = {
     initAuthNav,
     createBooking,
     getUserBookings,
+    cancelBooking,
     requireAuth
 };
