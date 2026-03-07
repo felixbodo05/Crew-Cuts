@@ -602,6 +602,57 @@
             cursor: default;
         }
 
+        /* ── DETAILS MODAL ── */
+        .details-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            text-align: left;
+            margin-bottom: 20px;
+        }
+
+        .detail-item {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 12px;
+            border-radius: 8px;
+        }
+
+        .detail-item label {
+            display: block;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+            letter-spacing: 0.05em;
+        }
+
+        .detail-item div {
+            font-size: 0.95rem;
+            color: #fff;
+            font-weight: 500;
+        }
+
+        .detail-item.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .detail-notes {
+            white-space: pre-wrap;
+            color: #a0a0a0 !important;
+            font-style: italic;
+        }
+
+        tr.clickable-row {
+            cursor: pointer;
+            transition: background-color 200ms ease;
+        }
+
+        tr.clickable-row:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+
         .cal-day-num {
             font-size: .95rem;
             font-weight: 700;
@@ -1739,7 +1790,7 @@
                     return;
                 }
                 tbody.innerHTML = data.map(b => `
-        <tr data-id="${b.id}">
+        <tr data-id="${b.id}" class="clickable-row" onclick="openDetailsModal('${b.id}')">
             <td>${b.booking_date}</td>
             <td><strong>${b.booking_time?.slice(0, 5)}</strong></td>
             <td>${BARBER_NAMES[b.barber] || b.barber}</td>
@@ -1748,7 +1799,7 @@
             <td style="color:var(--text-muted)">${b.phone || '–'}</td>
             <td>${SERVICE_NAMES[b.service] || b.service}</td>
             <td><span class="status-badge s-${b.status}">${{ pending: 'Függőben', confirmed: 'Visszaigazolt', cancelled: 'Törölve' }[b.status] || b.status}</span></td>
-            <td><div class="action-btns">${actionButtons(b)}</div></td>
+            <td onclick="event.stopPropagation()"><div class="action-btns">${actionButtons(b)}</div></td>
         </tr>`).join('');
                 attachActionListeners(document.getElementById('bookingsBody'));
             }
@@ -1757,14 +1808,14 @@
                 return `<table>
         <thead><tr><th>Idő</th><th>Borbély</th><th>Név</th><th>Telefon</th><th>Szolgáltatás</th><th>Státusz</th><th>Műveletek</th></tr></thead>
         <tbody>${data.map(b => `
-            <tr data-id="${b.id}">
+            <tr data-id="${b.id}" class="clickable-row" onclick="openDetailsModal('${b.id}')">
                 <td><strong>${b.booking_time?.slice(0, 5)}</strong></td>
                 <td>${BARBER_NAMES[b.barber] || b.barber}</td>
                 <td>${b.name || '–'}</td>
                 <td style="color:var(--text-muted)">${b.phone || '–'}</td>
                 <td>${SERVICE_NAMES[b.service] || b.service}</td>
                 <td><span class="status-badge s-${b.status}">${{ pending: 'Függőben', confirmed: 'Visszaigazolt', cancelled: 'Törölve' }[b.status] || b.status}</span></td>
-                <td><div class="action-btns">${actionButtons(b)}</div></td>
+                <td onclick="event.stopPropagation()"><div class="action-btns">${actionButtons(b)}</div></td>
             </tr>`).join('')}
         </tbody>
     </table>`;
@@ -1825,6 +1876,29 @@
                 pendingDeleteBtn = null;
 
                 await updateBookingStatus(id, 'cancelled');
+            });
+
+            // ── Booking Details Modal Logic ──
+            window.openDetailsModal = function (id) {
+                const b = allBookings.find(x => x.id === id);
+                if (!b) return;
+
+                document.getElementById('detName').textContent = b.name || 'Nincs megadva';
+                document.getElementById('detContact').textContent = `${b.phone || '–'} | ${b.email || '–'}`;
+                document.getElementById('detDate').textContent = `${b.booking_date} ${b.booking_time?.slice(0, 5)}`;
+                document.getElementById('detService').textContent = SERVICE_NAMES[b.service] || b.service;
+                document.getElementById('detBarber').textContent = BARBER_NAMES[b.barber] || b.barber;
+
+                const statusLabels = { pending: 'Függőben', confirmed: 'Visszaigazolt', cancelled: 'Törölve' };
+                document.getElementById('detStatus').innerHTML = `<span class="status-badge s-${b.status}">${statusLabels[b.status] || b.status}</span>`;
+
+                document.getElementById('detNotes').textContent = b.notes || 'Nincs megjegyzés a foglaláshoz.';
+
+                document.getElementById('bookingDetailsModal').classList.add('show');
+            };
+
+            document.getElementById('btnCloseDetails').addEventListener('click', () => {
+                document.getElementById('bookingDetailsModal').classList.remove('show');
             });
 
             async function updateBookingStatus(id, status) {
@@ -1958,7 +2032,7 @@
                     }).join('');
                     const more = dayB.length > maxEvents ? `<div class="cal-event s-pending">+${dayB.length - maxEvents}</div>` : '';
 
-                    html += `<div class="cal-day${isToday ? ' today' : ''}">
+                    html += `<div class="cal-day${isToday ? ' today' : ''}" style="cursor: pointer;" onclick="filterByDate('${dateStr}')">
                         <div class="cal-day-num">${d}</div>
                         ${events}${more}
                     </div>`;
@@ -2003,7 +2077,7 @@
                 weekDates.forEach((d, i) => {
                     const ds = d.toISOString().split('T')[0];
                     const isT = ds === today;
-                    html += `<div class="week-col-header${isT ? ' today-col' : ''}">
+                    html += `<div class="week-col-header${isT ? ' today-col' : ''}" style="cursor: pointer;" onclick="filterByDate('${ds}')">
                         ${isMobile ? DAY_NAMES_SHORT[i].slice(0, 3) : DAY_NAMES_SHORT[i]}<span class="day-date">${d.getDate()}</span>
                     </div>`;
                 });
@@ -2032,6 +2106,19 @@
                 html += '</div>';
                 grid.innerHTML = html;
             }
+
+            // Helper to jump to table and filter when clicking a calendar day
+            window.filterByDate = function (dateStr) {
+                const dateInput = document.getElementById('filterDate');
+                if (dateInput) {
+                    dateInput.value = dateStr;
+                    renderBookingsTable(getCurrentFilter());
+
+                    // Scroll to the filter section
+                    document.querySelector('.filters').scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    showToast('Szűrve erre: ' + dateStr);
+                }
+            };
 
             // ── Images ───────────────────────────────────────────────────
             const SLOT_FALLBACKS = {
@@ -2187,6 +2274,56 @@
                     style="flex: 1; background: rgba(239, 68, 68, 0.1); border-color: rgba(239, 68, 68, 0.3); color: #f87171;">Igen,
                     Törlöm</button>
             </div>
+        </div>
+    </div>
+
+    <!-- Booking Details Modal -->
+    <div class="modal-overlay" id="bookingDetailsModal">
+        <div class="modal-content" style="max-width: 500px;">
+            <div
+                style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px;">
+                <h2 class="modal-title" style="margin: 0; font-size: 1.4rem;"><i class="fa-solid fa-address-card"
+                        style="color:var(--text-muted); margin-right: 10px;"></i>Foglalás Részletei</h2>
+            </div>
+
+            <div class="details-grid">
+                <div class="detail-item full-width"
+                    style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <label>Vendég Neve</label>
+                        <div id="detName" style="font-size: 1.2rem;"></div>
+                    </div>
+                    <div id="detStatus"></div>
+                </div>
+
+                <div class="detail-item full-width">
+                    <label>Elérhetőségek</label>
+                    <div id="detContact"></div>
+                </div>
+
+                <div class="detail-item">
+                    <label>Időpont</label>
+                    <div id="detDate"></div>
+                </div>
+
+                <div class="detail-item">
+                    <label>Borbély</label>
+                    <div id="detBarber"></div>
+                </div>
+
+                <div class="detail-item full-width">
+                    <label>Szolgáltatás</label>
+                    <div id="detService"></div>
+                </div>
+
+                <div class="detail-item full-width">
+                    <label>Megjegyzés</label>
+                    <div id="detNotes" class="detail-notes"></div>
+                </div>
+            </div>
+
+            <button class="btn-primary" id="btnCloseDetails"
+                style="width:100%; padding:12px; background: rgba(255,255,255,0.05); color: #fff; border: 1px solid rgba(255,255,255,0.1);">Bezárás</button>
         </div>
     </div>
 
