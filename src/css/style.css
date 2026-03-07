@@ -406,14 +406,15 @@ img {
     position: absolute;
     top: 50%;
     left: 0;
-    /* Same approach: only transform is animated */
+    /* JS controls position via transform — hidden until fonts load */
     transform: translateY(-50%) translateX(0px);
     height: calc(100% - 4px);
     width: 80px;
-    /* JS will update this instantly (no transition) */
     background: rgba(128, 128, 128, 0.2);
     border-radius: 9999px;
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    /* Start hidden & no transition — JS sets opacity:1 and transition after fonts.ready */
+    opacity: 0;
+    transition: none;
     will-change: transform;
     z-index: 0;
     pointer-events: none;

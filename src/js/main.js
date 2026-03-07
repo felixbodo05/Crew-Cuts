@@ -472,12 +472,8 @@ function initNavbar() {
     const navPillsContainer = document.querySelector('.nav-pills');
 
     if (indicator && navPillsContainer) {
-        // Hide indicator until fonts load (avoids flash at wrong position)
-        indicator.style.transition = 'none';
-        indicator.style.opacity = '0';
-
-        // Position is set correctly inside initNavbarBubble's fonts.ready callback.
-        // Just add resize listener here.
+        // CSS already starts indicator hidden (opacity:0, transition:none)
+        // fonts.ready will reveal it at the correct position.
         window.addEventListener('resize', updateActiveIndicator);
     }
 }
@@ -830,15 +826,16 @@ function initNavbarBubble() {
     // Re-cache after web fonts finish loading (pill widths change with Oswald)
     document.fonts.ready.then(() => {
         cachePillPositions();
-        // Place indicator at correct position with no transition (no slide from wrong spot)
+        // Position indicator correctly with no animation, then fade in and enable slide transition
         const indicator = document.querySelector('.active-indicator');
         if (indicator) {
             indicator.style.transition = 'none';
             updateActiveIndicator();
-            indicator.offsetHeight; // force reflow before re-enabling transition
+            indicator.offsetHeight; // force reflow
             indicator.style.opacity = '1';
             requestAnimationFrame(() => {
-                indicator.style.transition = '';
+                // Restore the smooth slide transition
+                indicator.style.transition = 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s ease';
             });
         }
     });
