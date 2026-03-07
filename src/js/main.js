@@ -511,60 +511,8 @@ function initSmoothScroll() {
 
 // === Booking Form ===
 function initBookingForm() {
-    const bookingForm = document.getElementById('bookingForm');
-
-    if (!bookingForm) return;
-
-    bookingForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-
-        const formData = new FormData(bookingForm);
-        const data = Object.fromEntries(formData.entries());
-        const submitBtn = bookingForm.querySelector('button[type="submit"]');
-        const originalBtnText = submitBtn ? submitBtn.textContent : '';
-
-        try {
-            if (submitBtn) {
-                submitBtn.textContent = currentLang === 'hu' ? 'Küldés...' : 'Sending...';
-                submitBtn.disabled = true;
-            }
-
-            const response = await fetch('/api/booking', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(data)
-            });
-
-            const result = await response.json();
-
-            if (result.success) {
-                showNotification(
-                    currentLang === 'hu'
-                        ? 'Köszönjük! Foglalását rögzítettük.'
-                        : 'Thank you! Booking confirmed.',
-                    'success'
-                );
-                bookingForm.reset();
-            } else {
-                throw new Error(result.message);
-            }
-        } catch (error) {
-            console.error('Booking Error:', error);
-            showNotification(
-                currentLang === 'hu'
-                    ? 'Hiba történt. Kérjük próbálja újra.'
-                    : 'An error occurred. Please try again.',
-                'error'
-            );
-        } finally {
-            if (submitBtn) {
-                submitBtn.textContent = originalBtnText;
-                submitBtn.disabled = false;
-            }
-        }
-    });
+    // The old /api/booking form logic has been removed here.
+    // Booking logic is now handled in booking.html via Supabase.
 }
 
 // === Contact Form ===

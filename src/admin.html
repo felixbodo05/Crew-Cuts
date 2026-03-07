@@ -390,43 +390,71 @@
 
         table {
             width: 100%;
-            border-collapse: collapse;
+            border-collapse: separate;
+            border-spacing: 0 8px;
+            /* Separates the rows into cards */
         }
 
         thead th {
             text-align: left;
-            padding: .75rem 1rem;
-            font-size: .72rem;
+            padding: .5rem 1rem;
+            font-size: .75rem;
             font-weight: 700;
             letter-spacing: .1em;
             text-transform: uppercase;
             color: var(--text-muted);
-            border-bottom: 1px solid var(--border);
+            border-bottom: none;
             white-space: nowrap;
         }
 
-        tbody tr {
-            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
-            transition: background 150ms;
+        tbody tr:not(.date-divider) {
+            background: rgba(255, 255, 255, 0.03);
+            transition: all 150ms ease;
         }
 
-        tbody tr:hover {
-            background: rgba(255, 255, 255, 0.02);
+        tbody tr:not(.date-divider):hover {
+            background: rgba(255, 255, 255, 0.05);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
         }
 
         tbody td {
-            padding: .85rem 1rem;
-            font-size: .88rem;
+            padding: 1.1rem 1rem;
+            font-size: .9rem;
             vertical-align: middle;
+            border-top: 1px solid rgba(255, 255, 255, 0.04);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        tbody td:first-child {
+            border-left: 1px solid rgba(255, 255, 255, 0.04);
+            border-top-left-radius: 10px;
+            border-bottom-left-radius: 10px;
+        }
+
+        tbody td:last-child {
+            border-right: 1px solid rgba(255, 255, 255, 0.04);
+            border-top-right-radius: 10px;
+            border-bottom-right-radius: 10px;
+        }
+
+        .date-divider td {
+            padding: 2.5rem 0 0.2rem 0 !important;
+            font-family: 'Cinzel', serif;
+            font-size: 1.3rem;
+            color: var(--primary);
+            background: transparent !important;
+            border: none !important;
+            pointer-events: none;
         }
 
         .status-badge {
             display: inline-block;
-            padding: 3px 10px;
+            padding: 4px 12px;
             border-radius: 20px;
-            font-size: .7rem;
+            font-size: .75rem;
             font-weight: 700;
-            letter-spacing: .06em;
+            letter-spacing: .08em;
             text-transform: uppercase;
             white-space: nowrap;
         }
@@ -1849,18 +1877,37 @@
                     tbody.innerHTML = '<tr><td colspan="9" class="empty-state"><i class="fa-solid fa-calendar-xmark"></i><p>Nincs találat.</p></td></tr>';
                     return;
                 }
-                tbody.innerHTML = data.map(b => `
-        <tr data-id="${b.id}" class="clickable-row" onclick="openDetailsModal('${b.id}')">
-            <td>${b.booking_date}</td>
-            <td><strong>${b.booking_time?.slice(0, 5)}</strong></td>
-            <td>${BARBER_NAMES[b.barber] || b.barber}</td>
-            <td>${b.name || '–'}</td>
-            <td style="color:var(--text-muted)">${b.email || '–'}</td>
-            <td style="color:var(--text-muted)">${b.phone || '–'}</td>
-            <td>${SERVICE_NAMES[b.service] || b.service}</td>
-            <td><span class="status-badge s-${b.status}">${{ pending: 'Függőben', confirmed: 'Visszaigazolt', cancelled: 'Törölve' }[b.status] || b.status}</span></td>
-            <td onclick="event.stopPropagation()"><div class="action-btns">${actionButtons(b)}</div></td>
-        </tr>`).join('');
+
+                let html = '';
+                let currentDate = null;
+                const daysHu = ['Vasárnap', 'Hétfő', 'Kedd', 'Szerda', 'Csütörtök', 'Péntek', 'Szombat'];
+
+                data.forEach(b => {
+                    if (b.booking_date !== currentDate) {
+                        currentDate = b.booking_date;
+                        const dObj = new Date(currentDate);
+                        const dayName = isNaN(dObj) ? '' : daysHu[dObj.getDay()];
+                        html += `<tr class="date-divider"><td colspan="9">
+                            <i class="fa-regular fa-calendar" style="margin-right:8px; color:#fff;"></i> 
+                            <span style="color:#fff;">${currentDate}</span> 
+                            <span style="color:var(--text-muted); font-size:1rem; margin-left:8px; font-family:'Oswald', sans-serif; font-weight:400; text-transform:uppercase; letter-spacing:0.05em;">${dayName}</span>
+                        </td></tr>`;
+                    }
+                    html += `
+                        <tr data-id="${b.id}" class="clickable-row" onclick="openDetailsModal('${b.id}')">
+                            <td style="color:var(--text-muted)">${b.booking_date.slice(5)}</td>
+                            <td><strong style="font-size:1.05rem; color:#fff;">${b.booking_time?.slice(0, 5)}</strong></td>
+                            <td>${BARBER_NAMES[b.barber] || b.barber}</td>
+                            <td><strong style="color:#fff;">${b.name || '–'}</strong></td>
+                            <td style="color:var(--text-muted)">${b.email || '–'}</td>
+                            <td style="color:var(--text-muted)">${b.phone || '–'}</td>
+                            <td>${SERVICE_NAMES[b.service] || b.service}</td>
+                            <td><span class="status-badge s-${b.status}">${{ pending: 'Függőben', confirmed: 'Visszaigazolt', cancelled: 'Törölve' }[b.status] || b.status}</span></td>
+                            <td onclick="event.stopPropagation()"><div class="action-btns">${actionButtons(b)}</div></td>
+                        </tr>`;
+                });
+
+                tbody.innerHTML = html;
                 attachActionListeners(document.getElementById('bookingsBody'));
             }
 
@@ -1869,9 +1916,9 @@
         <thead><tr><th>Idő</th><th>Borbély</th><th>Név</th><th>Telefon</th><th>Szolgáltatás</th><th>Státusz</th><th>Műveletek</th></tr></thead>
         <tbody>${data.map(b => `
             <tr data-id="${b.id}" class="clickable-row" onclick="openDetailsModal('${b.id}')">
-                <td><strong>${b.booking_time?.slice(0, 5)}</strong></td>
+                <td><strong style="font-size:1.05rem; color:#fff;">${b.booking_time?.slice(0, 5)}</strong></td>
                 <td>${BARBER_NAMES[b.barber] || b.barber}</td>
-                <td>${b.name || '–'}</td>
+                <td><strong style="color:#fff;">${b.name || '–'}</strong></td>
                 <td style="color:var(--text-muted)">${b.phone || '–'}</td>
                 <td>${SERVICE_NAMES[b.service] || b.service}</td>
                 <td><span class="status-badge s-${b.status}">${{ pending: 'Függőben', confirmed: 'Visszaigazolt', cancelled: 'Törölve' }[b.status] || b.status}</span></td>
