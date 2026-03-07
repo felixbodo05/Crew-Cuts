@@ -649,11 +649,12 @@
         }
 
         /* Weekly grid */
-        .week-grid {
+        .week-grid-inner {
             display: grid;
             grid-template-columns: 60px repeat(7, 1fr);
             gap: 2px;
             font-size: .8rem;
+            min-width: 600px;
         }
 
         .week-col-header {
@@ -994,27 +995,333 @@
             color: #a0a0a0;
         }
 
-        /* Responsive */
-        @media (max-width:768px) {
-            .stats-row {
-                grid-template-columns: 1fr 1fr;
-            }
+        /* ── Mobile Header ── */
+        .mobile-header {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 56px;
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            z-index: 200;
+            align-items: center;
+            padding: 0 1rem;
+            gap: 12px;
+        }
 
-            .images-grid {
-                grid-template-columns: 1fr 1fr;
+        .mobile-hamburger {
+            background: none;
+            border: none;
+            cursor: pointer;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 5px;
+            padding: 4px;
+        }
+
+        .mobile-hamburger span {
+            display: block;
+            width: 100%;
+            height: 2px;
+            background: var(--text);
+            border-radius: 2px;
+            transition: all 250ms ease;
+        }
+
+        .mobile-hamburger.active span:nth-child(1) {
+            transform: translateY(7px) rotate(45deg);
+        }
+
+        .mobile-hamburger.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .mobile-hamburger.active span:nth-child(3) {
+            transform: translateY(-7px) rotate(-45deg);
+        }
+
+        .mobile-header-logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .mobile-header-logo img {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+        }
+
+        .mobile-header-logo span {
+            font-family: 'Cinzel', serif;
+            font-size: .9rem;
+            color: var(--primary-light);
+        }
+
+        .sidebar-backdrop {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, .6);
+            z-index: 99;
+            opacity: 0;
+            transition: opacity 300ms ease;
+        }
+
+        .sidebar-backdrop.active {
+            opacity: 1;
+        }
+
+        /* ── Responsive ── */
+        @media (max-width: 768px) {
+            .mobile-header {
+                display: flex;
             }
 
             .sidebar {
                 transform: translateX(-100%);
-                transition: transform 300ms;
+                transition: transform 300ms cubic-bezier(.4, 0, .2, 1);
             }
 
             .sidebar.open {
                 transform: translateX(0);
             }
 
+            .sidebar-backdrop.active {
+                display: block;
+            }
+
             .main {
                 margin-left: 0;
+                padding-top: 56px;
+            }
+
+            .page {
+                padding: 1.25rem;
+            }
+
+            /* Stats */
+            .stats-row {
+                grid-template-columns: 1fr 1fr;
+                gap: .75rem;
+            }
+
+            .stat-card {
+                padding: 1rem;
+            }
+
+            .stat-card .stat-val {
+                font-size: 1.5rem;
+            }
+
+            /* Page header */
+            .page-header h1 {
+                font-size: 1.25rem;
+            }
+
+            /* Bookings table → card layout on mobile */
+            .bookings-toolbar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .filter-row {
+                flex-direction: column;
+            }
+
+            .filter-select,
+            .filter-input {
+                width: 100%;
+            }
+
+            .table-wrap {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            table {
+                min-width: 700px;
+            }
+
+            tbody td {
+                padding: .65rem .5rem;
+                font-size: .8rem;
+            }
+
+            thead th {
+                padding: .6rem .5rem;
+                font-size: .65rem;
+            }
+
+            .action-btns {
+                flex-direction: column;
+                gap: .3rem;
+            }
+
+            .btn-sm {
+                padding: 4px 8px;
+                font-size: .68rem;
+                white-space: nowrap;
+            }
+
+            /* Calendar */
+            .calendar-nav {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: .75rem;
+            }
+
+            .cal-view-tabs {
+                margin-left: 0;
+                width: 100%;
+            }
+
+            .cal-view-tab {
+                flex: 1;
+                text-align: center;
+            }
+
+            .cal-label {
+                font-size: 1rem;
+            }
+
+            /* Monthly calendar */
+            .calendar-grid {
+                gap: 2px;
+            }
+
+            .cal-header {
+                font-size: .6rem;
+                padding: .4rem .2rem;
+                letter-spacing: .05em;
+            }
+
+            .cal-day {
+                min-height: 70px;
+                padding: .35rem;
+                border-radius: 6px;
+            }
+
+            .cal-day-num {
+                font-size: .78rem;
+                margin-bottom: .2rem;
+            }
+
+            .cal-day.today .cal-day-num {
+                width: 22px;
+                height: 22px;
+                font-size: .72rem;
+            }
+
+            .cal-event {
+                font-size: .58rem;
+                padding: 2px 4px;
+                margin-bottom: 2px;
+            }
+
+            /* Weekly calendar → horizontal scroll */
+            .week-grid-inner {
+                min-width: 600px;
+                font-size: .72rem;
+            }
+
+            .week-col-header {
+                font-size: .68rem;
+                padding: .4rem .2rem;
+            }
+
+            .week-col-header .day-date {
+                font-size: 1rem;
+            }
+
+            .week-col-header.today-col .day-date {
+                width: 30px;
+                height: 30px;
+            }
+
+            .week-time-label {
+                font-size: .62rem;
+                height: 44px;
+                padding-right: 4px;
+            }
+
+            .week-slot {
+                height: 44px;
+            }
+
+            .week-event {
+                font-size: .62rem;
+                padding: 2px 4px;
+            }
+
+            /* Images */
+            .images-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .image-card .img-info {
+                padding: .75rem;
+            }
+
+            .image-card .img-info h4 {
+                font-size: .85rem;
+            }
+
+            .img-url-row {
+                flex-direction: column;
+            }
+
+            .btn-save-url {
+                width: 100%;
+                text-align: center;
+            }
+
+            /* Toast */
+            .toast {
+                left: 1rem;
+                right: 1rem;
+                bottom: 1rem;
+            }
+
+            /* Gate */
+            .gate-card {
+                width: calc(100% - 2rem);
+                max-width: 340px;
+                padding: 1.75rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stats-row {
+                grid-template-columns: 1fr;
+            }
+
+            .stat-card .stat-val {
+                font-size: 1.25rem;
+            }
+
+            .page {
+                padding: 1rem;
+            }
+
+            .cal-day {
+                min-height: 55px;
+                padding: .25rem;
+            }
+
+            .cal-event {
+                font-size: .52rem;
+                padding: 1px 3px;
+            }
+
+            .cal-day-num {
+                font-size: .7rem;
             }
         }
     </style>
@@ -1048,8 +1355,19 @@
 
     <!-- ── Admin App ── -->
     <div id="app">
+        <!-- Mobile Header -->
+        <div class="mobile-header" id="mobileHeader">
+            <button class="mobile-hamburger" id="adminHamburger" aria-label="Menu">
+                <span></span><span></span><span></span>
+            </button>
+            <div class="mobile-header-logo">
+                <img src="images/logo.png" alt="Logo">
+                <span>Crew Cutz</span>
+            </div>
+        </div>
+        <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
         <!-- Sidebar -->
-        <aside class="sidebar">
+        <aside class="sidebar" id="adminSidebar">
             <div class="sidebar-header">
                 <div class="logo">
                     <img src="images/logo.png" alt="Logo">
@@ -1258,6 +1576,33 @@
                 location.reload();
             });
 
+            // ── Mobile Sidebar Toggle ────────────────────────────────────
+            const adminHamburger = document.getElementById('adminHamburger');
+            const adminSidebar = document.getElementById('adminSidebar');
+            const sidebarBackdrop = document.getElementById('sidebarBackdrop');
+
+            function openSidebar() {
+                adminSidebar.classList.add('open');
+                adminHamburger.classList.add('active');
+                sidebarBackdrop.classList.add('active');
+                // Show backdrop (needs display:block before opacity transition)
+                sidebarBackdrop.style.display = 'block';
+                requestAnimationFrame(() => sidebarBackdrop.classList.add('active'));
+            }
+
+            function closeSidebar() {
+                adminSidebar.classList.remove('open');
+                adminHamburger.classList.remove('active');
+                sidebarBackdrop.classList.remove('active');
+                setTimeout(() => { sidebarBackdrop.style.display = ''; }, 300);
+            }
+
+            adminHamburger.addEventListener('click', () => {
+                adminSidebar.classList.contains('open') ? closeSidebar() : openSidebar();
+            });
+
+            sidebarBackdrop.addEventListener('click', closeSidebar);
+
             // ── Navigation ──────────────────────────────────────────────
             document.querySelectorAll('.nav-item').forEach(item => {
                 item.addEventListener('click', () => {
@@ -1267,6 +1612,8 @@
                     document.getElementById('page-' + item.dataset.page).classList.add('active');
                     if (item.dataset.page === 'calendar') renderCalendar();
                     if (item.dataset.page === 'images') loadImages();
+                    // Close sidebar on mobile after navigation
+                    if (window.innerWidth <= 768) closeSidebar();
                 });
             });
 
@@ -1482,7 +1829,12 @@
                 document.getElementById('calMonthLabel').textContent = `${MONTHS_HU[calMonth]} ${calYear}`;
                 const grid = document.getElementById('calGrid');
                 grid.className = 'calendar-grid';
-                const dayHeaders = ['Hétfő', 'Kedd', 'Szerda', 'Csütörtök', 'Péntek', 'Szombat', 'Vasárnap'];
+                grid.style.overflowX = '';
+                grid.style.webkitOverflowScrolling = '';
+                const isMobile = window.innerWidth <= 768;
+                const dayHeaders = isMobile
+                    ? ['H', 'K', 'Sze', 'Cs', 'P', 'Szo', 'V']
+                    : ['Hétfő', 'Kedd', 'Szerda', 'Csütörtök', 'Péntek', 'Szombat', 'Vasárnap'];
                 const monthStr = `${calYear}-${String(calMonth + 1).padStart(2, '0')}`;
                 const monthBookings = allBookings.filter(b => b.booking_date.startsWith(monthStr));
 
@@ -1500,12 +1852,13 @@
                         .sort((a, b) => a.booking_time.localeCompare(b.booking_time));
                     const isToday = dateStr === today;
 
-                    const events = dayB.slice(0, 5).map(b =>
+                    const maxEvents = isMobile ? 2 : 5;
+                    const events = dayB.slice(0, maxEvents).map(b =>
                         `<div class="cal-event s-${b.status}" title="${b.booking_time?.slice(0, 5)} – ${BARBER_NAMES[b.barber] || b.barber} (${SERVICE_NAMES[b.service] || b.service})">
-                            ${b.booking_time?.slice(0, 5)} ${BARBER_NAMES[b.barber]?.split(' ')[1] || ''}
+                            ${isMobile ? b.booking_time?.slice(0, 5) : `${b.booking_time?.slice(0, 5)} ${BARBER_NAMES[b.barber]?.split(' ')[1] || ''}`}
                         </div>`
                     ).join('');
-                    const more = dayB.length > 5 ? `<div class="cal-event s-pending">+${dayB.length - 5} több</div>` : '';
+                    const more = dayB.length > maxEvents ? `<div class="cal-event s-pending">+${dayB.length - maxEvents}</div>` : '';
 
                     html += `<div class="cal-day${isToday ? ' today' : ''}">
                         <div class="cal-day-num">${d}</div>
@@ -1540,15 +1893,20 @@
 
                 const today = new Date().toISOString().split('T')[0];
                 const grid = document.getElementById('calGrid');
-                grid.className = 'week-grid';
+                // Wrap week grid in scrollable container for mobile
+                grid.className = '';
+                grid.style.overflowX = 'auto';
+                grid.style.webkitOverflowScrolling = 'touch';
 
                 // Column headers: empty + 7 day headers
-                let html = '<div class="week-col-header"></div>'; // time col
+                const isMobile = window.innerWidth <= 768;
+                let html = '<div class="week-grid-inner">';
+                html += '<div class="week-col-header"></div>'; // time col
                 weekDates.forEach((d, i) => {
                     const ds = d.toISOString().split('T')[0];
                     const isT = ds === today;
                     html += `<div class="week-col-header${isT ? ' today-col' : ''}">
-                        ${DAY_NAMES_SHORT[i]}<span class="day-date">${d.getDate()}</span>
+                        ${isMobile ? DAY_NAMES_SHORT[i].slice(0, 3) : DAY_NAMES_SHORT[i]}<span class="day-date">${d.getDate()}</span>
                     </div>`;
                 });
 
@@ -1573,6 +1931,7 @@
                     });
                 });
 
+                html += '</div>';
                 grid.innerHTML = html;
             }
 

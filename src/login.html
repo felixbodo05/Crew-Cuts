@@ -343,16 +343,16 @@
             <div class="auth-card" id="authCard">
                 <!-- Tabs -->
                 <div class="auth-tabs">
-                    <button class="auth-tab active" id="loginTab">
+                    <button type="button" class="auth-tab active" id="loginTab">
                         <i class="fa-solid fa-right-to-bracket"></i> Bejelentkezés
                     </button>
-                    <button class="auth-tab" id="registerTab">
+                    <button type="button" class="auth-tab" id="registerTab">
                         <i class="fa-solid fa-user-plus"></i> Regisztráció
                     </button>
                 </div>
 
                 <!-- Login Form -->
-                <form class="auth-form active" id="loginForm">
+                <form class="auth-form active" id="loginForm" novalidate>
                     <div class="auth-message error" id="loginError">
                         <i class="fa-solid fa-circle-exclamation"></i>
                         <span id="loginErrorMsg"></span>
@@ -386,7 +386,7 @@
                 </form>
 
                 <!-- Register Form -->
-                <form class="auth-form" id="registerForm">
+                <form class="auth-form" id="registerForm" novalidate>
                     <div class="auth-message error" id="registerError">
                         <i class="fa-solid fa-circle-exclamation"></i>
                         <span id="registerErrorMsg"></span>
@@ -507,21 +507,28 @@
             e.preventDefault();
             hideMsg('loginError');
             hideMsg('loginSuccess');
+
+            const emailVal = document.getElementById('loginEmail').value.trim();
+            const pwVal = document.getElementById('loginPassword').value;
+
+            if (!emailVal || !pwVal) {
+                showMsg('loginError', 'loginErrorMsg', 'Kérlek töltsd ki az összes mezőt!');
+                return;
+            }
+
             const btn = document.getElementById('loginBtn');
             btn.textContent = 'Belépés...';
             btn.disabled = true;
 
             try {
-                await signIn(
-                    document.getElementById('loginEmail').value,
-                    document.getElementById('loginPassword').value
-                );
+                await signIn(emailVal, pwVal);
                 showMsg('loginSuccess', 'loginSuccessMsg', 'Sikeres bejelentkezés! Átirányítás...');
                 setTimeout(() => window.location.href = getRedirectUrl(), 1000);
             } catch (err) {
-                const msg = err.message.includes('Invalid login credentials')
+                const errMsg = (err && err.message) ? err.message : String(err);
+                const msg = errMsg.includes('Invalid login credentials')
                     ? 'Hibás email vagy jelszó.'
-                    : err.message;
+                    : errMsg;
                 showMsg('loginError', 'loginErrorMsg', msg);
                 btn.textContent = 'Bejelentkezés';
                 btn.disabled = false;
@@ -558,6 +565,19 @@
             const pw = document.getElementById('regPassword').value;
             const pw2 = document.getElementById('regPasswordConfirm').value;
 
+            // Custom validation
+            if (!name || !phone || !email || !pw || !pw2) {
+                showMsg('registerError', 'registerErrorMsg', 'Kérlek töltsd ki az összes mezőt!');
+                return;
+            }
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                showMsg('registerError', 'registerErrorMsg', 'Kérlek adj meg érvényes email címet!');
+                return;
+            }
+            if (pw.length < 6) {
+                showMsg('registerError', 'registerErrorMsg', 'A jelszónak legalább 6 karakter hosszúnak kell lennie!');
+                return;
+            }
             if (pw !== pw2) {
                 showMsg('registerError', 'registerErrorMsg', 'A két jelszó nem egyezik!');
                 return;
@@ -573,10 +593,19 @@
                     'Fiók létrehozva! Ellenőrizd az emailedet a megerősítő linkért, majd jelentkezz be.');
                 registerForm.reset();
             } catch (err) {
-                const msg = err.message.includes('already registered')
-                    ? 'Ez az email cím már regisztrált.'
-                    : err.message;
+                const errMsg = (err && err.message) ? err.message : String(err);
+                let msg;
+                if (errMsg.includes('already registered') || errMsg.includes('already been registered')) {
+                    msg = 'Ez az email cím már regisztrált.';
+                } else if (errMsg.includes('not allowed') || errMsg.includes('disabled')) {
+                    msg = 'A regisztráció jelenleg nem engedélyezett.';
+                } else if (errMsg.includes('CDN')) {
+                    msg = 'Hálózati hiba. Kérlek frissítsd az oldalt és próbáld újra!';
+                } else {
+                    msg = errMsg;
+                }
                 showMsg('registerError', 'registerErrorMsg', msg);
+                console.error('Registration error:', err);
             } finally {
                 btn.textContent = 'Fiók létrehozása';
                 btn.disabled = false;
