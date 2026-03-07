@@ -1871,7 +1871,7 @@
                 if (filter.barber) data = data.filter(b => b.barber === filter.barber);
                 if (filter.status) data = data.filter(b => b.status === filter.status);
                 if (filter.date) data = data.filter(b => b.booking_date === filter.date);
-                data.sort((a, b) => b.booking_date.localeCompare(a.booking_date) || a.booking_time.localeCompare(b.booking_time));
+                data.sort((a, b) => a.booking_date.localeCompare(b.booking_date) || a.booking_time.localeCompare(b.booking_time));
                 const tbody = document.getElementById('bookingsBody');
                 if (data.length === 0) {
                     tbody.innerHTML = '<tr><td colspan="9" class="empty-state"><i class="fa-solid fa-calendar-xmark"></i><p>Nincs találat.</p></td></tr>';
