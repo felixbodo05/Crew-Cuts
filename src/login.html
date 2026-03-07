@@ -175,7 +175,7 @@
             box-shadow: 0 0 0 3px rgba(128, 128, 128, 0.1);
         }
 
-        .auth-field input:focus + i,
+        .auth-field input:focus+i,
         .auth-field .input-wrap:focus-within i {
             color: #a0a0a0;
         }
@@ -256,7 +256,7 @@
         .password-strength {
             height: 3px;
             border-radius: 2px;
-            background: rgba(255,255,255,0.1);
+            background: rgba(255, 255, 255, 0.1);
             margin-top: 6px;
             overflow: hidden;
         }
@@ -366,7 +366,8 @@
                         <label for="loginEmail">Email cím</label>
                         <div class="input-wrap">
                             <i class="fa-solid fa-envelope"></i>
-                            <input type="email" id="loginEmail" placeholder="email@pelda.hu" required autocomplete="email">
+                            <input type="email" id="loginEmail" placeholder="email@pelda.hu" required
+                                autocomplete="email">
                         </div>
                     </div>
 
@@ -374,7 +375,8 @@
                         <label for="loginPassword">Jelszó</label>
                         <div class="input-wrap">
                             <i class="fa-solid fa-lock"></i>
-                            <input type="password" id="loginPassword" placeholder="••••••••" required autocomplete="current-password">
+                            <input type="password" id="loginPassword" placeholder="••••••••" required
+                                autocomplete="current-password">
                         </div>
                     </div>
 
@@ -416,7 +418,8 @@
                         <label for="regEmail">Email cím</label>
                         <div class="input-wrap">
                             <i class="fa-solid fa-envelope"></i>
-                            <input type="email" id="regEmail" placeholder="email@pelda.hu" required autocomplete="email">
+                            <input type="email" id="regEmail" placeholder="email@pelda.hu" required
+                                autocomplete="email">
                         </div>
                     </div>
 
@@ -424,7 +427,8 @@
                         <label for="regPassword">Jelszó</label>
                         <div class="input-wrap">
                             <i class="fa-solid fa-lock"></i>
-                            <input type="password" id="regPassword" placeholder="Min. 6 karakter" required minlength="6" autocomplete="new-password">
+                            <input type="password" id="regPassword" placeholder="Min. 6 karakter" required minlength="6"
+                                autocomplete="new-password">
                         </div>
                         <div class="password-strength">
                             <div class="password-strength-bar" id="strengthBar"></div>
@@ -435,7 +439,8 @@
                         <label for="regPasswordConfirm">Jelszó megerősítése</label>
                         <div class="input-wrap">
                             <i class="fa-solid fa-lock"></i>
-                            <input type="password" id="regPasswordConfirm" placeholder="••••••••" required autocomplete="new-password">
+                            <input type="password" id="regPasswordConfirm" placeholder="••••••••" required
+                                autocomplete="new-password">
                         </div>
                     </div>
 
@@ -451,182 +456,186 @@
 
     <script src="js/auth.js"></script>
     <script>
-        const { signUp, signIn, getUser, initAuthNav } = window.CrewCutzAuth;
+        document.addEventListener('DOMContentLoaded', () => {
+            const { signUp, signIn, getUser, initAuthNav } = window.CrewCutzAuth;
 
-        // ── Check if already logged in ──
-        (async () => {
-            const user = await getUser();
-            if (user) {
-                document.getElementById('authCard').style.display = 'none';
-                document.getElementById('alreadyLoggedIn').style.display = 'block';
-            }
-        })();
-
-        // ── Tab switching ──
-        const loginTab = document.getElementById('loginTab');
-        const registerTab = document.getElementById('registerTab');
-        const loginForm = document.getElementById('loginForm');
-        const registerForm = document.getElementById('registerForm');
-
-        function showLogin() {
-            loginTab.classList.add('active');
-            registerTab.classList.remove('active');
-            loginForm.classList.add('active');
-            registerForm.classList.remove('active');
-        }
-
-        function showRegister() {
-            registerTab.classList.add('active');
-            loginTab.classList.remove('active');
-            registerForm.classList.add('active');
-            loginForm.classList.remove('active');
-        }
-
-        loginTab.addEventListener('click', showLogin);
-        registerTab.addEventListener('click', showRegister);
-        document.getElementById('switchToRegister').addEventListener('click', showRegister);
-        document.getElementById('switchToLogin').addEventListener('click', showLogin);
-
-        // ── Redirect helper ──
-        function getRedirectUrl() {
-            const params = new URLSearchParams(window.location.search);
-            return params.get('redirect') || 'booking.html';
-        }
-
-        // ── Show message helpers ──
-        function showMsg(id, msgId, text) {
-            document.getElementById(id).classList.add('show');
-            document.getElementById(msgId).textContent = text;
-        }
-        function hideMsg(id) {
-            document.getElementById(id).classList.remove('show');
-        }
-
-        // ── Login Form ──
-        loginForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            hideMsg('loginError');
-            hideMsg('loginSuccess');
-
-            const emailVal = document.getElementById('loginEmail').value.trim();
-            const pwVal = document.getElementById('loginPassword').value;
-
-            if (!emailVal || !pwVal) {
-                showMsg('loginError', 'loginErrorMsg', 'Kérlek töltsd ki az összes mezőt!');
-                return;
-            }
-
-            const btn = document.getElementById('loginBtn');
-            btn.textContent = 'Belépés...';
-            btn.disabled = true;
-
-            try {
-                await signIn(emailVal, pwVal);
-                showMsg('loginSuccess', 'loginSuccessMsg', 'Sikeres bejelentkezés! Átirányítás...');
-                setTimeout(() => window.location.href = getRedirectUrl(), 1000);
-            } catch (err) {
-                const errMsg = (err && err.message) ? err.message : String(err);
-                const msg = errMsg.includes('Invalid login credentials')
-                    ? 'Hibás email vagy jelszó.'
-                    : errMsg;
-                showMsg('loginError', 'loginErrorMsg', msg);
-                btn.textContent = 'Bejelentkezés';
-                btn.disabled = false;
-            }
-        });
-
-        // ── Password strength ──
-        document.getElementById('regPassword').addEventListener('input', (e) => {
-            const val = e.target.value;
-            const bar = document.getElementById('strengthBar');
-            let strength = 0;
-            if (val.length >= 6) strength++;
-            if (val.length >= 10) strength++;
-            if (/[A-Z]/.test(val)) strength++;
-            if (/[0-9]/.test(val)) strength++;
-            if (/[^A-Za-z0-9]/.test(val)) strength++;
-
-            const pct = (strength / 5) * 100;
-            bar.style.width = pct + '%';
-            bar.style.background = strength <= 1 ? '#ef4444'
-                : strength <= 3 ? '#f59e0b'
-                : '#22c55e';
-        });
-
-        // ── Register Form ──
-        registerForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            hideMsg('registerError');
-            hideMsg('registerSuccess');
-
-            const name = document.getElementById('regName').value.trim();
-            const phone = document.getElementById('regPhone').value.trim();
-            const email = document.getElementById('regEmail').value.trim();
-            const pw = document.getElementById('regPassword').value;
-            const pw2 = document.getElementById('regPasswordConfirm').value;
-
-            // Custom validation
-            if (!name || !phone || !email || !pw || !pw2) {
-                showMsg('registerError', 'registerErrorMsg', 'Kérlek töltsd ki az összes mezőt!');
-                return;
-            }
-            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-                showMsg('registerError', 'registerErrorMsg', 'Kérlek adj meg érvényes email címet!');
-                return;
-            }
-            if (pw.length < 6) {
-                showMsg('registerError', 'registerErrorMsg', 'A jelszónak legalább 6 karakter hosszúnak kell lennie!');
-                return;
-            }
-            if (pw !== pw2) {
-                showMsg('registerError', 'registerErrorMsg', 'A két jelszó nem egyezik!');
-                return;
-            }
-
-            const btn = document.getElementById('registerBtn');
-            btn.textContent = 'Létrehozás...';
-            btn.disabled = true;
-
-            try {
-                await signUp(email, pw, name, phone);
-                showMsg('registerSuccess', 'registerSuccessMsg',
-                    'Fiók létrehozva! Ellenőrizd az emailedet a megerősítő linkért, majd jelentkezz be.');
-                registerForm.reset();
-            } catch (err) {
-                const errMsg = (err && err.message) ? err.message : String(err);
-                let msg;
-                if (errMsg.includes('already registered') || errMsg.includes('already been registered')) {
-                    msg = 'Ez az email cím már regisztrált.';
-                } else if (errMsg.includes('not allowed') || errMsg.includes('disabled')) {
-                    msg = 'A regisztráció jelenleg nem engedélyezett.';
-                } else if (errMsg.includes('CDN')) {
-                    msg = 'Hálózati hiba. Kérlek frissítsd az oldalt és próbáld újra!';
-                } else {
-                    msg = errMsg;
+            // ── Check if already logged in ──
+            (async () => {
+                const user = await getUser();
+                if (user) {
+                    document.getElementById('authCard').style.display = 'none';
+                    document.getElementById('alreadyLoggedIn').style.display = 'block';
                 }
-                showMsg('registerError', 'registerErrorMsg', msg);
-                console.error('Registration error:', err);
-            } finally {
-                btn.textContent = 'Fiók létrehozása';
-                btn.disabled = false;
-            }
-        });
+            })();
 
-        // ── Hamburger menu ──
-        const hamburgerBtn = document.getElementById('hamburgerBtn');
-        const mobileMenuOverlay = document.getElementById('mobileMenuOverlay');
-        if (hamburgerBtn && mobileMenuOverlay) {
-            hamburgerBtn.addEventListener('click', () => {
-                hamburgerBtn.classList.toggle('active');
-                mobileMenuOverlay.classList.toggle('active');
+            // ── Tab switching ──
+            const loginTab = document.getElementById('loginTab');
+            const registerTab = document.getElementById('registerTab');
+            const loginForm = document.getElementById('loginForm');
+            const registerForm = document.getElementById('registerForm');
+
+            function showLogin() {
+                loginTab.classList.add('active');
+                registerTab.classList.remove('active');
+                loginForm.classList.add('active');
+                registerForm.classList.remove('active');
+            }
+
+            function showRegister() {
+                registerTab.classList.add('active');
+                loginTab.classList.remove('active');
+                registerForm.classList.add('active');
+                loginForm.classList.remove('active');
+            }
+
+            loginTab.addEventListener('click', showLogin);
+            registerTab.addEventListener('click', showRegister);
+            document.getElementById('switchToRegister').addEventListener('click', showRegister);
+            document.getElementById('switchToLogin').addEventListener('click', showLogin);
+
+            // ── Redirect helper ──
+            function getRedirectUrl() {
+                const params = new URLSearchParams(window.location.search);
+                return params.get('redirect') || 'booking.html';
+            }
+
+            // ── Show message helpers ──
+            function showMsg(id, msgId, text) {
+                document.getElementById(id).classList.add('show');
+                document.getElementById(msgId).textContent = text;
+            }
+            function hideMsg(id) {
+                document.getElementById(id).classList.remove('show');
+            }
+
+            // ── Login Form ──
+            loginForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                hideMsg('loginError');
+                hideMsg('loginSuccess');
+
+                const emailVal = document.getElementById('loginEmail').value.trim();
+                const pwVal = document.getElementById('loginPassword').value;
+
+                if (!emailVal || !pwVal) {
+                    showMsg('loginError', 'loginErrorMsg', 'Kérlek töltsd ki az összes mezőt!');
+                    return;
+                }
+
+                const btn = document.getElementById('loginBtn');
+                btn.textContent = 'Belépés...';
+                btn.disabled = true;
+
+                try {
+                    await signIn(emailVal, pwVal);
+                    showMsg('loginSuccess', 'loginSuccessMsg', 'Sikeres bejelentkezés! Átirányítás...');
+                    setTimeout(() => window.location.href = getRedirectUrl(), 1000);
+                } catch (err) {
+                    const errMsg = (err && err.message) ? err.message : String(err);
+                    const msg = errMsg.includes('Invalid login credentials')
+                        ? 'Hibás email vagy jelszó.'
+                        : errMsg;
+                    showMsg('loginError', 'loginErrorMsg', msg);
+                    btn.textContent = 'Bejelentkezés';
+                    btn.disabled = false;
+                }
             });
-            mobileMenuOverlay.querySelectorAll('a').forEach(link => {
-                link.addEventListener('click', () => {
-                    hamburgerBtn.classList.remove('active');
-                    mobileMenuOverlay.classList.remove('active');
+
+            // ── Password strength ──
+            document.getElementById('regPassword').addEventListener('input', (e) => {
+                const val = e.target.value;
+                const bar = document.getElementById('strengthBar');
+                let strength = 0;
+                if (val.length >= 6) strength++;
+                if (val.length >= 10) strength++;
+                if (/[A-Z]/.test(val)) strength++;
+                if (/[0-9]/.test(val)) strength++;
+                if (/[^A-Za-z0-9]/.test(val)) strength++;
+
+                const pct = (strength / 5) * 100;
+                bar.style.width = pct + '%';
+                bar.style.background = strength <= 1 ? '#ef4444'
+                    : strength <= 3 ? '#f59e0b'
+                        : '#22c55e';
+            });
+
+            // ── Register Form ──
+            registerForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                hideMsg('registerError');
+                hideMsg('registerSuccess');
+
+                const name = document.getElementById('regName').value.trim();
+                const phone = document.getElementById('regPhone').value.trim();
+                const email = document.getElementById('regEmail').value.trim();
+                const pw = document.getElementById('regPassword').value;
+                const pw2 = document.getElementById('regPasswordConfirm').value;
+
+                // Custom validation
+                if (!name || !phone || !email || !pw || !pw2) {
+                    showMsg('registerError', 'registerErrorMsg', 'Kérlek töltsd ki az összes mezőt!');
+                    return;
+                }
+                if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                    showMsg('registerError', 'registerErrorMsg', 'Kérlek adj meg érvényes email címet!');
+                    return;
+                }
+                if (pw.length < 6) {
+                    showMsg('registerError', 'registerErrorMsg', 'A jelszónak legalább 6 karakter hosszúnak kell lennie!');
+                    return;
+                }
+                if (pw !== pw2) {
+                    showMsg('registerError', 'registerErrorMsg', 'A két jelszó nem egyezik!');
+                    return;
+                }
+
+                const btn = document.getElementById('registerBtn');
+                btn.textContent = 'Létrehozás...';
+                btn.disabled = true;
+
+                try {
+                    await signUp(email, pw, name, phone);
+                    showMsg('registerSuccess', 'registerSuccessMsg',
+                        'Fiók létrehozva! Ellenőrizd az emailedet a megerősítő linkért, majd jelentkezz be.');
+                    registerForm.reset();
+                } catch (err) {
+                    const errMsg = (err && err.message) ? err.message : String(err);
+                    let msg;
+                    if (errMsg.includes('already registered') || errMsg.includes('already been registered')) {
+                        msg = 'Ez az email cím már regisztrált.';
+                    } else if (errMsg.includes('not allowed') || errMsg.includes('disabled')) {
+                        msg = 'A regisztráció jelenleg nem engedélyezett.';
+                    } else if (errMsg.includes('CDN')) {
+                        msg = 'Hálózati hiba. Kérlek frissítsd az oldalt és próbáld újra!';
+                    } else {
+                        msg = errMsg;
+                    }
+                    showMsg('registerError', 'registerErrorMsg', msg);
+                    console.error('Registration error:', err);
+                } finally {
+                    btn.textContent = 'Fiók létrehozása';
+                    btn.disabled = false;
+                }
+            });
+
+            // ── Hamburger menu ──
+            const hamburgerBtn = document.getElementById('hamburgerBtn');
+            const mobileMenuOverlay = document.getElementById('mobileMenuOverlay');
+            if (hamburgerBtn && mobileMenuOverlay) {
+                hamburgerBtn.addEventListener('click', () => {
+                    hamburgerBtn.classList.toggle('active');
+                    mobileMenuOverlay.classList.toggle('active');
                 });
-            });
-        }
+                mobileMenuOverlay.querySelectorAll('a').forEach(link => {
+                    link.addEventListener('click', () => {
+                        hamburgerBtn.classList.remove('active');
+                        mobileMenuOverlay.classList.remove('active');
+                    });
+                });
+            }
+
+        }); // end DOMContentLoaded
     </script>
 </body>
+
 </html>
