@@ -1621,7 +1621,7 @@
                     <h1>Foglalások</h1>
                     <p>Összes foglalás kezelése – státusz módosítás</p>
                 </div>
-                <div class="bookings-toolbar">
+                <div class="bookings-toolbar" style="justify-content: space-between;">
                     <div class="filter-row">
                         <select class="filter-select" id="filterBarber">
                             <option value="">Minden borbély</option>
@@ -1636,6 +1636,10 @@
                         </select>
                         <input type="date" class="filter-input" id="filterDate">
                     </div>
+                    <button class="btn-primary" onclick="openFutureBookingsModal()"
+                        style="font-size: 0.85rem; padding: 8px 16px;">
+                        <i class="fa-solid fa-list-ul" style="margin-right: 8px;"></i>Jövőbeli foglalások
+                    </button>
                 </div>
                 <div class="table-wrap">
                     <table id="bookingsTable">
