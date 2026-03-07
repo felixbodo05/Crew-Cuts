@@ -1777,17 +1777,55 @@
             <button class="btn-sm btn-cancel"  data-action="cancelled" data-id="${b.id}">✗ Törlés</button>`;
             }
 
+            // ── Deletion Modal Logic ──
+            let pendingDeleteId = null;
+            let pendingDeleteBtn = null;
+
             function attachActionListeners(container) {
                 container.querySelectorAll('[data-action]').forEach(btn => {
                     btn.addEventListener('click', async () => {
                         const id = btn.dataset.id;
                         const action = btn.dataset.action;
+
+                        // If action is delete (cancelled), show modal instead of direct action
+                        if (action === 'cancelled') {
+                            pendingDeleteId = id;
+                            pendingDeleteBtn = btn;
+                            document.getElementById('deleteConfirmModal').classList.add('show');
+                            return;
+                        }
+
+                        // Normal fast-track for 'confirmed' or 'pending' (restore)
                         btn.disabled = true;
                         btn.textContent = '...';
                         await updateBookingStatus(id, action);
                     });
                 });
             }
+
+            // Bind modal buttons
+            document.getElementById('btnCancelDelete').addEventListener('click', () => {
+                document.getElementById('deleteConfirmModal').classList.remove('show');
+                pendingDeleteId = null;
+                pendingDeleteBtn = null;
+            });
+
+            document.getElementById('btnConfirmDelete').addEventListener('click', async () => {
+                if (!pendingDeleteId || !pendingDeleteBtn) return;
+
+                document.getElementById('deleteConfirmModal').classList.remove('show');
+
+                const btn = pendingDeleteBtn;
+                const id = pendingDeleteId;
+
+                btn.disabled = true;
+                btn.textContent = '...';
+
+                pendingDeleteId = null;
+                pendingDeleteBtn = null;
+
+                await updateBookingStatus(id, 'cancelled');
+            });
 
             async function updateBookingStatus(id, status) {
                 try {
@@ -2134,6 +2172,24 @@
             }
         }); // end DOMContentLoaded
     </script>
+    <!-- Confirmation Modal for Deletion -->
+    <div class="modal-overlay" id="deleteConfirmModal">
+        <div class="modal-content">
+            <i class="fa-solid fa-triangle-exclamation modal-icon"
+                style="color: #f87171; text-shadow: 0 0 20px rgba(239, 68, 68, 0.4);"></i>
+            <h2 class="modal-title">Biztosan törlöd?</h2>
+            <p class="modal-text">Ezt az időpontot eltávolítod a naptárból. A vendég értesítést nem kap a törlésről, de
+                a felületén "Törölve" státusszal fogja látni.</p>
+            <div style="display: flex; gap: 1rem;">
+                <button class="btn-primary" id="btnCancelDelete"
+                    style="flex: 1; background: rgba(255,255,255,0.05); color: #fff;">Nem, mégse</button>
+                <button class="btn-primary" id="btnConfirmDelete"
+                    style="flex: 1; background: rgba(239, 68, 68, 0.1); border-color: rgba(239, 68, 68, 0.3); color: #f87171;">Igen,
+                    Törlöm</button>
+            </div>
+        </div>
+    </div>
+
 </body>
 
 </html>
