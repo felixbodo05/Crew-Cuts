@@ -1,5 +1,6 @@
 {
     "version": 2,
+    "cleanUrls": true,
     "builds": [
         {
             "src": "src/**",
@@ -12,35 +13,31 @@
             "dest": "/src/index.html"
         },
         {
-            "src": "/index.html",
-            "dest": "/src/index.html"
-        },
-        {
-            "src": "/booking.html",
+            "src": "/booking",
             "dest": "/src/booking.html"
         },
         {
-            "src": "/login.html",
+            "src": "/login",
             "dest": "/src/login.html"
         },
         {
-            "src": "/profile.html",
+            "src": "/profile",
             "dest": "/src/profile.html"
         },
         {
-            "src": "/admin.html",
+            "src": "/admin",
             "dest": "/src/admin.html"
         },
         {
-            "src": "/barbers.html",
+            "src": "/barbers",
             "dest": "/src/barbers.html"
         },
         {
-            "src": "/contact.html",
+            "src": "/contact",
             "dest": "/src/contact.html"
         },
         {
-            "src": "/portfolio.html",
+            "src": "/portfolio",
             "dest": "/src/portfolio.html"
         },
         {
