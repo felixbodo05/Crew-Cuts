@@ -1,12 +1,5 @@
 {
-    "version": 2,
     "cleanUrls": true,
-    "builds": [
-        {
-            "src": "src/**",
-            "use": "@vercel/static"
-        }
-    ],
     "rewrites": [
         {
             "source": "/",
@@ -41,8 +34,20 @@
             "destination": "/src/portfolio.html"
         },
         {
+            "source": "/css/(.*)",
+            "destination": "/src/css/$1"
+        },
+        {
+            "source": "/js/(.*)",
+            "destination": "/src/js/$1"
+        },
+        {
+            "source": "/images/(.*)",
+            "destination": "/src/images/$1"
+        },
+        {
             "source": "/(.*)",
-            "destination": "/src/$1"
+            "destination": "/src/$1.html"
         }
     ]
 }
