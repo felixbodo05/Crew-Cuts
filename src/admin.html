@@ -1070,6 +1070,53 @@
             margin-bottom: 1rem;
         }
 
+        /* Calendar day-off markers */
+        .cal-day.day-off {
+            background: repeating-linear-gradient(135deg, rgba(239, 68, 68, 0.04), rgba(239, 68, 68, 0.04) 4px, transparent 4px, transparent 8px);
+            border-color: rgba(239, 68, 68, 0.2);
+        }
+
+        .cal-event.s-dayoff {
+            background: rgba(239, 68, 68, 0.12);
+            border-left: 3px solid #f87171;
+            color: #f87171;
+            font-style: italic;
+        }
+
+        .week-slot.day-off {
+            background: repeating-linear-gradient(135deg, rgba(239, 68, 68, 0.04), rgba(239, 68, 68, 0.04) 4px, transparent 4px, transparent 8px);
+        }
+
+        .week-event.s-dayoff {
+            background: rgba(239, 68, 68, 0.12);
+            border-left: 3px solid #f87171;
+            color: #f87171;
+            font-style: italic;
+        }
+
+        /* Timeoff type badges */
+        .timeoff-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.78rem;
+            font-weight: 600;
+        }
+
+        .timeoff-badge.vacation {
+            background: rgba(96, 165, 250, 0.12);
+            color: #60a5fa;
+            border: 1px solid rgba(96, 165, 250, 0.25);
+        }
+
+        .timeoff-badge.holiday {
+            background: rgba(251, 191, 36, 0.12);
+            color: #fbbf24;
+            border: 1px solid rgba(251, 191, 36, 0.25);
+        }
+
         /* Toast */
         .toast {
             position: fixed;
@@ -1574,6 +1621,7 @@
             <div class="nav-section-label">Tartalom</div>
             <div class="nav-item" data-page="images"><i class="fa-solid fa-images"></i> Képek</div>
             <div class="nav-item" data-page="services"><i class="fa-solid fa-list-check"></i> Szolgáltatások</div>
+            <div class="nav-item" data-page="timeoffs"><i class="fa-solid fa-calendar-xmark"></i> Szabadnapok</div>
             <div class="sidebar-footer">
                 <div class="logout-btn" id="adminLogout">
                     <i class="fa-solid fa-right-from-bracket"></i> Kilépés
@@ -1735,6 +1783,40 @@
                 </div>
             </div>
 
+            <!-- Timeoffs -->
+            <div class="page" id="page-timeoffs">
+                <div class="page-header">
+                    <h1>Szabadnapok</h1>
+                    <p>Szabadságok és munkaszüneti napok kezelése</p>
+                </div>
+                <div class="bookings-toolbar" style="margin-bottom: 1rem; justify-content: flex-end;">
+                    <button class="btn-primary" onclick="openAddTimeoffModal()"
+                        style="font-size: 0.85rem; padding: 8px 16px;">
+                        <i class="fa-solid fa-plus" style="margin-right:8px;"></i> Új szabadnap
+                    </button>
+                </div>
+                <div class="table-wrap">
+                    <table id="timeoffsTable">
+                        <thead>
+                            <tr>
+                                <th>Típus</th>
+                                <th>Borbély</th>
+                                <th>Kezdés</th>
+                                <th>Vége</th>
+                                <th>Műveletek</th>
+                            </tr>
+                        </thead>
+                        <tbody id="timeoffsList">
+                            <tr>
+                                <td colspan="5" style="text-align:center;">
+                                    <div class="spinner"></div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
         </main>
     </div>
 
@@ -1777,6 +1859,7 @@
             const MONTHS_HU = ['Január', 'Február', 'Március', 'Április', 'Május', 'Június', 'Július', 'Augusztus', 'Szeptember', 'Október', 'November', 'December'];
 
             let allBookings = [];
+            let timeoffsData = [];
 
             // ── Password Gate ──────────────────────────────────────────
             const gateEl = document.getElementById('gate');
@@ -1846,6 +1929,7 @@
                     if (item.dataset.page === 'calendar') renderCalendar();
                     if (item.dataset.page === 'images') loadImages();
                     if (item.dataset.page === 'services') loadServices();
+                    if (item.dataset.page === 'timeoffs') loadTimeoffs();
                     // Close sidebar on mobile after navigation
                     if (window.innerWidth <= 768) closeSidebar();
                 });
@@ -1877,6 +1961,11 @@
             // ── Init ────────────────────────────────────────────────────
             async function initAdmin() {
                 allBookings = await fetchAllBookings();
+                // Load timeoffs for calendar display
+                try {
+                    const { data } = await sb.from('timeoffs').select('*').order('start_date', { ascending: true });
+                    timeoffsData = data || [];
+                } catch (e) { timeoffsData = []; }
                 updateStats();
                 renderTodayBookings();
                 renderBookingsTable();
@@ -2241,6 +2330,20 @@
                     const dayB = monthBookings.filter(b => b.booking_date === dateStr)
                         .sort((a, b) => a.booking_time.localeCompare(b.booking_time));
                     const isToday = dateStr === today;
+                    const dayTimeoffs = getTimeoffsForDate(dateStr);
+                    const isDayOff = dayTimeoffs.length > 0;
+
+                    // Timeoff event pills
+                    let timeoffEvents = '';
+                    if (isDayOff) {
+                        const uniqueBarbers = [...new Set(dayTimeoffs.map(t => t.barber))];
+                        uniqueBarbers.forEach(b => {
+                            const label = b === 'all' ? 'Zárva' : (BARBER_NAMES[b]?.split(' ')[1] || b);
+                            timeoffEvents += `<div class="cal-event s-dayoff" title="Szabadnap: ${b === 'all' ? 'Egész szalon' : (BARBER_NAMES[b] || b)}">
+                                <i class="fa-solid fa-ban" style="font-size:0.6rem;"></i> ${label}
+                            </div>`;
+                        });
+                    }
 
                     const maxEvents = isMobile ? 3 : 5;
                     const events = dayB.slice(0, maxEvents).map(b => {
@@ -2255,9 +2358,9 @@
                     }).join('');
                     const more = dayB.length > maxEvents ? `<div class="cal-event s-pending">+${dayB.length - maxEvents}</div>` : '';
 
-                    html += `<div class="cal-day${isToday ? ' today' : ''}" style="cursor: pointer;" onclick="filterByDate('${dateStr}')">
+                    html += `<div class="cal-day${isToday ? ' today' : ''}${isDayOff ? ' day-off' : ''}" style="cursor: pointer;" onclick="filterByDate('${dateStr}')">
                         <div class="cal-day-num">${d}</div>
-                        ${events}${more}
+                        ${timeoffEvents}${events}${more}
                     </div>`;
                 }
                 grid.innerHTML = html;
@@ -2313,16 +2416,26 @@
                     weekDates.forEach(d => {
                         const ds = d.toISOString().split('T')[0];
                         const isT = ds === today;
+                        const dayTimeoffs = getTimeoffsForDate(ds);
+                        const isDayOff = dayTimeoffs.length > 0;
                         const slotBookings = allBookings.filter(b =>
                             b.booking_date === ds &&
                             b.booking_time?.slice(0, 5) === slot
                         );
-                        const events = slotBookings.map(b =>
+                        let events = '';
+                        if (isDayOff && slot === '11:00') {
+                            const uniqueBarbers = [...new Set(dayTimeoffs.map(t => t.barber))];
+                            events = uniqueBarbers.map(b => {
+                                const label = b === 'all' ? 'Zárva' : (BARBER_NAMES[b]?.split(' ')[1] || b);
+                                return `<div class="week-event s-dayoff" title="Szabadnap"><i class="fa-solid fa-ban" style="font-size:0.55rem;"></i> ${label}</div>`;
+                            }).join('');
+                        }
+                        events += slotBookings.map(b =>
                             `<div class="week-event s-${b.status}" title="${b.name || ''} – ${BARBER_NAMES[b.barber] || b.barber} – ${SERVICE_NAMES[b.service] || b.service}">
                                 ${BARBER_NAMES[b.barber]?.split(' ')[0] || b.barber} – ${SERVICE_NAMES[b.service] || b.service}
                             </div>`
                         ).join('');
-                        html += `<div class="week-slot${isT ? ' today-col' : ''}">${events}</div>`;
+                        html += `<div class="week-slot${isT ? ' today-col' : ''}${isDayOff ? ' day-off' : ''}">${events}</div>`;
                     });
                 });
 
@@ -2643,6 +2756,146 @@
             // Expose globally so it can be called upon login success
             window.adminLoadServices = loadServices;
 
+            // ============================================================
+            // TIMEOFFS MANAGEMENT
+            // ============================================================
+
+            async function loadTimeoffs() {
+                try {
+                    const { data, error } = await sb.from('timeoffs').select('*').order('start_date', { ascending: true });
+                    if (error) throw error;
+                    timeoffsData = data || [];
+                    renderTimeoffsTable();
+                } catch (err) {
+                    console.error('Hiba a szabadnapok betöltésekor:', err);
+                    document.getElementById('timeoffsList').innerHTML = `<tr><td colspan="5" style="text-align:center;color:#f87171;">Hiba: ${err.message}</td></tr>`;
+                }
+            }
+
+            function renderTimeoffsTable() {
+                const tbody = document.getElementById('timeoffsList');
+                const today = new Date().toISOString().split('T')[0];
+                // Show future/current timeoffs first
+                const sorted = [...timeoffsData].sort((a, b) => {
+                    const aFuture = a.end_date >= today ? 0 : 1;
+                    const bFuture = b.end_date >= today ? 0 : 1;
+                    if (aFuture !== bFuture) return aFuture - bFuture;
+                    return a.start_date.localeCompare(b.start_date);
+                });
+
+                if (sorted.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:2rem;">Nincs szabadnap felvéve</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = sorted.map(t => {
+                    const isHoliday = t.barber === 'all';
+                    const typeBadge = isHoliday
+                        ? '<span class="timeoff-badge holiday"><i class="fa-solid fa-star"></i> Munkaszüneti</span>'
+                        : '<span class="timeoff-badge vacation"><i class="fa-solid fa-umbrella-beach"></i> Szabadság</span>';
+                    const barberName = isHoliday ? 'Mindenki' : (BARBER_NAMES[t.barber] || t.barber);
+                    const isPast = t.end_date < today;
+                    const rowStyle = isPast ? 'opacity:0.4;' : '';
+                    const sameDay = t.start_date === t.end_date;
+                    const dateDisplay = sameDay ? formatDateHu(t.start_date) : formatDateHu(t.start_date);
+                    const endDisplay = sameDay ? formatDateHu(t.end_date) : formatDateHu(t.end_date);
+
+                    return `
+                        <tr style="${rowStyle}">
+                            <td>${typeBadge}</td>
+                            <td style="font-weight:bold;">${barberName}</td>
+                            <td>${dateDisplay}</td>
+                            <td>${endDisplay}</td>
+                            <td>
+                                <button class="btn-sm btn-cancel" onclick="deleteTimeoff('${t.id}')">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+
+            function formatDateHu(dateStr) {
+                const [y, m, d] = dateStr.split('-');
+                const monthNames = ['jan.', 'feb.', 'már.', 'ápr.', 'máj.', 'jún.', 'júl.', 'aug.', 'szept.', 'okt.', 'nov.', 'dec.'];
+                return `${y}. ${monthNames[parseInt(m) - 1]} ${parseInt(d)}.`;
+            }
+
+            window.openAddTimeoffModal = function () {
+                document.getElementById('timeoffForm').reset();
+                document.getElementById('toBarberGroup').style.display = 'block';
+                // Default start date to today
+                const today = new Date().toISOString().split('T')[0];
+                document.getElementById('toStartDate').value = today;
+                document.getElementById('toEndDate').value = today;
+                document.getElementById('timeoffModal').classList.add('show');
+            };
+
+            window.closeTimeoffModal = function () {
+                document.getElementById('timeoffModal').classList.remove('show');
+            };
+
+            document.getElementById('timeoffForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const btn = e.target.querySelector('button[type="submit"]');
+                const origText = btn.innerHTML;
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Mentés...';
+
+                const isHoliday = document.querySelector('input[name="toType"]:checked').value === 'holiday';
+                const barber = isHoliday ? 'all' : document.getElementById('toBarber').value;
+                const startDate = document.getElementById('toStartDate').value;
+                const endDate = document.getElementById('toEndDate').value;
+
+                if (endDate < startDate) {
+                    showToast('A záró dátum nem lehet korábbi a kezdő dátumnál!', 'error');
+                    btn.disabled = false;
+                    btn.innerHTML = origText;
+                    return;
+                }
+
+                try {
+                    const payload = {
+                        action: 'save-timeoff',
+                        barber,
+                        start_date: startDate,
+                        end_date: endDate
+                    };
+                    const res = await adminFetch(payload, 'POST', payload);
+                    if (res.error) throw new Error(res.error);
+
+                    showToast('Szabadnap sikeresen mentve!');
+                    closeTimeoffModal();
+                    loadTimeoffs();
+                    // Refresh calendar if it was loaded
+                    if (timeoffsData) renderCalendar();
+                } catch (err) {
+                    showToast('Hiba mentéskor: ' + err.message, 'error');
+                } finally {
+                    btn.disabled = false;
+                    btn.innerHTML = origText;
+                }
+            });
+
+            window.deleteTimeoff = async function (id) {
+                if (!confirm('Biztosan törlöd ezt a szabadnapot?')) return;
+                try {
+                    const res = await adminFetch({ action: 'delete-timeoff' }, 'POST', { id });
+                    if (res.error) throw new Error(res.error);
+                    showToast('Szabadnap törölve!');
+                    loadTimeoffs();
+                    renderCalendar();
+                } catch (err) {
+                    showToast('Hiba törléskor: ' + err.message, 'error');
+                }
+            };
+
+            // Helper: check if a date falls within any timeoff
+            function getTimeoffsForDate(dateStr) {
+                return timeoffsData.filter(t => t.start_date <= dateStr && t.end_date >= dateStr);
+            }
+
         }); // end DOMContentLoaded
     </script>
 
@@ -2704,6 +2957,71 @@
                 </div>
                 <div style="display: flex; gap: 1rem;">
                     <button type="button" class="btn-cancel" onclick="closeServiceModal()" style="flex: 1;"><i
+                            class="fa-solid fa-xmark"></i> Mégsem</button>
+                    <button type="submit" class="btn-primary" style="flex: 1;"><i class="fa-solid fa-save"></i>
+                        Mentés</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- TIMEOFF MODAL -->
+    <div class="modal-overlay" id="timeoffModal">
+        <div class="modal-content" style="max-width: 500px; text-align: left; padding: 2rem;">
+            <div
+                style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px;">
+                <h3 id="timeoffModalTitle" style="margin: 0; font-size: 1.4rem;"><i class="fa-solid fa-calendar-xmark"
+                        style="color:var(--text-muted); margin-right: 10px;"></i>Új szabadnap</h3>
+            </div>
+            <form id="timeoffForm" action="javascript:void(0);">
+                <div class="form-group">
+                    <label>Típus</label>
+                    <div style="display:flex; gap:1rem; margin-top:0.5rem;">
+                        <label class="timeoff-radio-label" style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
+                            <input type="radio" name="toType" value="vacation" checked
+                                style="width:auto; transform:scale(1.2);"
+                                onchange="document.getElementById('toBarberGroup').style.display='block'">
+                            <span>Szabadság</span>
+                        </label>
+                        <label class="timeoff-radio-label" style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
+                            <input type="radio" name="toType" value="holiday"
+                                style="width:auto; transform:scale(1.2);"
+                                onchange="document.getElementById('toBarberGroup').style.display='none'">
+                            <span>Munkaszüneti nap</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group" id="toBarberGroup">
+                    <label for="toBarber">Borbély</label>
+                    <div class="input-wrap">
+                        <i class="fa-solid fa-user-tie"></i>
+                        <select id="toBarber" required
+                            style="width:100%; border-radius:8px; padding:12px; padding-left:40px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); color:#fff; font-family:var(--font); appearance:none; -webkit-appearance:none;">
+                            <option value="mark">Egervári Márk</option>
+                            <option value="domonkos">Kányai Domonkos</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group" style="display:flex; gap:1rem;">
+                    <div style="flex:1;">
+                        <label for="toStartDate">Kezdő dátum</label>
+                        <div class="input-wrap">
+                            <i class="fa-solid fa-calendar"></i>
+                            <input type="date" id="toStartDate" required
+                                style="width:100%; border-radius:8px; padding:12px; padding-left:40px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); color:#fff; font-family:var(--font);">
+                        </div>
+                    </div>
+                    <div style="flex:1;">
+                        <label for="toEndDate">Záró dátum</label>
+                        <div class="input-wrap">
+                            <i class="fa-solid fa-calendar"></i>
+                            <input type="date" id="toEndDate" required
+                                style="width:100%; border-radius:8px; padding:12px; padding-left:40px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); color:#fff; font-family:var(--font);">
+                        </div>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 1rem; margin-top: 0.5rem;">
+                    <button type="button" class="btn-cancel" onclick="closeTimeoffModal()" style="flex: 1;"><i
                             class="fa-solid fa-xmark"></i> Mégsem</button>
                     <button type="submit" class="btn-primary" style="flex: 1;"><i class="fa-solid fa-save"></i>
                         Mentés</button>

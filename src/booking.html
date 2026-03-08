@@ -837,6 +837,31 @@
 
                 let selectedTime = null;
                 let bookedSlots = [];
+                let cachedTimeoffs = null;
+
+                // Fetch timeoffs from Supabase (cached per session)
+                async function fetchTimeoffs() {
+                    if (cachedTimeoffs !== null) return cachedTimeoffs;
+                    try {
+                        const { data, error } = await window.CrewCutzAuth.supabase
+                            .from('timeoffs')
+                            .select('*');
+                        if (error) throw error;
+                        cachedTimeoffs = data || [];
+                    } catch (e) {
+                        console.warn('Timeoffs fetch error:', e);
+                        cachedTimeoffs = [];
+                    }
+                    return cachedTimeoffs;
+                }
+
+                // Check if a date is a day off for a specific barber
+                function isDayOff(dateStr, barber, timeoffs) {
+                    return timeoffs.some(t =>
+                        t.start_date <= dateStr && t.end_date >= dateStr &&
+                        (t.barber === 'all' || t.barber === barber)
+                    );
+                }
 
                 // ── Fetch booked slots for a given barber + date ──
                 async function fetchBookedSlots(barber, date) {
@@ -917,6 +942,7 @@
                     let currentDate = new Date(y, m - 1, d);
                     let booked = [];
                     const now = new Date();
+                    const timeoffs = await fetchTimeoffs();
 
                     // Keresés maximum 30 napra előre, hogy találjunk szabad helyet
                     for (let i = 0; i < 30; i++) {
@@ -924,6 +950,12 @@
 
                         // Múltbéli napokon ugorjunk
                         if (iterDateStr < todayStr) {
+                            currentDate.setDate(currentDate.getDate() + 1);
+                            continue;
+                        }
+
+                        // Szabadnapokon ugorjunk (mint hétvégéken)
+                        if (isDayOff(iterDateStr, barber, timeoffs)) {
                             currentDate.setDate(currentDate.getDate() + 1);
                             continue;
                         }
@@ -985,32 +1017,43 @@
                     radio.addEventListener('change', loadSlots);
                 });
 
-                // Listen for date change (prevent past dates and weekends)
-                dateInput.addEventListener('change', () => {
+                // Listen for date change (prevent past dates, weekends and day-offs)
+                dateInput.addEventListener('change', async () => {
                     if (dateInput.value < todayStr) {
                         dateInput.value = todayStr;
                     }
 
-                    // Check if it's a weekend
-                    if (!isWorkday(dateInput.value)) {
+                    const barber = document.querySelector('input[name="barber"]:checked')?.value;
+                    const timeoffs = await fetchTimeoffs();
+
+                    // Check if it's a weekend or day off
+                    const isWeekendOrDayOff = (ds) => !isWorkday(ds) || (barber && isDayOff(ds, barber, timeoffs));
+
+                    if (isWeekendOrDayOff(dateInput.value)) {
                         let [y, m, d] = dateInput.value.split('-');
                         let currentDate = new Date(y, m - 1, d);
+                        const wasWeekend = !isWorkday(dateInput.value);
 
                         let iterDateStr = dateInput.value;
-                        while (!isWorkday(iterDateStr)) {
+                        let safety = 0;
+                        while (isWeekendOrDayOff(iterDateStr) && safety < 60) {
                             currentDate.setDate(currentDate.getDate() + 1);
                             iterDateStr = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-${String(currentDate.getDate()).padStart(2, '0')}`;
+                            safety++;
                         }
 
                         dateInput.value = iterDateStr;
 
+                        const msg = wasWeekend
+                            ? 'Hétvégén zárva vagyunk! A naptár automatikusan a legközelebbi munkanapra ugrott.'
+                            : 'Ez a nap szabadnap! A naptár automatikusan a legközelebbi elérhető napra ugrott.';
                         const errorContainer = document.getElementById('bookingError');
                         if (errorContainer) {
-                            document.getElementById('bookingErrorMsg').textContent = 'Hétvégén zárva vagyunk! A naptár automatikusan a legközelebbi munkanapra ugrott.';
+                            document.getElementById('bookingErrorMsg').textContent = msg;
                             errorContainer.style.display = 'block';
                             setTimeout(() => { errorContainer.style.display = 'none'; }, 4000);
                         } else {
-                            alert('Hétvégén zárva vagyunk! A naptár automatikusan a legközelebbi munkanapra ugrott.');
+                            alert(msg);
                         }
                     }
 
