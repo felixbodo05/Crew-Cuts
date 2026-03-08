@@ -7,42 +7,42 @@
             "use": "@vercel/static"
         }
     ],
-    "routes": [
+    "rewrites": [
         {
-            "src": "/",
-            "dest": "/src/index.html"
+            "source": "/",
+            "destination": "/src/index.html"
         },
         {
-            "src": "/booking",
-            "dest": "/src/booking.html"
+            "source": "/booking",
+            "destination": "/src/booking.html"
         },
         {
-            "src": "/login",
-            "dest": "/src/login.html"
+            "source": "/login",
+            "destination": "/src/login.html"
         },
         {
-            "src": "/profile",
-            "dest": "/src/profile.html"
+            "source": "/profile",
+            "destination": "/src/profile.html"
         },
         {
-            "src": "/admin",
-            "dest": "/src/admin.html"
+            "source": "/admin",
+            "destination": "/src/admin.html"
         },
         {
-            "src": "/barbers",
-            "dest": "/src/barbers.html"
+            "source": "/barbers",
+            "destination": "/src/barbers.html"
         },
         {
-            "src": "/contact",
-            "dest": "/src/contact.html"
+            "source": "/contact",
+            "destination": "/src/contact.html"
         },
         {
-            "src": "/portfolio",
-            "dest": "/src/portfolio.html"
+            "source": "/portfolio",
+            "destination": "/src/portfolio.html"
         },
         {
-            "src": "/(.*)",
-            "dest": "/src/$1"
+            "source": "/(.*)",
+            "destination": "/src/$1"
         }
     ]
 }
