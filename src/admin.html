@@ -1707,7 +1707,8 @@
                 </div>
                 <!-- Toolbar for adding a new service -->
                 <div class="bookings-toolbar" style="margin-bottom: 1rem; justify-content: flex-end;">
-                    <button class="btn-primary" onclick="openAddServiceModal()">
+                    <button class="btn-primary" onclick="openAddServiceModal()"
+                        style="font-size: 0.85rem; padding: 8px 16px;">
                         <i class="fa-solid fa-plus" style="margin-right:8px;"></i> Új Szolgáltatás
                     </button>
                 </div>
@@ -2557,10 +2558,10 @@
                             <td>${statusHtml}</td>
                             <td>
                                 <div style="display:flex;gap:0.5rem;">
-                                    <button class="btn-primary" style="padding:6px 12px;font-size:0.75rem;" onclick="openEditServiceModal('${s.id}')">
+                                    <button class="btn-sm btn-primary" onclick="openEditServiceModal('${s.id}')">
                                         <i class="fa-solid fa-pen"></i>
                                     </button>
-                                    <button class="btn-cancel" style="padding:6px 12px;font-size:0.75rem;" onclick="deleteService('${s.id}')">
+                                    <button class="btn-sm btn-cancel" onclick="deleteService('${s.id}')">
                                         <i class="fa-solid fa-trash"></i>
                                     </button>
                                 </div>
@@ -2575,7 +2576,7 @@
                 document.getElementById('serviceForm').reset();
                 document.getElementById('srvId').value = '';
                 document.getElementById('srvActive').checked = true;
-                document.getElementById('serviceModal').classList.add('active');
+                document.getElementById('serviceModal').classList.add('show');
             };
 
             window.openEditServiceModal = function (id) {
@@ -2587,11 +2588,11 @@
                 document.getElementById('srvDuration').value = s.duration_minutes;
                 document.getElementById('srvPrice').value = s.price;
                 document.getElementById('srvActive').checked = s.active;
-                document.getElementById('serviceModal').classList.add('active');
+                document.getElementById('serviceModal').classList.add('show');
             };
 
             window.closeServiceModal = function () {
-                document.getElementById('serviceModal').classList.remove('active');
+                document.getElementById('serviceModal').classList.remove('show');
             };
 
             document.getElementById('serviceForm').addEventListener('submit', async (e) => {
