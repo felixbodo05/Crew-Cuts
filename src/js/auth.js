@@ -126,10 +126,10 @@ async function initAuthNav() {
 
     if (user) {
         authBtn.innerHTML = '<i class="fa-solid fa-user"></i><span>Profilom</span>';
-        authBtn.href = 'profile.html';
+        authBtn.href = '/profile';
     } else {
         authBtn.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i><span>Belépés</span>';
-        authBtn.href = 'login.html';
+        authBtn.href = '/login';
     }
 
     authBtn.addEventListener('mouseenter', () => {
@@ -220,10 +220,10 @@ async function cancelBooking(bookingId) {
  * Redirects to login.html if not authenticated.
  * Call at the top of protected pages.
  */
-async function requireAuth(redirectUrl = 'booking.html') {
+async function requireAuth(redirectUrl = 'booking') {
     const user = await getUser();
     if (!user) {
-        window.location.href = `login.html?redirect=${encodeURIComponent(redirectUrl)}`;
+        window.location.href = `/login?redirect=${encodeURIComponent(redirectUrl)}`;
         return null;
     }
     return user;

@@ -285,7 +285,7 @@
 
 <body>
     <!-- Logo -->
-    <a href="index.html" class="logo-fixed">
+    <a href="/" class="logo-fixed">
         <img src="images/logo.png" alt="Crew Cutz Logo">
     </a>
 
@@ -300,19 +300,19 @@
     <!-- Mobile Menu -->
     <div class="mobile-menu-overlay" id="mobileMenuOverlay">
         <nav class="mobile-menu">
-            <a href="index.html" class="mobile-menu-item" data-page="home">
+            <a href="/" class="mobile-menu-item" data-page="home">
                 <i class="fa-solid fa-home"></i><span>Kezdőlap</span>
             </a>
-            <a href="portfolio.html" class="mobile-menu-item" data-page="portfolio">
+            <a href="/" class="mobile-menu-item" data-page="portfolio">
                 <i class="fa-solid fa-images"></i><span>Portfólió</span>
             </a>
-            <a href="barbers.html" class="mobile-menu-item" data-page="barbers">
+            <a href="/" class="mobile-menu-item" data-page="barbers">
                 <i class="fa-solid fa-scissors"></i><span>Borbélyok</span>
             </a>
-            <a href="contact.html" class="mobile-menu-item" data-page="contact">
+            <a href="/" class="mobile-menu-item" data-page="contact">
                 <i class="fa-solid fa-envelope"></i><span>Kapcsolat</span>
             </a>
-            <a href="booking.html" class="mobile-menu-cta" data-page="booking">
+            <a href="/" class="mobile-menu-cta" data-page="booking">
                 <i class="fa-solid fa-calendar-check"></i><span>Foglalás</span>
             </a>
         </nav>
@@ -334,8 +334,8 @@
             <!-- Already logged in notice (hidden by default) -->
             <div class="auth-already-in" id="alreadyLoggedIn">
                 <p>Már be vagy jelentkezve!<br>
-                    <a href="booking.html">Vissza a foglaláshoz</a> vagy
-                    <a href="profile.html">Profilom</a>
+                    <a href="/">Vissza a foglaláshoz</a> vagy
+                    <a href="/">Profilom</a>
                 </p>
             </div>
 
@@ -496,7 +496,7 @@
             // ── Redirect helper ──
             function getRedirectUrl() {
                 const params = new URLSearchParams(window.location.search);
-                return params.get('redirect') || 'booking.html';
+                return params.get('redirect') || '/booking';
             }
 
             // ── Show message helpers ──
