@@ -661,10 +661,7 @@
                         <div class="input-wrap">
                             <i class="fa-solid fa-scissors"></i>
                             <select id="bookingService" name="service" required>
-                                <option value="">Válassz szolgáltatást</option>
-                                <option value="haircut">✂️ Hajvágás</option>
-                                <option value="beard">🧔 Szakállformázás</option>
-                                <option value="combo">💈 Kombináció (haj + szakáll)</option>
+                                <option value="">Betöltés...</option>
                             </select>
                             <i class="fa-solid fa-check valid-icon"></i>
                         </div>
@@ -805,6 +802,31 @@
                 const dateInput = document.getElementById('bookingDate');
                 dateInput.min = todayStr;
                 dateInput.value = defaultDateStr;
+
+                // ── Load Dynamic Services ──
+                async function loadServices() {
+                    try {
+                        const { data, error } = await window.CrewCutzAuth.supabase
+                            .from('services')
+                            .select('*')
+                            .eq('active', true)
+                            .order('order_index', { ascending: true });
+                        if (error) throw error;
+
+                        const select = document.getElementById('bookingService');
+                        select.innerHTML = '<option value="">Válassz szolgáltatást</option>';
+                        if (data) {
+                            data.forEach(s => {
+                                // Save the service name directly to bookings based on previous app design
+                                select.innerHTML += `<option value="${s.name}" data-duration="${s.duration_minutes}">${s.name} - ${s.price.toLocaleString('hu-HU')} Ft</option>`;
+                            });
+                        }
+                    } catch (err) {
+                        console.error('Hiba a szolgáltatások betöltésekor:', err);
+                        document.getElementById('bookingService').innerHTML = '<option value="">Hiba a betöltéskor</option>';
+                    }
+                }
+                loadServices();
 
                 // ── Time slots config ──
                 // Opening hours: Mon-Fri 11:00-20:00, full hours only

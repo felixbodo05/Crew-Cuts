@@ -1573,6 +1573,7 @@
             <div class="nav-item" data-page="calendar"><i class="fa-solid fa-calendar-days"></i> Naptár</div>
             <div class="nav-section-label">Tartalom</div>
             <div class="nav-item" data-page="images"><i class="fa-solid fa-images"></i> Képek</div>
+            <div class="nav-item" data-page="services"><i class="fa-solid fa-list-check"></i> Szolgáltatások</div>
             <div class="sidebar-footer">
                 <div class="logout-btn" id="adminLogout">
                     <i class="fa-solid fa-right-from-bracket"></i> Kilépés
@@ -1698,6 +1699,41 @@
                 </div>
             </div>
 
+            <!-- Services -->
+            <div class="page" id="page-services">
+                <div class="page-header">
+                    <h1>Szolgáltatások</h1>
+                    <p>Szolgáltatások, árak és időtartamok kezelése</p>
+                </div>
+                <!-- Toolbar for adding a new service -->
+                <div class="bookings-toolbar" style="margin-bottom: 1rem; justify-content: flex-end;">
+                    <button class="btn-primary" onclick="openAddServiceModal()">
+                        <i class="fa-solid fa-plus" style="margin-right:8px;"></i> Új Szolgáltatás
+                    </button>
+                </div>
+                <div class="table-wrap">
+                    <table id="servicesTable">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Név</th>
+                                <th>Időtartam (perc)</th>
+                                <th>Ár (Ft)</th>
+                                <th>Állapot</th>
+                                <th>Műveletek</th>
+                            </tr>
+                        </thead>
+                        <tbody id="servicesList">
+                            <tr>
+                                <td colspan="6" style="text-align:center;">
+                                    <div class="spinner"></div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
         </main>
     </div>
 
@@ -1808,6 +1844,7 @@
                     document.getElementById('page-' + item.dataset.page).classList.add('active');
                     if (item.dataset.page === 'calendar') renderCalendar();
                     if (item.dataset.page === 'images') loadImages();
+                    if (item.dataset.page === 'services') loadServices();
                     // Close sidebar on mobile after navigation
                     if (window.innerWidth <= 768) closeSidebar();
                 });
@@ -1843,6 +1880,7 @@
                 renderTodayBookings();
                 renderBookingsTable();
                 loadImages();
+                loadServices();
                 setupFilters();
             }
 
@@ -2481,6 +2519,129 @@
                     preview.innerHTML = `<img src="${url}" alt="${slot}" id="img-${slot}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;">`;
                 }
             }
+            // ============================================================
+            // SERVICES MANAGEMENT
+            // ============================================================
+            let servicesData = [];
+
+            async function loadServices() {
+                try {
+                    const { data, error } = await sb.from('services').select('*').order('order_index', { ascending: true });
+                    if (error) throw error;
+                    servicesData = data || [];
+                    renderServicesTable();
+                } catch (err) {
+                    console.error('Hiba a szolgáltatások betöltésekor:', err);
+                    document.getElementById('servicesList').innerHTML = `<tr><td colspan="6" style="text-align:center;color:#f87171;">Hiba: ${err.message}</td></tr>`;
+                }
+            }
+
+            function renderServicesTable() {
+                const tbody = document.getElementById('servicesList');
+                if (servicesData.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:2rem;">Nincs még felvéve szolgáltatás</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = servicesData.map((s, index) => {
+                    const statusHtml = s.active
+                        ? `<span class="status-badge s-confirmed"><i class="fa-solid fa-check-circle"></i> Aktív</span>`
+                        : `<span style="opacity:0.5" class="status-badge"><i class="fa-solid fa-eye-slash"></i> Rejtett</span>`;
+
+                    return `
+                        <tr>
+                            <td>${index + 1}.</td>
+                            <td style="font-weight:bold;">${s.name}</td>
+                            <td>${s.duration_minutes} perc</td>
+                            <td>${s.price.toLocaleString('hu-HU')} Ft</td>
+                            <td>${statusHtml}</td>
+                            <td>
+                                <div style="display:flex;gap:0.5rem;">
+                                    <button class="btn-primary" style="padding:6px 12px;font-size:0.75rem;" onclick="openEditServiceModal('${s.id}')">
+                                        <i class="fa-solid fa-pen"></i>
+                                    </button>
+                                    <button class="btn-cancel" style="padding:6px 12px;font-size:0.75rem;" onclick="deleteService('${s.id}')">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+
+            window.openAddServiceModal = function () {
+                document.getElementById('serviceModalTitle').innerHTML = '<i class="fa-solid fa-plus-circle" style="color:var(--text-muted); margin-right: 10px;"></i>Új Szolgáltatás';
+                document.getElementById('serviceForm').reset();
+                document.getElementById('srvId').value = '';
+                document.getElementById('srvActive').checked = true;
+                document.getElementById('serviceModal').classList.add('active');
+            };
+
+            window.openEditServiceModal = function (id) {
+                const s = servicesData.find(x => x.id === id);
+                if (!s) return;
+                document.getElementById('serviceModalTitle').innerHTML = '<i class="fa-solid fa-pen" style="color:var(--text-muted); margin-right: 10px;"></i>Szolgáltatás módosítása';
+                document.getElementById('srvId').value = s.id;
+                document.getElementById('srvName').value = s.name;
+                document.getElementById('srvDuration').value = s.duration_minutes;
+                document.getElementById('srvPrice').value = s.price;
+                document.getElementById('srvActive').checked = s.active;
+                document.getElementById('serviceModal').classList.add('active');
+            };
+
+            window.closeServiceModal = function () {
+                document.getElementById('serviceModal').classList.remove('active');
+            };
+
+            document.getElementById('serviceForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const btn = e.target.querySelector('button[type="submit"]');
+                const origText = btn.innerHTML;
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Mentés...';
+
+                const id = document.getElementById('srvId').value;
+                const payload = {
+                    action: 'save-service',
+                    name: document.getElementById('srvName').value,
+                    duration_minutes: document.getElementById('srvDuration').value,
+                    price: document.getElementById('srvPrice').value,
+                    active: document.getElementById('srvActive').checked
+                };
+                if (id) payload.id = id;
+                else payload.order_index = servicesData.length + 1; // Put new at the end
+
+                try {
+                    const res = await adminFetch(payload, 'POST', payload);
+                    if (res.error) throw new Error(res.error);
+
+                    showToast('Szolgáltatás sikeresen mentve!');
+                    closeServiceModal();
+                    loadServices();
+                } catch (err) {
+                    showToast('Hiba mentéskor: ' + err.message, 'error');
+                } finally {
+                    btn.disabled = false;
+                    btn.innerHTML = origText;
+                }
+            });
+
+            window.deleteService = async function (id) {
+                if (!confirm('Biztosan törlöd ezt a szolgáltatást? Ezt nem lehet visszavonni! (Ha már voltak rá foglalások, kérjük inkább inaktiváld!)')) return;
+                try {
+                    const res = await adminFetch({ action: 'delete-service' }, 'POST', { id });
+                    if (res.error) throw new Error(res.error);
+                    showToast('Szolgáltatás törölve!');
+                    loadServices();
+                } catch (err) {
+                    showToast('Hiba törléskor: ' + err.message, 'error');
+                }
+            };
+
+            // Expose globally so it can be called upon login success
+            window.adminLoadServices = loadServices;
+
         }); // end DOMContentLoaded
     </script>
 
@@ -2498,6 +2659,55 @@
             <div id="futureBookingsList" style="max-height: 60vh; overflow-y: auto; padding-right: 10px;">
                 <!-- Content injected via JS -->
             </div>
+        </div>
+    </div>
+
+    <!-- SERVICE MODAL -->
+    <div class="modal-overlay" id="serviceModal">
+        <div class="modal-content" style="max-width: 500px; text-align: left; padding: 2rem;">
+            <div
+                style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px;">
+                <h3 id="serviceModalTitle" style="margin: 0; font-size: 1.4rem;"><i class="fa-solid fa-list-check"
+                        style="color:var(--text-muted); margin-right: 10px;"></i>Új Szolgáltatás</h3>
+            </div>
+            <form id="serviceForm" action="javascript:void(0);">
+                <input type="hidden" id="srvId">
+                <div class="form-group">
+                    <label for="srvName">Név</label>
+                    <div class="input-wrap">
+                        <i class="fa-solid fa-tag"></i>
+                        <input type="text" id="srvName" required placeholder="pl. Hajvágás">
+                    </div>
+                </div>
+                <div class="form-group" style="display:flex; gap:1rem;">
+                    <div style="flex:1;">
+                        <label for="srvDuration">Időtartam (perc)</label>
+                        <div class="input-wrap">
+                            <i class="fa-solid fa-clock"></i>
+                            <input type="number" id="srvDuration" required placeholder="60" min="15" step="15"
+                                style="width:100%; border-radius:8px; padding:12px; padding-left:40px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); color:#fff; font-family:var(--font-oswald);">
+                        </div>
+                    </div>
+                    <div style="flex:1;">
+                        <label for="srvPrice">Ár (Ft)</label>
+                        <div class="input-wrap">
+                            <i class="fa-solid fa-coins"></i>
+                            <input type="number" id="srvPrice" required placeholder="7000" min="0" step="100"
+                                style="width:100%; border-radius:8px; padding:12px; padding-left:40px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); color:#fff; font-family:var(--font-oswald);">
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group" style="display:flex; align-items:center; gap:0.5rem; margin-bottom:1.5rem;">
+                    <input type="checkbox" id="srvActive" checked style="width:auto; transform:scale(1.2);">
+                    <label for="srvActive" style="margin:0; cursor:pointer;">Aktív (foglalható)</label>
+                </div>
+                <div style="display: flex; gap: 1rem;">
+                    <button type="button" class="btn-cancel" onclick="closeServiceModal()" style="flex: 1;"><i
+                            class="fa-solid fa-xmark"></i> Mégsem</button>
+                    <button type="submit" class="btn-primary" style="flex: 1;"><i class="fa-solid fa-save"></i>
+                        Mentés</button>
+                </div>
+            </form>
         </div>
     </div>
 
