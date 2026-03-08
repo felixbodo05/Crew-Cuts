@@ -963,11 +963,35 @@
                     radio.addEventListener('change', loadSlots);
                 });
 
-                // Listen for date change (prevent past dates)
+                // Listen for date change (prevent past dates and weekends)
                 dateInput.addEventListener('change', () => {
                     if (dateInput.value < todayStr) {
                         dateInput.value = todayStr;
                     }
+
+                    // Check if it's a weekend
+                    if (!isWorkday(dateInput.value)) {
+                        let [y, m, d] = dateInput.value.split('-');
+                        let currentDate = new Date(y, m - 1, d);
+
+                        let iterDateStr = dateInput.value;
+                        while (!isWorkday(iterDateStr)) {
+                            currentDate.setDate(currentDate.getDate() + 1);
+                            iterDateStr = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-${String(currentDate.getDate()).padStart(2, '0')}`;
+                        }
+
+                        dateInput.value = iterDateStr;
+
+                        const errorContainer = document.getElementById('bookingError');
+                        if (errorContainer) {
+                            document.getElementById('bookingErrorMsg').textContent = 'Hétvégén zárva vagyunk! A naptár automatikusan a legközelebbi munkanapra ugrott.';
+                            errorContainer.style.display = 'block';
+                            setTimeout(() => { errorContainer.style.display = 'none'; }, 4000);
+                        } else {
+                            alert('Hétvégén zárva vagyunk! A naptár automatikusan a legközelebbi munkanapra ugrott.');
+                        }
+                    }
+
                     selectedTime = null;
                     document.getElementById('selectedTimeInput').value = '';
                     document.getElementById('submitBtn').disabled = true;
