@@ -140,7 +140,8 @@
             pointer-events: none;
         }
 
-        .btn-green {
+        .btn-green,
+        .btn-primary {
             width: 100%;
             padding: 14px;
             background: linear-gradient(135deg, #808080, #a0a0a0);
@@ -157,9 +158,56 @@
             box-shadow: 0 4px 20px rgba(128, 128, 128, 0.35);
         }
 
-        .btn-green:hover {
+        .btn-green:hover,
+        .btn-primary:hover {
             transform: translateY(-2px);
             box-shadow: 0 8px 28px rgba(128, 128, 128, 0.5);
+        }
+
+        /* Custom Radio Buttons */
+        .custom-radio-wrap {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        .custom-radio {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            color: var(--text);
+        }
+
+        .custom-radio input[type="radio"] {
+            appearance: none;
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.05);
+            outline: none;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.2s;
+        }
+
+        .custom-radio input[type="radio"]:checked {
+            border-color: #a0a0a0;
+        }
+
+        .custom-radio input[type="radio"]:checked::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #a0a0a0;
         }
 
         .gate-error {
@@ -1117,6 +1165,86 @@
             border: 1px solid rgba(251, 191, 36, 0.25);
         }
 
+        /* Timeoff Modal Premium Dark Theme Styling */
+        .timeoff-radio-label {
+            position: relative;
+            cursor: pointer;
+            flex: 1;
+        }
+
+        .timeoff-radio-label input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .timeoff-radio-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 1.25rem 1rem;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            color: var(--text-muted);
+            text-align: center;
+        }
+
+        .timeoff-radio-card i {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            transition: color 0.3s;
+        }
+
+        .timeoff-radio-card span {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .timeoff-radio-label input[type="radio"]:checked+.timeoff-radio-card {
+            background: rgba(128, 128, 128, 0.15);
+            border-color: #a0a0a0;
+            color: #fff;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3), inset 0 0 0 1px #a0a0a0;
+        }
+
+        .timeoff-radio-label input[type="radio"]:focus-visible+.timeoff-radio-card {
+            outline: 2px solid #a0a0a0;
+            outline-offset: 2px;
+        }
+
+        .timeoff-radio-label:hover .timeoff-radio-card {
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .timeoff-radio-label input[type="radio"]:checked+.timeoff-radio-card i {
+            color: #a0a0a0;
+        }
+
+        .timeoff-input {
+            width: 100%;
+            border-radius: 8px;
+            padding: 12px;
+            padding-left: 40px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #fff;
+            font-family: var(--font);
+            transition: all 0.2s;
+        }
+
+        .timeoff-input:focus {
+            outline: none;
+            border-color: #a0a0a0;
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 0 0 3px rgba(128, 128, 128, 0.1);
+        }
+
+
         /* Toast */
         .toast {
             position: fixed;
@@ -1963,8 +2091,8 @@
                 allBookings = await fetchAllBookings();
                 // Load timeoffs for calendar display
                 try {
-                    const { data } = await sb.from('timeoffs').select('*').order('start_date', { ascending: true });
-                    timeoffsData = data || [];
+                    const { data, error } = await sb.from('timeoffs').select('*').order('start_date', { ascending: true });
+                    timeoffsData = (!error && data) ? data : [];
                 } catch (e) { timeoffsData = []; }
                 updateStats();
                 renderTodayBookings();
@@ -2763,7 +2891,13 @@
             async function loadTimeoffs() {
                 try {
                     const { data, error } = await sb.from('timeoffs').select('*').order('start_date', { ascending: true });
-                    if (error) throw error;
+                    if (error) {
+                        if (error.message && error.message.includes('schema cache')) {
+                            document.getElementById('timeoffsList').innerHTML = '<tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--text-muted);"><i class="fa-solid fa-database" style="font-size:1.5rem;margin-bottom:0.5rem;display:block;"></i>A <b>timeoffs</b> tábla még nem létezik.<br><span style="font-size:0.8rem;">Futtasd a migrációs SQL-t a Supabase SQL Editorban.</span></td></tr>';
+                            return;
+                        }
+                        throw error;
+                    }
                     timeoffsData = data || [];
                     renderTimeoffsTable();
                 } catch (err) {
@@ -2784,14 +2918,14 @@
                 });
 
                 if (sorted.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:2rem;">Nincs szabadnap felvéve</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="5" class="empty-state"><i class="fa-solid fa-umbrella-beach"></i><p>Nincs szabadnap felvéve.</p></td></tr>';
                     return;
                 }
 
                 tbody.innerHTML = sorted.map(t => {
                     const isHoliday = t.barber === 'all';
                     const typeBadge = isHoliday
-                        ? '<span class="timeoff-badge holiday"><i class="fa-solid fa-star"></i> Munkaszüneti</span>'
+                        ? '<span class="timeoff-badge holiday"><i class="fa-solid fa-store-slash"></i> Zárvatartás</span>'
                         : '<span class="timeoff-badge vacation"><i class="fa-solid fa-umbrella-beach"></i> Szabadság</span>';
                     const barberName = isHoliday ? 'Mindenki' : (BARBER_NAMES[t.barber] || t.barber);
                     const isPast = t.end_date < today;
@@ -2801,13 +2935,13 @@
                     const endDisplay = sameDay ? formatDateHu(t.end_date) : formatDateHu(t.end_date);
 
                     return `
-                        <tr style="${rowStyle}">
+                        <tr class="clickable-row" style="${rowStyle}">
                             <td>${typeBadge}</td>
-                            <td style="font-weight:bold;">${barberName}</td>
-                            <td>${dateDisplay}</td>
-                            <td>${endDisplay}</td>
+                            <td><strong style="color:#fff;">${barberName}</strong></td>
+                            <td style="color:var(--text-muted)">${dateDisplay}</td>
+                            <td style="color:var(--text-muted)">${endDisplay}</td>
                             <td>
-                                <button class="btn-sm btn-cancel" onclick="deleteTimeoff('${t.id}')">
+                                <button class="btn-sm btn-cancel" onclick="deleteTimeoff('${t.id}')" title="Törlés">
                                     <i class="fa-solid fa-trash"></i>
                                 </button>
                             </td>
@@ -2970,60 +3104,66 @@
         <div class="modal-content" style="max-width: 500px; text-align: left; padding: 2rem;">
             <div
                 style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px;">
-                <h3 id="timeoffModalTitle" style="margin: 0; font-size: 1.4rem;"><i class="fa-solid fa-calendar-xmark"
-                        style="color:var(--text-muted); margin-right: 10px;"></i>Új szabadnap</h3>
+                <h3 id="timeoffModalTitle" style="margin: 0; font-size: 1.4rem; font-family: var(--font);"><i
+                        class="fa-solid fa-calendar-xmark" style="color:var(--text-muted); margin-right: 10px;"></i>Új
+                    szabadnap</h3>
             </div>
             <form id="timeoffForm" action="javascript:void(0);">
                 <div class="form-group">
-                    <label>Típus</label>
-                    <div style="display:flex; gap:1rem; margin-top:0.5rem;">
-                        <label class="timeoff-radio-label" style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
+                    <label style="margin-bottom: 8px; display: block; font-family: var(--font);">Típus</label>
+                    <div class="custom-radio-wrap" style="margin-bottom: 15px;">
+                        <label class="custom-radio">
                             <input type="radio" name="toType" value="vacation" checked
-                                style="width:auto; transform:scale(1.2);"
                                 onchange="document.getElementById('toBarberGroup').style.display='block'">
                             <span>Szabadság</span>
                         </label>
-                        <label class="timeoff-radio-label" style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
+                        <label class="custom-radio">
                             <input type="radio" name="toType" value="holiday"
-                                style="width:auto; transform:scale(1.2);"
                                 onchange="document.getElementById('toBarberGroup').style.display='none'">
                             <span>Munkaszüneti nap</span>
                         </label>
                     </div>
                 </div>
                 <div class="form-group" id="toBarberGroup">
-                    <label for="toBarber">Borbély</label>
-                    <div class="input-wrap">
+                    <label for="toBarber"
+                        style="margin-bottom: 8px; display: block; font-family: var(--font);">Borbély</label>
+                    <div class="input-wrap" style="margin-bottom: 15px;">
                         <i class="fa-solid fa-user-tie"></i>
-                        <select id="toBarber" required
-                            style="width:100%; border-radius:8px; padding:12px; padding-left:40px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); color:#fff; font-family:var(--font); appearance:none; -webkit-appearance:none;">
+                        <select id="toBarber" required class="timeoff-input"
+                            style="appearance:none; -webkit-appearance:none;">
                             <option value="mark">Egervári Márk</option>
                             <option value="domonkos">Kányai Domonkos</option>
                         </select>
+                        <i class="fa-solid fa-chevron-down"
+                            style="left: auto; right: 14px; font-size: 12px; color: var(--text-muted);"></i>
                     </div>
                 </div>
-                <div class="form-group" style="display:flex; gap:1rem;">
+                <div class="form-group" style="display:flex; gap:1rem; margin-bottom: 20px;">
                     <div style="flex:1;">
-                        <label for="toStartDate">Kezdő dátum</label>
+                        <label for="toStartDate"
+                            style="margin-bottom: 8px; display: block; font-family: var(--font);">Kezdő dátum</label>
                         <div class="input-wrap">
                             <i class="fa-solid fa-calendar"></i>
-                            <input type="date" id="toStartDate" required
-                                style="width:100%; border-radius:8px; padding:12px; padding-left:40px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); color:#fff; font-family:var(--font);">
+                            <input type="date" id="toStartDate" required class="timeoff-input"
+                                style="color-scheme: dark;">
                         </div>
                     </div>
                     <div style="flex:1;">
-                        <label for="toEndDate">Záró dátum</label>
+                        <label for="toEndDate"
+                            style="margin-bottom: 8px; display: block; font-family: var(--font);">Záró dátum</label>
                         <div class="input-wrap">
                             <i class="fa-solid fa-calendar"></i>
-                            <input type="date" id="toEndDate" required
-                                style="width:100%; border-radius:8px; padding:12px; padding-left:40px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); color:#fff; font-family:var(--font);">
+                            <input type="date" id="toEndDate" required class="timeoff-input"
+                                style="color-scheme: dark;">
                         </div>
                     </div>
                 </div>
-                <div style="display: flex; gap: 1rem; margin-top: 0.5rem;">
-                    <button type="button" class="btn-cancel" onclick="closeTimeoffModal()" style="flex: 1;"><i
+                <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+                    <button type="button" class="btn-cancel" onclick="closeTimeoffModal()"
+                        style="flex: 1; border-radius: 10px; font-family: var(--font);"><i
                             class="fa-solid fa-xmark"></i> Mégsem</button>
-                    <button type="submit" class="btn-primary" style="flex: 1;"><i class="fa-solid fa-save"></i>
+                    <button type="submit" class="btn-primary"
+                        style="flex: 1; border-radius: 10px; font-family: var(--font);"><i class="fa-solid fa-save"></i>
                         Mentés</button>
                 </div>
             </form>
